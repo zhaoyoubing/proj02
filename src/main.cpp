@@ -18,12 +18,16 @@ void initTriangle()
     };
     */
 
-    // two triangles : vertex data
+    // vertex data with RGB colour components
     GLfloat verts[] = {
         -1.0f, 1.0f,  0.0f, // v0
+        0.0f, 1.0f,  0.0f,  // v0 colour green
         -1.0f, -1.0f, 0.0f, // v1
+        0.0f, 0.0f, 0.0f,   // v1 colour black
         1.0f, -1.0f,  0.0f, // v2
+        1.0f, 0.0f,  0.0f,  // v2 colour red
         1.0f, 1.0f,   0.0f, // v3
+        1.0f, 1.0f,   0.0f, // v3 colour yellow
     };
 
     // indices of two triangles
@@ -37,7 +41,11 @@ void initTriangle()
     // set buffer data to triangle vertex and setting vertex attributes
     glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, 0);
+
+    // set colour attributes
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (void *) (sizeof(float) * 3));
 
     // create index buffer
     GLuint idxBufID;

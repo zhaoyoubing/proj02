@@ -4,28 +4,58 @@
 
 void initTriangle()
 {
-    // triangle data
+    
+    /*
+    // raw triangle data with duplicated vertices
     GLfloat verts[] = {
-        0.0f, 1.0f,
-        -1.0f, -1.0f,
-        1.0f, -1.0f
+        -1.0f, 1.0f,  // v0
+        -1.0f, -1.0f, // v1
+        1.0f, -1.0f,  // v2
+
+        1.0f, -1.0f,  // v2
+        1.0f, 1.0f,   // v3
+        -1.0f, 1.0f,  // v0
+    };
+    */
+
+    // two triangles : vertex data
+    GLfloat verts[] = {
+        -1.0f, 1.0f,  0.0f, // v0
+        -1.0f, -1.0f, 0.0f, // v1
+        1.0f, -1.0f,  0.0f, // v2
+        1.0f, 1.0f,   0.0f, // v3
     };
 
+    // indices of two triangles
+    GLuint indices[] = { 0, 1, 2, 2, 3, 0};
+
     // create vertex buffer
-    GLuint bufID;
-    glGenBuffers(1, &bufID);
-    glBindBuffer(GL_ARRAY_BUFFER, bufID);
+    GLuint vertBufID;
+    glGenBuffers(1, &vertBufID);
+    glBindBuffer(GL_ARRAY_BUFFER, vertBufID);
 
     // set buffer data to triangle vertex and setting vertex attributes
     glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+    // create index buffer
+    GLuint idxBufID;
+    glGenBuffers(1, &idxBufID);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idxBufID);
+
+    // set buffer data for triangle index
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 }
 
 void drawTriangle()
 {
     glColor3f(1.0f, 0.0f, 0.0f);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    
+    // glDrawArrays(GL_TRIANGLES, 0, 6);
+    
+    // draw triangle using indices
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
 int main()

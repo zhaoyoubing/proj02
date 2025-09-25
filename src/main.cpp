@@ -80,8 +80,11 @@ void initTriangle()
 
     glm::mat4 mat_scale = glm::scale(glm::vec3(0.5f, 0.5f, 0.5f));
     glm::mat4 mat_trans = glm::translate(glm::vec3(0.3f, 0.2f, 0.0f));
+    glm::mat4 mat_rot = glm::rotate(glm::radians(60.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
-    glm::mat4 mat_modelview = mat_trans * mat_scale;
+    // the order matters
+    // glm::mat4 mat_modelview = mat_rot * mat_trans * mat_scale;
+    glm::mat4 mat_modelview = mat_trans * mat_rot * mat_scale;
     
     GLuint modelview_loc = glGetUniformLocation( shader.program, "modelview" );
     glUniformMatrix4fv(modelview_loc, 1, GL_FALSE, &mat_modelview[0][0]);
@@ -109,7 +112,7 @@ int main()
     }
 
     // create a GLFW window
-    window = glfwCreateWindow(640, 480, "Hello OpenGL1", NULL, NULL);
+    window = glfwCreateWindow(640, 640, "Hello OpenGL 2", NULL, NULL);
     glfwMakeContextCurrent(window);
 
     // loading glad

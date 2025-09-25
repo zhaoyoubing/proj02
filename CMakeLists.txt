@@ -11,7 +11,7 @@ find_package(glfw3 REQUIRED)
 
 
 # adding source files to our exectuable programs
-add_executable(run01 src/main.cpp src/glad.c)
+add_executable(run01 src/main.cpp src/glad.c src/shader.cpp)
 
 # specify include directories
 target_include_directories(run01 PRIVATE include)

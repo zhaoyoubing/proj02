@@ -1,6 +1,12 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/transform.hpp>
+
 #include "shader.h"
 
 static Shader shader;
@@ -64,6 +70,21 @@ void initTriangle()
     // shader.read_source( "shaders/colour.vert", "shaders/colour.frag");
     shader.compile();
     glUseProgram(shader.program);
+
+    /*
+    glm::mat4 mat_scale = glm::scale(  // Scale first
+        glm::mat4(1.0),              // identity matrix
+        glm::vec3( 0.5f, 0.5f, 0.5f )
+    );
+    */
+
+    glm::mat4 mat_scale = glm::scale(glm::vec3(0.5f, 0.5f, 0.5f));
+
+
+    glm::mat4 mat_modelview = mat_scale;
+    
+    GLuint modelview_loc = glGetUniformLocation( shader.program, "modelview" );
+    glUniformMatrix4fv(modelview_loc, 1, GL_FALSE, &mat_modelview[0][0]);
 
 }
 

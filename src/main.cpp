@@ -1,6 +1,9 @@
 #include <iostream>
-#include "glad/glad.h"
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "shader.h"
+
+static Shader shader;
 
 void initTriangle()
 {
@@ -54,11 +57,19 @@ void initTriangle()
 
     // set buffer data for triangle index
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    // Initialize shader
+    shader.read_source( "../shaders/colour.vert", "../shaders/colour.frag");
+    // use the following if you are using Visual Studio
+    // shader.read_source( "shaders/colour.vert", "shaders/colour.frag");
+    shader.compile();
+    glUseProgram(shader.program);
+
 }
 
 void drawTriangle()
 {
-    glColor3f(1.0f, 0.0f, 0.0f);
+    //glColor3f(1.0f, 0.0f, 0.0f);
     
     // glDrawArrays(GL_TRIANGLES, 0, 6);
     

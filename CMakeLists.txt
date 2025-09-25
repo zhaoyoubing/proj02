@@ -18,3 +18,13 @@ target_include_directories(run01 PRIVATE include)
 
 # specify library directories
 target_link_libraries(run01 ${GLFW3_LIBRARY} OpenGL::GL)
+
+# copy shaders
+# Move assets to .exe
+add_custom_target(CopyShaders ALL
+	COMMAND ${CMAKE_COMMAND} -E copy_directory
+	"${CMAKE_CURRENT_SOURCE_DIR}/shaders"
+	"${CMAKE_CURRENT_BINARY_DIR}/shaders"
+)
+
+add_dependencies(run01 CopyShaders)

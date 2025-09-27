@@ -44,6 +44,7 @@ void initTriangle()
     GLuint indices[] = { 0, 1, 2, 2, 3, 0};
     */
 
+    /*
     // cube vertex data with RGB colour components
     GLfloat verts[] = {
         -1.0f, 1.0f,  1.0f, // v0
@@ -64,8 +65,23 @@ void initTriangle()
         1.0f, 1.0f,  -1.0f, // v7
         1.0f, 1.0f,  1.0f, // v7 colour white
     };
+    */
 
+    // pyramid vertex data with RGB colour components
+    GLfloat verts[] = {
+        -1.0f, 1.0f,  0.0f, // v0
+        0.0f, 1.0f,  0.0f,  // v0 colour green
+        -1.0f, -1.0f, 0.0f, // v1
+        0.0f, 0.0f, 0.0f,   // v1 colour black
+        1.0f, -1.0f,  0.0f, // v2
+        1.0f, 0.0f,  0.0f,  // v2 colour red
+        1.0f, 1.0f,   0.0f, // v3
+        1.0f, 1.0f,   0.0f, // v3 colour yellow
 
+        0.0f, 0.0f, 1.0f, // v4
+        0.0f, 0.0f, 1.0f,  // v4 colour blue
+    };
+/*
     // indices of 12 triangles of a cube
     GLuint indices[] = { 
         0, 1, 2,  0, 2, 3,
@@ -74,9 +90,16 @@ void initTriangle()
         3, 2, 7,  2, 6, 7,
         1, 0, 4,  1, 4, 5,
         7, 6, 4,  4, 6, 5
-    
     };
-
+*/
+    // indices of 5 triangles of a pyramid
+    GLuint indices[] = { 
+        0, 1, 2,  0, 2, 3, //base
+        4, 0, 1,
+        4, 1, 2,
+        4, 2, 3,
+        4, 3, 0
+    };
 
     // create vertex buffer
     GLuint vertBufID;
@@ -116,15 +139,17 @@ void initTriangle()
 
     glm::mat4 mat_scale = glm::scale(glm::vec3(0.5f, 0.5f, 0.5f));
     glm::mat4 mat_trans = glm::translate(glm::vec3(0.0f, 0.0f, 0.0f));
-    glm::mat4 mat_rot = glm::rotate(glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 mat_rot = glm::rotate(glm::radians(60.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat4 mat_rot2 = glm::rotate(glm::radians(30.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
     // the order matters
     // glm::mat4 mat_modelview = mat_rot * mat_trans * mat_scale;
     // glm::mat4 mat_modelview = mat_trans * mat_rot * mat_scale;
     // glm::mat4 mat_modelview =  mat_rot2 * mat_rot *  mat_scale;
-    glm::mat4 mat_modelview =   mat_rot2 * mat_rot * mat_scale;
+    //glm::mat4 mat_modelview =   mat_rot2 * mat_rot * mat_scale;
+    glm::mat4 mat_modelview =  mat_rot * mat_scale;
 
+ 
     glm::mat4 mat_projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
     
     GLuint modelview_loc = glGetUniformLocation( shader.program, "modelview" );
@@ -141,7 +166,9 @@ void drawTriangle()
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
        
     // draw triangle using indices
-    glDrawElements(GL_TRIANGLES, 12 * 3, GL_UNSIGNED_INT, 0);
+    //glDrawElements(GL_TRIANGLES, 12 * 3, GL_UNSIGNED_INT, 0);
+    // piramid : 6 triangles
+    glDrawElements(GL_TRIANGLES, 6 * 3, GL_UNSIGNED_INT, 0);
 
 }
 
@@ -173,7 +200,6 @@ int main()
     glClearColor(0.25f, 0.5f, 0.75f, 1.0f);
     
     glEnable(GL_DEPTH_TEST);
-    //glDepthFunc(GL_GREATER);  
 
     // setting the event loop
     while (!glfwWindowShouldClose(window))

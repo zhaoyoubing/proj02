@@ -92,7 +92,7 @@ void initTriangle()
         7, 6, 4,  4, 6, 5
     };
 */
-    // indices of 5 triangles of a pyramid
+    // indices of 6 triangles of a pyramid
     GLuint indices[] = { 
         0, 1, 2,  0, 2, 3, //base
         4, 0, 1,
@@ -147,7 +147,7 @@ void initTriangle()
     // glm::mat4 mat_modelview = mat_trans * mat_rot * mat_scale;
     // glm::mat4 mat_modelview =  mat_rot2 * mat_rot *  mat_scale;
     // glm::mat4 mat_modelview =   mat_rot2 * mat_rot * mat_scale;
-    glm::mat4 mat_modelview =  mat_rot * mat_scale;
+    glm::mat4 mat_modelview =  mat_scale;
 
     glm::mat4 mat_projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
     
@@ -180,9 +180,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     } else if (key == GLFW_KEY_RIGHT /*&& action == GLFW_PRESS*/) {
         rot_y += 5.0;
     } if (key == GLFW_KEY_DOWN ) {
-        rot_x -= 5.0;
-    } else if (key == GLFW_KEY_UP) {
         rot_x += 5.0;
+    } else if (key == GLFW_KEY_UP) {
+        rot_x -= 5.0;
     }
 
     glm::mat4 mat_scale = glm::scale(glm::vec3(0.5f, 0.5f, 0.5f));
@@ -209,6 +209,9 @@ int main()
     window = glfwCreateWindow(640, 640, "Hello OpenGL 2", NULL, NULL);
     glfwMakeContextCurrent(window);
 
+    // register the key event callback function
+    glfwSetKeyCallback(window, key_callback);
+
     // loading glad
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -219,7 +222,6 @@ int main()
 
     initTriangle();
 
-    glfwSetKeyCallback(window, key_callback);
 
     // setting the background colour, you can change the value
     glClearColor(0.25f, 0.5f, 0.75f, 1.0f);

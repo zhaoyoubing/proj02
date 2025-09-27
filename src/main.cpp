@@ -146,10 +146,9 @@ void initTriangle()
     // glm::mat4 mat_modelview = mat_rot * mat_trans * mat_scale;
     // glm::mat4 mat_modelview = mat_trans * mat_rot * mat_scale;
     // glm::mat4 mat_modelview =  mat_rot2 * mat_rot *  mat_scale;
-    //glm::mat4 mat_modelview =   mat_rot2 * mat_rot * mat_scale;
+    // glm::mat4 mat_modelview =   mat_rot2 * mat_rot * mat_scale;
     glm::mat4 mat_modelview =  mat_rot * mat_scale;
 
- 
     glm::mat4 mat_projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
     
     GLuint modelview_loc = glGetUniformLocation( shader.program, "modelview" );
@@ -172,6 +171,30 @@ void drawTriangle()
 
 }
 
+float rot_x = 0;
+float rot_y = 0;
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (key == GLFW_KEY_LEFT ) {
+        rot_y -= 5.0;
+    } else if (key == GLFW_KEY_RIGHT /*&& action == GLFW_PRESS*/) {
+        rot_y += 5.0;
+    } if (key == GLFW_KEY_DOWN ) {
+        rot_x -= 5.0;
+    } else if (key == GLFW_KEY_UP) {
+        rot_x += 5.0;
+    }
+
+    glm::mat4 mat_scale = glm::scale(glm::vec3(0.5f, 0.5f, 0.5f));
+    glm::mat4 mat_rot_y = glm::rotate(glm::radians(rot_y), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 mat_rot_x = glm::rotate(glm::radians(rot_x), glm::vec3(1.0f, 0.0f, 0.0f));
+
+    glm::mat4 mat_modelview =  mat_rot_x * mat_rot_y * mat_scale;
+    
+    GLuint modelview_loc = glGetUniformLocation( shader.program, "modelview" );
+    glUniformMatrix4fv(modelview_loc, 1, GL_FALSE, &mat_modelview[0][0]);
+}
+
 int main()
 {
     GLFWwindow *window;
@@ -189,12 +212,14 @@ int main()
     // loading glad
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
-        std::cout << "Couuldn't load opengl" << std::endl;
+        std::cout << "Couldn't load opengl" << std::endl;
         glfwTerminate();
         return -1;
     }
 
     initTriangle();
+
+    glfwSetKeyCallback(window, key_callback);
 
     // setting the background colour, you can change the value
     glClearColor(0.25f, 0.5f, 0.75f, 1.0f);

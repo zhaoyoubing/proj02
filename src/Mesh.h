@@ -11,13 +11,11 @@
 class Mesh {
 
 protected:
-    std::vector< glm::vec3 > vertices; // array of vertices
-    std::vector< glm::vec3 > normals;  // // array of normals
+    // array of vertices and normals
+    std::vector< glm::vec3 > vertices; 
 
     // triangle vertex indices
-    std::vector< unsigned int > vertex_indices;
-    // triangle normal indices
-    std::vector< unsigned int > normal_indices;
+    std::vector< unsigned int > indices;
     
     std::vector<GLuint> buffers;
 

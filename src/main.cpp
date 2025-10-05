@@ -7,13 +7,28 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 
+#include <assimp/scene.h>
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+
 #include "shader.h"
 
 static Shader shader;
 
+void loadModel(std::string path)
+{
+    Assimp::Importer importer;
+    const aiScene* scene = importer.ReadFile(path, aiProcess_CalcTangentSpace);
+    if (NULL != scene) {
+        std::cout << "load model successful" << std::endl;
+    } else {
+        std::cout << "load model failed" << std::endl;
+    }
+}
+
 void initTriangle()
 {
-    
+    //loadModel("D:/_course/_graphics/_labs/lab03/model/plane_basic.obj");
     /*
     // raw triangle data with duplicated vertices
     GLfloat verts[] = {
@@ -147,17 +162,20 @@ void drawTriangle()
 
 int main()
 {
+
     GLFWwindow *window;
 
     // GLFW init
     if (!glfwInit())
     {
+        std::cout << "glfw failed" << std::endl;
         return -1;
     }
 
     // create a GLFW window
     window = glfwCreateWindow(640, 640, "Hello OpenGL 2", NULL, NULL);
     glfwMakeContextCurrent(window);
+
 
     // loading glad
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))

@@ -55,6 +55,36 @@ void Mesh::loadModel(std::string path)
     // std::cout << indices.size() << std::endl;
 }
 
+void Mesh::initBuffer()
+{
+   // create vertex buffer
+    GLuint vertBufID;
+    glGenBuffers(1, &vertBufID);
+    glBindBuffer(GL_ARRAY_BUFFER, vertBufID);
+    
+    buffers.push_back(vertBufID);
+
+    // set buffer data to triangle vertex and setting vertex attributes
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), vertices.data(), GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, 0);
+
+    // set normal attributes
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (void *) (sizeof(float) * 3));
+
+    // create index buffer
+    GLuint idxBufID;
+    glGenBuffers(1, &idxBufID);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idxBufID);
+
+    buffers.push_back(idxBufID);
+
+    // set buffer data for triangle index
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices) * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
+
+}
+
 void Mesh::draw()
 {
 

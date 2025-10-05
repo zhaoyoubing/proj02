@@ -19,6 +19,8 @@ protected:
     
     std::vector<GLuint> buffers;
 
+    void initBuffer();
+
 public:
     void loadModel(std::string path);
     void draw();

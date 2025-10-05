@@ -82,10 +82,9 @@ void Mesh::initBuffer()
 
     // set buffer data for triangle index
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices) * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
-
 }
 
 void Mesh::draw()
 {
-
+    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 }

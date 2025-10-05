@@ -22,6 +22,8 @@ protected:
     void initBuffer();
 
 public:
+    void init(std::string path);
     void loadModel(std::string path);
+    
     void draw();
 };

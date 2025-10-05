@@ -4,6 +4,12 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 
+void Mesh::init(std::string path)
+{
+    loadModel(path);
+    initBuffer();
+}
+
 void Mesh::loadModel(std::string path) 
 {
     Assimp::Importer importer;
@@ -81,7 +87,7 @@ void Mesh::initBuffer()
     buffers.push_back(idxBufID);
 
     // set buffer data for triangle index
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices) * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
 }
 
 void Mesh::draw()

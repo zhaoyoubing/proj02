@@ -22,6 +22,29 @@ void initShader(std::string pathVert, std::string pathFrag)
     glUseProgram(shader.program);
 }
 
+float rot_x = 0;
+float rot_y = 0;
+glm::mat4 matRoot = glm::mat4(1.0);
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (key == GLFW_KEY_LEFT ) {
+        rot_y -= 5.0;
+    } else if (key == GLFW_KEY_RIGHT /*&& action == GLFW_PRESS*/) {
+        rot_y += 5.0;
+    } if (key == GLFW_KEY_DOWN ) {
+        rot_x += 5.0;
+    } else if (key == GLFW_KEY_UP) {
+        rot_x -= 5.0;
+    }
+
+    glm::mat4 mat_rot_y = glm::rotate(glm::radians(rot_y), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 mat_rot_x = glm::rotate(glm::radians(rot_x), glm::vec3(1.0f, 0.0f, 0.0f));
+
+    matRoot =  mat_rot_x * mat_rot_y;
+    
+}
+
 int main()
 {
     GLFWwindow *window;
@@ -36,6 +59,9 @@ int main()
     // create a GLFW window
     window = glfwCreateWindow(640, 640, "Hello OpenGL 3", NULL, NULL);
     glfwMakeContextCurrent(window);
+
+    // register the key event callback function
+    glfwSetKeyCallback(window, key_callback);
 
 
     // loading glad
@@ -102,7 +128,7 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // pMesh->draw();
-        scene->draw();
+        scene->draw(matRoot);
         
         glfwSwapBuffers(window);
     }

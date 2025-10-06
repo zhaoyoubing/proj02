@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <glad/glad.h>
 
 #include "Mesh.h"
@@ -5,6 +7,16 @@
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
+
+Mesh::Mesh()
+{
+
+}
+
+Mesh::~Mesh()
+{
+
+}
 
 void Mesh::init(std::string path, GLuint id)
 {
@@ -42,6 +54,8 @@ void Mesh::loadModel(std::string path)
             pos.z = mesh->mVertices[j].z; 
             vertices.push_back(pos);
 
+            // std::cout << pos.x << pos.y << pos.z << std::endl;
+
             glm::vec3 normal;
             normal.x = mesh->mNormals[j].x;
             normal.y = mesh->mNormals[j].y;
@@ -56,7 +70,9 @@ void Mesh::loadModel(std::string path)
             const aiFace& face = mesh->mFaces[j];
             for (int k = 0; k < 3; k++)
             {
-                indices.push_back(face.mIndices[k]);
+                indices.push_back(face.mIndices[k]); 
+
+                //std::cout << face.mIndices[k] << std::endl;
             }
         }
     }
@@ -68,11 +84,17 @@ void Mesh::loadModel(std::string path)
 
 void Mesh::initBuffer()
 {
-   // create vertex buffer
+    // create vertex buffer
+    GLuint vao;
+    glGenVertexArrays(1, &vao);
     GLuint vertBufID;
     glGenBuffers(1, &vertBufID);
     glBindBuffer(GL_ARRAY_BUFFER, vertBufID);
+    glBindVertexArray(vao);
+    buffers.push_back(vao);
     
+    std::cout << "vertBufId: " << vertBufID << std::endl;
+
     buffers.push_back(vertBufID);
 
     // set buffer data to triangle vertex and setting vertex attributes
@@ -89,10 +111,13 @@ void Mesh::initBuffer()
     glGenBuffers(1, &idxBufID);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idxBufID);
 
+    std::cout << "idxBufId: " << idxBufID << std::endl;
     buffers.push_back(idxBufID);
 
     // set buffer data for triangle index
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
+
+    glBindVertexArray(0);
 }
 
 // all drawings come here
@@ -106,7 +131,7 @@ void Mesh::draw(glm::mat4 mat)
     glm::mat4 mat_modelview = mat;
     
     // default orthographic projection
-    glm::mat4 mat_projection = glm::ortho(-2.0f, 2.0f, -2.0f, 2.0f, -2.0f, 2.0f);
+    glm::mat4 mat_projection = glm::ortho(-5.0f, 5.0f, -5.0f, 5.0f, -5.0f, 5.0f);
     
     GLuint modelview_loc = glGetUniformLocation(shaderId, "modelview" );
     glUniformMatrix4fv(modelview_loc, 1, GL_FALSE, &mat_modelview[0][0]);
@@ -115,8 +140,7 @@ void Mesh::draw(glm::mat4 mat)
     GLuint projection_loc = glGetUniformLocation( shaderId, "projection" );
     glUniformMatrix4fv(projection_loc, 1, GL_FALSE, &mat_projection[0][0]);
 
-    // glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
-    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers[1]);
+    glBindVertexArray(buffers[0]);
 
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 }

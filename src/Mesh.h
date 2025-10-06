@@ -28,6 +28,9 @@ protected:
     GLuint shaderId;
 
 public:
+    Mesh();
+    ~Mesh();
+
     void init(std::string path, GLuint shaderId);
     void loadModel(std::string path);
     

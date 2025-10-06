@@ -230,28 +230,30 @@ int main()
     // initShader( "shaders/colour.vert", "shaders/colour.frag");
     initShader("../shaders/colour.vert", "../shaders/colour.frag");
 
-    
+    std::shared_ptr<Mesh> cube = std::make_shared<Mesh>();
+    // Use your own model path !
+    cube->init("D:/_course/_graphics/_labs/lab03/proj_cg/models/cube.obj", shader.program);
+
+
     // loading mesh models
     std::shared_ptr<Mesh> teapot = std::make_shared<Mesh>();
     // Use your own model path !
     teapot->init("D:/_course/_graphics/_labs/lab03/proj_cg/models/teapot.obj", shader.program);
     
-    std::shared_ptr<Mesh> cube = std::make_shared<Mesh>();
-    // Use your own model path !
-    cube->init("D:/_course/_graphics/_labs/lab03/proj_cg/models/cube.obj", shader.program);
-
 
     // build scene
     std::shared_ptr<Node> scene = std::make_shared<Node>();
     std::shared_ptr<Node> teapotNode = std::make_shared<Node>();
     std::shared_ptr<Node> cubeNode = std::make_shared<Node>();
     
-    scene->addMesh(cube);
-    //cubeNode->addChild(teapotNode);
-
+    teapotNode->addMesh(teapot);
+    cubeNode->addMesh(cube);
+    cubeNode->addChild(teapotNode, glm::translate(glm::vec3(0.0f, 1.0f, 0.0f)));
+    // cubeNode->addChild(teapotNode, glm::translate(glm::vec3(0.0f, 1.0f, 0.0f)), glm::rotate(glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
     
-
-    // initTransform();
+    scene->addChild(cubeNode);
+    // scene->addChild(cubeNode, glm::translate(glm::vec3(1.0f, 0.0f, 0.0f)), glm::rotate(glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
+    //scene->addMesh(teapot);
 
     //initTriangle();
 

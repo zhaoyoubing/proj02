@@ -90,6 +90,10 @@ void Mesh::initBuffer()
     GLuint vertBufID;
     glGenBuffers(1, &vertBufID);
     glBindBuffer(GL_ARRAY_BUFFER, vertBufID);
+    GLuint idxBufID;
+    glGenBuffers(1, &idxBufID);
+    
+    // remember VAO
     glBindVertexArray(vao);
     buffers.push_back(vao);
     
@@ -106,9 +110,7 @@ void Mesh::initBuffer()
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (void *) (sizeof(float) * 3));
 
-    // create index buffer
-    GLuint idxBufID;
-    glGenBuffers(1, &idxBufID);
+    // bind index buffer
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idxBufID);
 
     std::cout << "idxBufId: " << idxBufID << std::endl;
@@ -131,7 +133,7 @@ void Mesh::draw(glm::mat4 mat)
     glm::mat4 mat_modelview = mat;
     
     // default orthographic projection
-    glm::mat4 mat_projection = glm::ortho(-5.0f, 5.0f, -5.0f, 5.0f, -5.0f, 5.0f);
+    glm::mat4 mat_projection = glm::ortho(-2.0f, 2.0f, -2.0f, 2.0f, -2.0f, 2.0f);
     
     GLuint modelview_loc = glGetUniformLocation(shaderId, "modelview" );
     glUniformMatrix4fv(modelview_loc, 1, GL_FALSE, &mat_modelview[0][0]);

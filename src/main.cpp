@@ -50,6 +50,10 @@ void initTransform()
     glUniformMatrix4fv(projection_loc, 1, GL_FALSE, &mat_projection[0][0]);
 }
 
+void testNode()
+{
+
+}
 
 void initTriangle()
 {
@@ -225,7 +229,7 @@ int main()
     // initShader( "shaders/colour.vert", "shaders/colour.frag");
     initShader("../shaders/colour.vert", "../shaders/colour.frag");
 
-    Mesh * pMesh = new Mesh();
+    std::shared_ptr<Mesh> pMesh = std::make_shared<Mesh>();
     // Use your own model path !
     pMesh->init("D:/_course/_graphics/_labs/lab03/proj_cg/models/teapot.obj");
 

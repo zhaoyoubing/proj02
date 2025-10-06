@@ -102,7 +102,7 @@ void Mesh::draw(glm::mat4 mat)
 
     // set transforms
     // identity
-    glm::mat4 mat_modelview =   glm::mat4(1.0);
+    glm::mat4 mat_modelview = mat;
     
     // default orthographic projection
     glm::mat4 mat_projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);

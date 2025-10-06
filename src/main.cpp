@@ -231,9 +231,9 @@ int main()
 
     std::shared_ptr<Mesh> pMesh = std::make_shared<Mesh>();
     // Use your own model path !
-    pMesh->init("D:/_course/_graphics/_labs/lab03/proj_cg/models/teapot.obj");
+    pMesh->init("D:/_course/_graphics/_labs/lab03/proj_cg/models/teapot.obj", shader.program);
 
-    initTransform();
+    // initTransform();
 
     //initTriangle();
 

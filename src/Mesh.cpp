@@ -1,11 +1,14 @@
+#include <glad/glad.h>
+
 #include "Mesh.h"
 
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 
-void Mesh::init(std::string path)
+void Mesh::init(std::string path, GLuint id)
 {
+    shaderId = id;
     loadModel(path);
     initBuffer();
 }
@@ -92,7 +95,26 @@ void Mesh::initBuffer()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
 }
 
-void Mesh::draw()
+// all drawings come here
+void Mesh::draw(glm::mat4 mat)
 {
+    glUseProgram(shaderId);
+
+    // set transforms
+    // identity
+    glm::mat4 mat_modelview =   glm::mat4(1.0);
+    
+    // default orthographic projection
+    glm::mat4 mat_projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
+    
+    GLuint modelview_loc = glGetUniformLocation(shaderId, "modelview" );
+    glUniformMatrix4fv(modelview_loc, 1, GL_FALSE, &mat_modelview[0][0]);
+
+    // you must set the orthographic projection to get correct rendering with depth
+    GLuint projection_loc = glGetUniformLocation( shaderId, "projection" );
+    glUniformMatrix4fv(projection_loc, 1, GL_FALSE, &mat_projection[0][0]);
+
+    glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers[1]);
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 }

@@ -9,7 +9,6 @@
 
 #include "shader.h"
 #include "Mesh.h"
-
 #include "Node.h"
 
 static Shader shader;
@@ -48,15 +47,16 @@ int main()
     }
 
  
-    // use the following if you are using Visual Studio
+    // !!!!!!!!!! Use the following with Visual Studio
     // initShader( "shaders/colour.vert", "shaders/colour.frag");
+    // !!!!!!!!!! Use the following with VS Code
     initShader("../shaders/colour.vert", "../shaders/colour.frag");
 
     /*
     // Demo loading a single mesh
     // loading mesh models
     std::shared_ptr<Mesh> pMesh = std::make_shared<Mesh>();
-    // Use your own model path !
+    // !!!!!!!!!! Use your own model path !!!!!!!!!!!
     pMesh->init("D:/_course/_graphics/_labs/lab03/proj_cg/models/teapot.obj", shader.program);
     */
 
@@ -64,11 +64,11 @@ int main()
     //----------------------------------------------------
     // Meshes
     std::shared_ptr<Mesh> cube = std::make_shared<Mesh>();
-    // Use your own model path !
+    // !!!!!!!!!! Use your own model path !!!!!!!!!!!
     cube->init("D:/_course/_graphics/_labs/lab03/proj_cg/models/cube.obj", shader.program);
 
     std::shared_ptr<Mesh> teapot = std::make_shared<Mesh>();
-    // Use your own model path !
+    // !!!!!!!!!! Use your own model path !!!!!!!!!!!
     teapot->init("D:/_course/_graphics/_labs/lab03/proj_cg/models/teapot.obj", shader.program);
     
     //----------------------------------------------------

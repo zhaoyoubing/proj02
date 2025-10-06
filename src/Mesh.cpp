@@ -13,7 +13,7 @@ void Mesh::init(std::string path)
 void Mesh::loadModel(std::string path) 
 {
     Assimp::Importer importer;
-    const aiScene* scene = importer.ReadFile(path, aiProcess_CalcTangentSpace | aiProcess_Triangulate);
+    const aiScene* scene = importer.ReadFile(path, aiProcess_JoinIdenticalVertices);
     if (NULL != scene) {
         std::cout << "load model successful" << std::endl;
     } else {
@@ -21,7 +21,7 @@ void Mesh::loadModel(std::string path)
     }
 
     // mNumMeshes should > 0
-    //std::cout << scene->mNumMeshes << std::endl;
+    // std::cout << scene->mNumMeshes << std::endl;
 
     // at the moment we only handle one mesh
     for (int i = 0; i < scene->mNumMeshes; i++)
@@ -30,19 +30,21 @@ void Mesh::loadModel(std::string path)
         
         // read vertex position and normals
         int nVertex = mesh->mNumVertices;
+        // std::cout << mesh->mNumVertices << std::endl;
         for (int j = 0; j < nVertex; j++)
         {
             glm::vec3 pos; 
-            pos.x = mesh->mVertices[i].x;
-            pos.y = mesh->mVertices[i].y;
-            pos.z = mesh->mVertices[i].z; 
+            pos.x = mesh->mVertices[j].x;
+            pos.y = mesh->mVertices[j].y;
+            pos.z = mesh->mVertices[j].z; 
             vertices.push_back(pos);
 
             glm::vec3 normal;
-            normal.x = mesh->mNormals[i].x;
-            normal.y = mesh->mNormals[i].y;
-            normal.z = mesh->mNormals[i].z;
+            normal.x = mesh->mNormals[j].x;
+            normal.y = mesh->mNormals[j].y;
+            normal.z = mesh->mNormals[j].z;
             vertices.push_back(normal);
+
         }
 
 		int nFaces = mesh->mNumFaces;
@@ -51,7 +53,7 @@ void Mesh::loadModel(std::string path)
             const aiFace& face = mesh->mFaces[j];
             for (int k = 0; k < 3; k++)
             {
-                indices.push_back(face.mIndices[j]);
+                indices.push_back(face.mIndices[k]);
             }
         }
     }

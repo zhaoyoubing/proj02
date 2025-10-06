@@ -13,11 +13,43 @@
 static Shader shader;
 
 
-void testMesh()
+
+// Initialize shader
+void initShader(std::string pathVert, std::string pathFrag) 
 {
-    Mesh * pMesh = new Mesh();
-    pMesh->loadModel("D:/_course/_graphics/_labs/lab03/proj_cg/models/teapot.obj");
+    shader.read_source( pathVert.c_str(), pathFrag.c_str());
+
+    shader.compile();
+    glUseProgram(shader.program);
 }
+
+void initTransform()
+{
+    /*
+    glm::mat4 mat_scale = glm::scale(glm::vec3(0.5f, 0.5f, 0.5f));
+    glm::mat4 mat_trans = glm::translate(glm::vec3(0.0f, 0.0f, 0.0f));
+    glm::mat4 mat_rot = glm::rotate(glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 mat_rot2 = glm::rotate(glm::radians(30.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+    // the order matters
+    // glm::mat4 mat_modelview = mat_rot * mat_trans * mat_scale;
+    // glm::mat4 mat_modelview = mat_trans * mat_rot * mat_scale;
+    // glm::mat4 mat_modelview =  mat_rot2 * mat_rot *  mat_scale;
+    */
+
+    // identity
+    glm::mat4 mat_modelview =   glm::mat4(1.0);
+
+    glm::mat4 mat_projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
+    
+    GLuint modelview_loc = glGetUniformLocation( shader.program, "modelview" );
+    glUniformMatrix4fv(modelview_loc, 1, GL_FALSE, &mat_modelview[0][0]);
+
+    // you must set the orthographic projection to get correct rendering with depth
+    GLuint projection_loc = glGetUniformLocation( shader.program, "projection" );
+    glUniformMatrix4fv(projection_loc, 1, GL_FALSE, &mat_projection[0][0]);
+}
+
 
 void initTriangle()
 {
@@ -107,40 +139,51 @@ void initTriangle()
     // set buffer data for triangle index
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    // Initialize shader
-    shader.read_source( "../shaders/colour.vert", "../shaders/colour.frag");
-    // use the following if you are using Visual Studio
-    // shader.read_source( "shaders/colour.vert", "shaders/colour.frag");
-    shader.compile();
-    glUseProgram(shader.program);
 
     /*
-    glm::mat4 mat_scale = glm::scale(  // Scale first
-        glm::mat4(1.0),              // identity matrix
-        glm::vec3( 0.5f, 0.5f, 0.5f )
-    );
-    */
+    std::vector< glm::vec3 > vertices; 
 
-    glm::mat4 mat_scale = glm::scale(glm::vec3(0.5f, 0.5f, 0.5f));
-    glm::mat4 mat_trans = glm::translate(glm::vec3(0.0f, 0.0f, 0.0f));
-    glm::mat4 mat_rot = glm::rotate(glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    glm::mat4 mat_rot2 = glm::rotate(glm::radians(30.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    // triangle vertex indices
+    std::vector< unsigned int > vindices;
 
-    // the order matters
-    // glm::mat4 mat_modelview = mat_rot * mat_trans * mat_scale;
-    // glm::mat4 mat_modelview = mat_trans * mat_rot * mat_scale;
-    // glm::mat4 mat_modelview =  mat_rot2 * mat_rot *  mat_scale;
-    glm::mat4 mat_modelview =   mat_rot2 * mat_rot * mat_scale;
+    for (int i = 0; i < 8; i++)
+    {
+        int j = i * 6;
+        glm::vec3 v = glm::vec3(verts[j], verts[j+1], verts[j+2]);
+        vertices.push_back(v);
+        glm::vec3 c = glm::vec3(verts[j+3], verts[j+4], verts[j+5]);
+        vertices.push_back(c);
+    }
 
-    glm::mat4 mat_projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
+    for (int i = 0; i < 36; i++)
+    {
+        vindices.push_back(indices[i]);
+    }
+
+    // create vertex buffer
+    GLuint vertBufID;
+    glGenBuffers(1, &vertBufID);
+    glBindBuffer(GL_ARRAY_BUFFER, vertBufID);
     
-    GLuint modelview_loc = glGetUniformLocation( shader.program, "modelview" );
-    glUniformMatrix4fv(modelview_loc, 1, GL_FALSE, &mat_modelview[0][0]);
 
-    // you must set the orthographic projection to get correct rendering with depth
-    GLuint projection_loc = glGetUniformLocation( shader.program, "projection" );
-    glUniformMatrix4fv(projection_loc, 1, GL_FALSE, &mat_projection[0][0]);
+    // set buffer data to triangle vertex and setting vertex attributes
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), vertices.data(), GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, 0);
 
+    // set normal attributes
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (void *) (sizeof(float) * 3));
+
+    // create index buffer
+    GLuint idxBufID;
+    glGenBuffers(1, &idxBufID);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idxBufID);
+
+
+    // set buffer data for triangle index
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, vindices.size() * sizeof(GLuint), vindices.data(), GL_STATIC_DRAW);
+    */
 }
 
 void drawTriangle()
@@ -172,16 +215,23 @@ int main()
     // loading glad
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
-        std::cout << "Couuldn't load opengl" << std::endl;
+        std::cout << "Couldn't load opengl" << std::endl;
         glfwTerminate();
         return -1;
     }
 
-    // test our Mesh class
-    testMesh();
+ 
+    // use the following if you are using Visual Studio
+    // initShader( "shaders/colour.vert", "shaders/colour.frag");
+    initShader("../shaders/colour.vert", "../shaders/colour.frag");
 
+    Mesh * pMesh = new Mesh();
+    // Use your own model path !
+    pMesh->init("D:/_course/_graphics/_labs/lab03/proj_cg/models/teapot.obj");
 
-    initTriangle();
+    initTransform();
+
+    //initTriangle();
 
     // setting the background colour, you can change the value
     glClearColor(0.25f, 0.5f, 0.75f, 1.0f);
@@ -196,7 +246,8 @@ int main()
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        drawTriangle();
+        // drawTriangle();
+        pMesh->draw();
 
         glfwSwapBuffers(window);
     }

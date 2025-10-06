@@ -21,9 +21,12 @@ protected:
 
     void initBuffer();
 
+    // this will be Material in the future
+    GLuint shaderId;
+
 public:
-    void init(std::string path);
+    void init(std::string path, GLuint shaderId);
     void loadModel(std::string path);
     
-    void draw();
+    void draw(glm::mat4 mat = glm::mat4(1.0));
 };

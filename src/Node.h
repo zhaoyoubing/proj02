@@ -1,3 +1,6 @@
+#ifndef __NODE_H__
+#define __NODE_H__
+
 #include <vector>
 
 #define GLM_ENABLE_EXPERIMENTAL
@@ -22,8 +25,10 @@ private:
 
 public:
     void addChild(std::shared_ptr<Node> child, glm::mat4 trans = glm::mat4(1.0), glm::mat4 rot = glm::mat4(1.0));
-    void addMesh(std::shared_ptr<Mesh> mesh, glm::mat4 trans = glm::mat4(1.0), glm::mat4 rot = glm::mat4(1.0));
+    void addMesh(std::shared_ptr<Mesh> mesh, glm::mat4 trans = glm::mat4(1.0), glm::mat4 rot = glm::mat4(1.0), glm::mat4 scale = glm::mat4(1.0));
 
-    void draw(glm::mat4 mat);
+    void draw(glm::mat4 mat = glm::mat4(1.0));
 
 };
+
+#endif

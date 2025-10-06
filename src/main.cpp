@@ -9,6 +9,7 @@
 
 #include "shader.h"
 #include "Mesh.h"
+#include "Node.h"
 
 static Shader shader;
 
@@ -229,9 +230,26 @@ int main()
     // initShader( "shaders/colour.vert", "shaders/colour.frag");
     initShader("../shaders/colour.vert", "../shaders/colour.frag");
 
-    std::shared_ptr<Mesh> pMesh = std::make_shared<Mesh>();
+    
+    // loading mesh models
+    std::shared_ptr<Mesh> teapot = std::make_shared<Mesh>();
     // Use your own model path !
-    pMesh->init("D:/_course/_graphics/_labs/lab03/proj_cg/models/teapot.obj", shader.program);
+    teapot->init("D:/_course/_graphics/_labs/lab03/proj_cg/models/teapot.obj", shader.program);
+    
+    std::shared_ptr<Mesh> cube = std::make_shared<Mesh>();
+    // Use your own model path !
+    cube->init("D:/_course/_graphics/_labs/lab03/proj_cg/models/cube.obj", shader.program);
+
+
+    // build scene
+    std::shared_ptr<Node> scene = std::make_shared<Node>();
+    std::shared_ptr<Node> teapotNode = std::make_shared<Node>();
+    std::shared_ptr<Node> cubeNode = std::make_shared<Node>();
+    
+    scene->addMesh(cube);
+    //cubeNode->addChild(teapotNode);
+
+    
 
     // initTransform();
 
@@ -251,7 +269,7 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // drawTriangle();
-        pMesh->draw();
+        scene->draw();
 
         glfwSwapBuffers(window);
     }

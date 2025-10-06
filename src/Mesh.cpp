@@ -62,8 +62,8 @@ void Mesh::loadModel(std::string path)
     }
 
     // for debugging
-    // std::cout << vertices.size() << std::endl;
-    // std::cout << indices.size() << std::endl;
+    std::cout << "numVertex: " <<  vertices.size() << std::endl;
+    std::cout << "numIdex: " << indices.size() << std::endl;
 }
 
 void Mesh::initBuffer()
@@ -98,6 +98,7 @@ void Mesh::initBuffer()
 // all drawings come here
 void Mesh::draw(glm::mat4 mat)
 {
+
     glUseProgram(shaderId);
 
     // set transforms
@@ -105,7 +106,7 @@ void Mesh::draw(glm::mat4 mat)
     glm::mat4 mat_modelview = mat;
     
     // default orthographic projection
-    glm::mat4 mat_projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
+    glm::mat4 mat_projection = glm::ortho(-2.0f, 2.0f, -2.0f, 2.0f, -2.0f, 2.0f);
     
     GLuint modelview_loc = glGetUniformLocation(shaderId, "modelview" );
     glUniformMatrix4fv(modelview_loc, 1, GL_FALSE, &mat_modelview[0][0]);
@@ -114,7 +115,8 @@ void Mesh::draw(glm::mat4 mat)
     GLuint projection_loc = glGetUniformLocation( shaderId, "projection" );
     glUniformMatrix4fv(projection_loc, 1, GL_FALSE, &mat_projection[0][0]);
 
-    glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers[1]);
+    // glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
+    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers[1]);
+
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 }

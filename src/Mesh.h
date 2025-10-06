@@ -1,3 +1,6 @@
+#ifndef __MESH_H__
+#define __MESH_H__
+
 #include <iostream>
 #include <vector>
 
@@ -30,3 +33,5 @@ public:
     
     void draw(glm::mat4 mat = glm::mat4(1.0));
 };
+
+#endif

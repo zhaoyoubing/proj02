@@ -35,17 +35,30 @@ PATHS external/assimp/lib )
 target_link_libraries(run01 ${GLFW3_LIBRARY} OpenGL::GL ${ASSIMP_LIBRARY})
 
 # copy shaders
-add_custom_target(CopyShaders ALL
-	COMMAND ${CMAKE_COMMAND} -E copy_directory
-	"${CMAKE_CURRENT_SOURCE_DIR}/shaders"
-	"${CMAKE_CURRENT_BINARY_DIR}/shaders"
-)
+#add_custom_target(CopyShaders ALL
+#	COMMAND ${CMAKE_COMMAND} -E copy_directory
+#	"${CMAKE_CURRENT_SOURCE_DIR}/shaders"
+#	"${CMAKE_CURRENT_BINARY_DIR}/shaders"
+#)
 
 # copy assimp dll
-add_custom_target(CopyAssimpDLL ALL
-	COMMAND ${CMAKE_COMMAND} -E copy_if_different
-	"${CMAKE_CURRENT_SOURCE_DIR}/external/assimp/lib/assimp-vc143-mt.dll"
-	 $<TARGET_FILE_DIR:run01>
-)
+add_custom_command(
+        TARGET run01 POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+                "${CMAKE_CURRENT_SOURCE_DIR}/external/assimp/lib/assimp-vc143-mt.dll"
+                $<TARGET_FILE_DIR:run01>
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+		"${CMAKE_CURRENT_SOURCE_DIR}/shaders"
+                $<TARGET_FILE_DIR:run01>/shaders
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+		"${CMAKE_CURRENT_SOURCE_DIR}/models"
+                $<TARGET_FILE_DIR:run01>/models         
+        )
 
-add_dependencies(run01 CopyShaders CopyAssimpDLL)
+#add_custom_target(CopyAssimpDLL ALL
+#	COMMAND ${CMAKE_COMMAND} -E copy
+#	"${CMAKE_CURRENT_SOURCE_DIR}/external/assimp/lib/assimp-vc143-mt.dll"
+#	 $<TARGET_FILE_DIR:run01>
+#)
+
+#add_dependencies(run01)

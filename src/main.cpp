@@ -74,9 +74,9 @@ int main()
 
  
     // !!!!!!!!!! Use the following with Visual Studio
-    // initShader( "shaders/colour.vert", "shaders/colour.frag");
+    initShader( "shaders/colour.vert", "shaders/colour.frag");
     // !!!!!!!!!! Use the following with VS Code
-    initShader("../shaders/colour.vert", "../shaders/colour.frag");
+    // initShader("../shaders/colour.vert", "../shaders/colour.frag");
 
     /*
     // Demo loading a single mesh
@@ -86,16 +86,13 @@ int main()
     pMesh->init("D:/_course/_graphics/_labs/lab03/proj_cg/models/teapot.obj", shader.program);
     */
 
-
     //----------------------------------------------------
     // Meshes
     std::shared_ptr<Mesh> cube = std::make_shared<Mesh>();
-    // !!!!!!!!!! Use your own model path !!!!!!!!!!!
-    cube->init("D:/_course/_graphics/_labs/lab03/proj_cg/models/cube.obj", shader.program);
+    cube->init("models/cube.obj", shader.program);
 
     std::shared_ptr<Mesh> teapot = std::make_shared<Mesh>();
-    // !!!!!!!!!! Use your own model path !!!!!!!!!!!
-    teapot->init("D:/_course/_graphics/_labs/lab03/proj_cg/models/teapot.obj", shader.program);
+    teapot->init("models/teapot.obj", shader.program);
     
     //----------------------------------------------------
     // Nodes

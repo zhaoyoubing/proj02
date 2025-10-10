@@ -54,8 +54,6 @@ void Mesh::loadModel(std::string path)
             pos.z = mesh->mVertices[j].z; 
             vertices.push_back(pos);
 
-            // std::cout << pos.x << pos.y << pos.z << std::endl;
-
             glm::vec3 normal;
             normal.x = mesh->mNormals[j].x;
             normal.y = mesh->mNormals[j].y;
@@ -71,15 +69,13 @@ void Mesh::loadModel(std::string path)
             for (int k = 0; k < 3; k++)
             {
                 indices.push_back(face.mIndices[k]); 
-
-                //std::cout << face.mIndices[k] << std::endl;
             }
         }
     }
 
     // for debugging
-    std::cout << "numVertex: " <<  vertices.size() << std::endl;
-    std::cout << "numIdex: " << indices.size() << std::endl;
+    //std::cout << "numVertex: " <<  vertices.size() << std::endl;
+    //std::cout << "numIdex: " << indices.size() << std::endl;
 }
 
 void Mesh::initBuffer()
@@ -97,7 +93,7 @@ void Mesh::initBuffer()
     glBindVertexArray(vao);
     buffers.push_back(vao);
     
-    std::cout << "vertBufId: " << vertBufID << std::endl;
+    // std::cout << "vertBufId: " << vertBufID << std::endl;
 
     buffers.push_back(vertBufID);
 
@@ -113,7 +109,7 @@ void Mesh::initBuffer()
     // bind index buffer
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idxBufID);
 
-    std::cout << "idxBufId: " << idxBufID << std::endl;
+    //std::cout << "idxBufId: " << idxBufID << std::endl;
     buffers.push_back(idxBufID);
 
     // set buffer data for triangle index

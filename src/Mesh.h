@@ -34,7 +34,7 @@ public:
     void init(std::string path, GLuint shaderId);
     void loadModel(std::string path);
     
-    void draw(glm::mat4 mat = glm::mat4(1.0));
+    void draw(glm::mat4 matModel, glm::mat4 matView, glm::mat4 matProj);
 };
 
 #endif

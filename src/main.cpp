@@ -22,26 +22,70 @@ void initShader(std::string pathVert, std::string pathFrag)
     glUseProgram(shader.program);
 }
 
-float rot_x = 0;
-float rot_y = 0;
-glm::mat4 matRoot = glm::mat4(1.0);
 
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+glm::mat4 matModelRoot = glm::mat4(1.0);
+glm::mat4 matView = glm::mat4(1.0);
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int modes)
 {
-    if (key == GLFW_KEY_LEFT ) {
-        rot_y -= 5.0;
-    } else if (key == GLFW_KEY_RIGHT /*&& action == GLFW_PRESS*/) {
-        rot_y += 5.0;
-    } if (key == GLFW_KEY_DOWN ) {
-        rot_x += 5.0;
-    } else if (key == GLFW_KEY_UP) {
-        rot_x -= 5.0;
+    glm::mat4 mat = glm::mat4(1.0);
+
+    float angleStep = 5.0f;
+    float transStep = 1.0f;
+
+    if (action == GLFW_PRESS) {
+
+        if (GLFW_KEY_LEFT == key) {
+            // pan, rotate around Y
+            mat = glm::rotate(glm::radians(-angleStep), glm::vec3(0.0, 1.0, 0.0));
+            matView = mat * matView;
+        } else if (GLFW_KEY_RIGHT == key ) {
+            mat = glm::rotate(glm::radians(angleStep), glm::vec3(0.0, 1.0, 0.0));
+            matView = mat * matView;
+        } else if (GLFW_KEY_UP == key) {
+            mat = glm::rotate(glm::radians(-angleStep), glm::vec3(1.0, 0.0, 0.0));
+            matView = mat * matView;
+        } if (GLFW_KEY_DOWN == key) {
+            mat = glm::rotate(glm::radians(angleStep), glm::vec3(1.0, 0.0, 0.0));
+            matView = mat * matView;
+        } else if ( (GLFW_KEY_KP_ADD == key) || 
+            (GLFW_KEY_EQUAL == key) && (modes == GLFW_MOD_SHIFT) ) {
+            // std::cout << "+ pressed" << std::endl;
+            // zoom in
+            mat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, transStep));
+            matView = matView * mat ;
+        } else if ( (GLFW_KEY_KP_SUBTRACT == key ) || (GLFW_KEY_MINUS == key) ) {
+            // std::cout << "keypad - pressed" << std::endl;
+            // zoom out
+            mat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -transStep));
+            matView = mat * matView;
+        } else if (GLFW_KEY_R == key) {
+            //std::cout << "R pressed" << std::endl;
+            // reset
+            matView = glm::lookAt(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)); 
+            matModelRoot = glm::mat4(1.0f);
+        }
+
+        else if (GLFW_KEY_A == key ) {
+            mat = glm::translate(glm::mat4(1.0f), glm::vec3(transStep, 0.0f, 0.0f));
+            matView = mat * matView;
+        } else if (GLFW_KEY_D == key) {
+            mat = glm::translate(glm::mat4(1.0f), glm::vec3(-transStep, 0.0f, 0.0f));
+            matView = mat * matView;
+        } 
+
+        //glm::mat4 mat_rot_y = glm::rotate(glm::radians(rot_y), glm::vec3(0.0f, 1.0f, 0.0f));
+        //glm::mat4 mat_rot_x = glm::rotate(glm::radians(rot_x), glm::vec3(1.0f, 0.0f, 0.0f));
+
+        // matModelRoot =  mat_rot_x * mat_rot_y;
+
+       
     }
 
-    glm::mat4 mat_rot_y = glm::rotate(glm::radians(rot_y), glm::vec3(0.0f, 1.0f, 0.0f));
-    glm::mat4 mat_rot_x = glm::rotate(glm::radians(rot_x), glm::vec3(1.0f, 0.0f, 0.0f));
+    //glm::mat4 mat_rot_y = glm::rotate(glm::radians(rot_y), glm::vec3(0.0f, 1.0f, 0.0f));
+    //glm::mat4 mat_rot_x = glm::rotate(glm::radians(rot_x), glm::vec3(1.0f, 0.0f, 0.0f));
 
-    matRoot =  mat_rot_x * mat_rot_y;
+    //matRoot =  mat_rot_x * mat_rot_y;
     
 }
 
@@ -73,8 +117,14 @@ int main()
     }
 
  
-    // !!!!!!!!!! Use the following with Visual Studio
     initShader( "shaders/colour.vert", "shaders/colour.frag");
+
+    // set the eye at (0, 0, 5), looking at the centre of the world
+    // try to change the eye position
+    matView = glm::lookAt(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)); 
+    // set the Y field of view angle to 60 degrees, width/height ratio to 1.0, and a near plane of 3.5, far plane of 6.5
+    // try to play with the FoV
+    glm::mat4 matProj = glm::perspective(glm::radians(60.0f), 1.0f, 2.0f, 8.0f);
 
     //----------------------------------------------------
     // Meshes
@@ -114,8 +164,7 @@ int main()
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // pMesh->draw();
-        scene->draw(matRoot);
+        scene->draw(matModelRoot, matView, matProj);
         
         glfwSwapBuffers(window);
     }

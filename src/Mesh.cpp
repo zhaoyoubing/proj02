@@ -123,23 +123,21 @@ void Mesh::initBuffer()
 }
 
 // all drawings come here
-void Mesh::draw(glm::mat4 mat)
+void Mesh::draw(glm::mat4 matModel, glm::mat4 matView, glm::mat4 matProj)
 {
     // 1. Bind the correct shader program
     glUseProgram(shaderId);
 
     // 2. Set the appropriate uniforms for each shader
-    // set transforms
-    glm::mat4 mat_modelview = mat;
+    // set model view transforms
+    glm::mat4 mat_modelview = matView * matModel;
     
     GLuint modelview_loc = glGetUniformLocation(shaderId, "modelview" );
     glUniformMatrix4fv(modelview_loc, 1, GL_FALSE, &mat_modelview[0][0]);
 
-    // you must set the projection to get correct rendering with depth
-    // we use the default orthographic projection.
-    // As projection is shared by all models in a scene,
-    // This will be moved out in the future.
-    glm::mat4 mat_projection = glm::ortho(-2.0f, 2.0f, -2.0f, 2.0f, -2.0f, 2.0f);
+    // set projection transforms
+    // glm::mat4 mat_projection = glm::ortho(-2.0f, 2.0f, -2.0f, 2.0f, -2.0f, 2.0f);
+    glm::mat4 mat_projection = matProj;
     GLuint projection_loc = glGetUniformLocation( shaderId, "projection" );
     glUniformMatrix4fv(projection_loc, 1, GL_FALSE, &mat_projection[0][0]);
 

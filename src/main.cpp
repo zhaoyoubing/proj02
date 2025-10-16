@@ -13,6 +13,10 @@
 
 static Shader shader;
 
+glm::mat4 matModelRoot = glm::mat4(1.0);
+glm::mat4 matView = glm::mat4(1.0);
+glm::mat4 matProj = glm::ortho(-2.0f,2.0f,-2.0f,2.0f, -2.0f,2.0f);
+
 // Initialize shader
 void initShader(std::string pathVert, std::string pathFrag) 
 {
@@ -23,10 +27,7 @@ void initShader(std::string pathVert, std::string pathFrag)
 }
 
 
-glm::mat4 matModelRoot = glm::mat4(1.0);
-glm::mat4 matView = glm::mat4(1.0);
-
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int modes)
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     glm::mat4 mat = glm::mat4(1.0);
 
@@ -36,27 +37,30 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     if (action == GLFW_PRESS) {
 
         if (GLFW_KEY_LEFT == key) {
-            // pan, rotate around Y
+            // pan left, rotate around Y, CCW
             mat = glm::rotate(glm::radians(-angleStep), glm::vec3(0.0, 1.0, 0.0));
             matView = mat * matView;
         } else if (GLFW_KEY_RIGHT == key ) {
+            // pan right, rotate around Y, CW
             mat = glm::rotate(glm::radians(angleStep), glm::vec3(0.0, 1.0, 0.0));
             matView = mat * matView;
         } else if (GLFW_KEY_UP == key) {
+            // tilt up, rotate around X, CCW
             mat = glm::rotate(glm::radians(-angleStep), glm::vec3(1.0, 0.0, 0.0));
             matView = mat * matView;
         } if (GLFW_KEY_DOWN == key) {
+            // tilt down, rotate around X, CW
             mat = glm::rotate(glm::radians(angleStep), glm::vec3(1.0, 0.0, 0.0));
             matView = mat * matView;
         } else if ( (GLFW_KEY_KP_ADD == key) || 
-            (GLFW_KEY_EQUAL == key) && (modes == GLFW_MOD_SHIFT) ) {
+            (GLFW_KEY_EQUAL == key) && (mods & GLFW_MOD_SHIFT) ) {
             // std::cout << "+ pressed" << std::endl;
-            // zoom in
+            // zoom in, move along -Z
             mat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, transStep));
-            matView = matView * mat ;
+            matView = mat * matView ;
         } else if ( (GLFW_KEY_KP_SUBTRACT == key ) || (GLFW_KEY_MINUS == key) ) {
             // std::cout << "keypad - pressed" << std::endl;
-            // zoom out
+            // zoom out, move along -Z
             mat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -transStep));
             matView = mat * matView;
         } else if (GLFW_KEY_R == key) {
@@ -66,26 +70,48 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
             matModelRoot = glm::mat4(1.0f);
         }
 
+        // translation along camera axis
         else if (GLFW_KEY_A == key ) {
+            //if (modes & GLFW_MOD_CONTROL)
+            // move left along -X
             mat = glm::translate(glm::mat4(1.0f), glm::vec3(transStep, 0.0f, 0.0f));
             matView = mat * matView;
         } else if (GLFW_KEY_D == key) {
+            // move right along X
             mat = glm::translate(glm::mat4(1.0f), glm::vec3(-transStep, 0.0f, 0.0f));
+            matView = mat * matView;
+        } if (GLFW_KEY_W == key ) {
+            // move forward along -Z
+            mat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, transStep));
+            matView = mat * matView;
+        } else if (GLFW_KEY_S == key) {
+            // move backward along Z
+            mat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -transStep));
             matView = mat * matView;
         } 
 
-        //glm::mat4 mat_rot_y = glm::rotate(glm::radians(rot_y), glm::vec3(0.0f, 1.0f, 0.0f));
-        //glm::mat4 mat_rot_x = glm::rotate(glm::radians(rot_x), glm::vec3(1.0f, 0.0f, 0.0f));
-
-        // matModelRoot =  mat_rot_x * mat_rot_y;
+        // translation along world axis
+        else if (GLFW_KEY_H == key ) {
+            //if (modes & GLFW_MOD_CONTROL)
+            // move left along -X
+            mat = glm::translate(glm::mat4(1.0f), glm::vec3(transStep, 0.0f, 0.0f));
+            matView = matView * mat;
+        } else if (GLFW_KEY_L == key) {
+            // move right along X
+            mat = glm::translate(glm::mat4(1.0f), glm::vec3(-transStep, 0.0f, 0.0f));
+            matView = matView * mat;
+        } if (GLFW_KEY_J == key ) {
+            // move forward along Z
+            mat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -transStep));
+            matView = matView * mat;
+        } else if (GLFW_KEY_K == key) {
+            // move backward along -Z
+            mat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, transStep));
+            matView = matView * mat;
+        } 
 
        
     }
-
-    //glm::mat4 mat_rot_y = glm::rotate(glm::radians(rot_y), glm::vec3(0.0f, 1.0f, 0.0f));
-    //glm::mat4 mat_rot_x = glm::rotate(glm::radians(rot_x), glm::vec3(1.0f, 0.0f, 0.0f));
-
-    //matRoot =  mat_rot_x * mat_rot_y;
     
 }
 
@@ -124,7 +150,7 @@ int main()
     matView = glm::lookAt(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)); 
     // set the Y field of view angle to 60 degrees, width/height ratio to 1.0, and a near plane of 3.5, far plane of 6.5
     // try to play with the FoV
-    glm::mat4 matProj = glm::perspective(glm::radians(60.0f), 1.0f, 2.0f, 8.0f);
+    matProj = glm::perspective(glm::radians(60.0f), 1.0f, 2.0f, 8.0f);
 
     //----------------------------------------------------
     // Meshes

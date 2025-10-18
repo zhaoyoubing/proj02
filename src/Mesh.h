@@ -33,6 +33,8 @@ public:
 
     void init(std::string path, GLuint shaderId);
     void loadModel(std::string path);
+
+    void setShaderId(GLuint sid);
     
     void draw(glm::mat4 matModel, glm::mat4 matView, glm::mat4 matProj);
 };

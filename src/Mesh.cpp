@@ -122,18 +122,28 @@ void Mesh::initBuffer()
     glBindVertexArray(0);
 }
 
+void Mesh::setShaderId(GLuint sid) {
+    shaderId = sid;
+}
+
 // all drawings come here
 void Mesh::draw(glm::mat4 matModel, glm::mat4 matView, glm::mat4 matProj)
 {
     // 1. Bind the correct shader program
     glUseProgram(shaderId);
 
+    //std::cout << "shader: " << shaderId << std::endl;
+
     // 2. Set the appropriate uniforms for each shader
     // set model view transforms
-    glm::mat4 mat_modelview = matView * matModel;
+    //glm::mat4 mat_modelview = matView * matModel;
     
-    GLuint modelview_loc = glGetUniformLocation(shaderId, "modelview" );
-    glUniformMatrix4fv(modelview_loc, 1, GL_FALSE, &mat_modelview[0][0]);
+    GLuint model_loc = glGetUniformLocation(shaderId, "model" );
+    glUniformMatrix4fv(model_loc, 1, GL_FALSE, &matModel[0][0]);
+
+    // set view matrix
+    GLuint view_loc = glGetUniformLocation(shaderId, "view" );
+    glUniformMatrix4fv(view_loc, 1, GL_FALSE, &matView[0][0]);
 
     // set projection transforms
     // glm::mat4 mat_projection = glm::ortho(-2.0f, 2.0f, -2.0f, 2.0f, -2.0f, 2.0f);

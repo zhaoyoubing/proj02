@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
+#include <glm/gtc/type_ptr.hpp> 
 
 #include "shader.h"
 #include "Mesh.h"
@@ -17,13 +18,31 @@ glm::mat4 matModelRoot = glm::mat4(1.0);
 glm::mat4 matView = glm::mat4(1.0);
 glm::mat4 matProj = glm::ortho(-2.0f,2.0f,-2.0f,2.0f, -2.0f,2.0f);
 
+glm::vec3 lightPos = glm::vec3(5.0f, 10.0f, 20.0f);
+glm::vec3 viewPos = glm::vec3(0.0f, 0.0f, 10.0f);
+
+
+GLuint flatShader;
+GLuint blinnShader;
+GLuint phongShader;
+
 // Initialize shader
-void initShader(std::string pathVert, std::string pathFrag) 
+GLuint initShader(std::string pathVert, std::string pathFrag) 
 {
     shader.read_source( pathVert.c_str(), pathFrag.c_str());
 
     shader.compile();
     glUseProgram(shader.program);
+
+    return shader.program;
+}
+
+void initLightPosition(glm::vec3 lightPos)
+{
+    //lightPos = glm::vec3(0.0f, 0.0f, 10.0f);
+
+    GLuint lightpos_loc = glGetUniformLocation(shader.program, "lightPos" );
+    glUniform3fv(lightpos_loc, 1, glm::value_ptr(lightPos));
 }
 
 
@@ -109,8 +128,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
             mat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, transStep));
             matView = matView * mat;
         } 
-
-       
     }
     
 }
@@ -127,7 +144,7 @@ int main()
     }
 
     // create a GLFW window
-    window = glfwCreateWindow(640, 640, "Hello OpenGL 3", NULL, NULL);
+    window = glfwCreateWindow(640, 640, "Hello OpenGL 5", NULL, NULL);
     glfwMakeContextCurrent(window);
 
     // register the key event callback function
@@ -143,11 +160,19 @@ int main()
     }
 
  
-    initShader( "shaders/colour.vert", "shaders/colour.frag");
+    //initShader( "shaders/colour.vert", "shaders/colour.frag");
+
+    flatShader = initShader( "shaders/flat.vert", "shaders/flat.frag");
+    initLightPosition(lightPos);
+    phongShader = initShader( "shaders/blinn.vert", "shaders/phong.frag");
+    initLightPosition(lightPos);
+    blinnShader = initShader( "shaders/blinn.vert", "shaders/blinn.frag");
+    initLightPosition(lightPos);
 
     // set the eye at (0, 0, 5), looking at the centre of the world
     // try to change the eye position
-    matView = glm::lookAt(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)); 
+    viewPos = glm::vec3(0.0f, 0.0f, 5.0f);
+    matView = glm::lookAt(viewPos, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)); 
     // set the Y field of view angle to 60 degrees, width/height ratio to 1.0, and a near plane of 3.5, far plane of 6.5
     // try to play with the FoV
     matProj = glm::perspective(glm::radians(60.0f), 1.0f, 2.0f, 8.0f);
@@ -156,9 +181,11 @@ int main()
     // Meshes
     std::shared_ptr<Mesh> cube = std::make_shared<Mesh>();
     cube->init("models/cube.obj", shader.program);
+    cube->setShaderId(flatShader);
 
     std::shared_ptr<Mesh> teapot = std::make_shared<Mesh>();
     teapot->init("models/teapot.obj", shader.program);
+    teapot->setShaderId(blinnShader);
     
     //----------------------------------------------------
     // Nodes

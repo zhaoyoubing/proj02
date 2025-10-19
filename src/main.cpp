@@ -18,11 +18,10 @@ glm::mat4 matModelRoot = glm::mat4(1.0);
 glm::mat4 matView = glm::mat4(1.0);
 glm::mat4 matProj = glm::ortho(-2.0f,2.0f,-2.0f,2.0f, -2.0f,2.0f);
 
-glm::vec3 lightPos = glm::vec3(5.0f, 10.0f, 20.0f);
+glm::vec3 lightPos = glm::vec3(5.0f, 5.0f, 10.0f);
 glm::vec3 viewPos = glm::vec3(0.0f, 0.0f, 10.0f);
 
-
-GLuint flatShader;
+// GLuint flatShader;
 GLuint blinnShader;
 GLuint phongShader;
 
@@ -37,10 +36,8 @@ GLuint initShader(std::string pathVert, std::string pathFrag)
     return shader.program;
 }
 
-void initLightPosition(glm::vec3 lightPos)
+void setLightPosition(glm::vec3 lightPos)
 {
-    //lightPos = glm::vec3(0.0f, 0.0f, 10.0f);
-
     GLuint lightpos_loc = glGetUniformLocation(shader.program, "lightPos" );
     glUniform3fv(lightpos_loc, 1, glm::value_ptr(lightPos));
 }
@@ -162,12 +159,12 @@ int main()
  
     //initShader( "shaders/colour.vert", "shaders/colour.frag");
 
-    flatShader = initShader( "shaders/flat.vert", "shaders/flat.frag");
-    initLightPosition(lightPos);
+    // flatShader = initShader( "shaders/flat.vert", "shaders/flat.frag");
+    // initLightPosition(lightPos);
     phongShader = initShader( "shaders/blinn.vert", "shaders/phong.frag");
-    initLightPosition(lightPos);
+    setLightPosition(lightPos);
     blinnShader = initShader( "shaders/blinn.vert", "shaders/blinn.frag");
-    initLightPosition(lightPos);
+    setLightPosition(lightPos);
 
     // set the eye at (0, 0, 5), looking at the centre of the world
     // try to change the eye position
@@ -180,12 +177,12 @@ int main()
     //----------------------------------------------------
     // Meshes
     std::shared_ptr<Mesh> cube = std::make_shared<Mesh>();
-    cube->init("models/cube.obj", shader.program);
-    cube->setShaderId(flatShader);
+    cube->init("models/cube.obj", blinnShader);
+
 
     std::shared_ptr<Mesh> teapot = std::make_shared<Mesh>();
-    teapot->init("models/teapot.obj", shader.program);
-    teapot->setShaderId(blinnShader);
+    teapot->init("models/teapot.obj", phongShader);
+
     
     //----------------------------------------------------
     // Nodes

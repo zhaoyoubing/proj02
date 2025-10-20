@@ -19,7 +19,7 @@ glm::mat4 matView = glm::mat4(1.0);
 glm::mat4 matProj = glm::ortho(-2.0f,2.0f,-2.0f,2.0f, -2.0f,2.0f);
 
 glm::vec3 lightPos = glm::vec3(5.0f, 5.0f, 10.0f);
-glm::vec3 viewPos = glm::vec3(0.0f, 0.0f, 10.0f);
+glm::vec3 viewPos = glm::vec3(0.0f, 0.0f, 5.0f);
 
 // GLuint flatShader;
 GLuint blinnShader;
@@ -168,8 +168,9 @@ int main()
 
     // set the eye at (0, 0, 5), looking at the centre of the world
     // try to change the eye position
-    viewPos = glm::vec3(0.0f, 0.0f, 5.0f);
+    // viewPos = glm::vec3(0.0f, 0.0f, 5.0f);
     matView = glm::lookAt(viewPos, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)); 
+    
     // set the Y field of view angle to 60 degrees, width/height ratio to 1.0, and a near plane of 3.5, far plane of 6.5
     // try to play with the FoV
     matProj = glm::perspective(glm::radians(60.0f), 1.0f, 2.0f, 8.0f);

@@ -185,7 +185,7 @@ int main()
     //----------------------------------------------------
     // Meshes
     std::shared_ptr<Mesh> cube = std::make_shared<Mesh>();
-    cube->init("models/cube.obj", blinnShader);
+    cube->init("models/cube.obj", phongShader);
 
 
     std::shared_ptr<Mesh> teapot = std::make_shared<Mesh>();

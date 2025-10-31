@@ -34,7 +34,7 @@ void main()
     vec3 reflectDir = reflect(-lightDir, norm);
 
     // the shininess coefficient alpha = 8.0 
-    float spec = pow(max(dot(norm, reflectDir), 0.0), 8.0);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 8.0);
 
     // assuming a light source with a bright white colour
     vec3 specular = vec3(0.3) * spec;

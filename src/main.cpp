@@ -26,6 +26,7 @@ glm::vec3 viewPos = glm::vec3(0.0f, 0.0f, 5.0f);
 GLuint blinnShader;
 GLuint phongShader;
 GLuint texblinnShader;
+GLuint normalblinnShader;
 
 // Initialize shader
 GLuint initShader(std::string pathVert, std::string pathFrag) 
@@ -48,6 +49,16 @@ void setViewPosition(glm::vec3 eyePos)
 {
     GLuint viewpos_loc = glGetUniformLocation(shader.program, "viewPos" );
     glUniform3fv(viewpos_loc, 1, glm::value_ptr(eyePos));
+}
+
+void window_size_callback(GLFWwindow* window, int width, int height)
+{
+    //int width, height;
+    //glfwGetWindowSize(window, &width, &height);
+
+    glViewport(0, 0, width, height);
+
+    matProj = glm::perspective(glm::radians(60.0f), width/(float)height, 2.0f, 8.0f);
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -173,6 +184,8 @@ int main()
     // register the key event callback function
     glfwSetKeyCallback(window, key_callback);
 
+    glfwSetWindowSizeCallback(window, window_size_callback);
+
 
     // loading glad
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -182,19 +195,21 @@ int main()
         return -1;
     }
 
- 
-    //initShader( "shaders/colour.vert", "shaders/colour.frag");
-
     // flatShader = initShader( "shaders/flat.vert", "shaders/flat.frag");
     // initLightPosition(lightPos);
     phongShader = initShader( "shaders/blinn.vert", "shaders/phong.frag");
     setLightPosition(lightPos);
     setViewPosition(viewPos);
+
     blinnShader = initShader( "shaders/blinn.vert", "shaders/blinn.frag");
     setLightPosition(lightPos);
     setViewPosition(viewPos);
 
     texblinnShader = initShader("shaders/texblinn.vert", "shaders/texblinn.frag");
+    setLightPosition(lightPos);
+    setViewPosition(viewPos);
+
+    normalblinnShader = initShader("shaders/normalblinn2.vert", "shaders/normalblinn2.frag");
     setLightPosition(lightPos);
     setViewPosition(viewPos);
 
@@ -211,15 +226,18 @@ int main()
     //----------------------------------------------------
     // Meshes
     std::shared_ptr<Mesh> cube = std::make_shared<Mesh>();
-    cube->init("models/cube.obj", blinnShader);
+    //cube->init("models/cube.obj", blinnShader);
 
 
     std::shared_ptr<Mesh> teapot = std::make_shared<Mesh>();
-    teapot->init("models/teapot.obj", blinnShader);
+    //teapot->init("models/teapot.obj", blinnShader);
 
 
     std::shared_ptr<Mesh> bunny = std::make_shared<Mesh>();
-    bunny->init("models/bunny_normal.obj", texblinnShader);
+    //bunny->init("models/bunny_normal.obj", texblinnShader);
+
+    std::shared_ptr<Mesh> box = std::make_shared<Mesh>();
+    box->init("models/Box_normal.obj", normalblinnShader);
 
     
     //----------------------------------------------------
@@ -228,13 +246,14 @@ int main()
     std::shared_ptr<Node> teapotNode = std::make_shared<Node>();
     std::shared_ptr<Node> cubeNode = std::make_shared<Node>();
     std::shared_ptr<Node> bunnyNode = std::make_shared<Node>();
+    std::shared_ptr<Node> boxNode = std::make_shared<Node>();
     
     //----------------------------------------------------
     // Build the tree
     teapotNode->addMesh(teapot);
     cubeNode->addMesh(cube, glm::mat4(1.0), glm::mat4(1.0), glm::scale(glm::vec3(2.0f, 0.25f, 1.5f)));
     bunnyNode->addMesh(bunny, glm::mat4(1.0), glm::mat4(1.0), glm::scale(glm::vec3(0.005f, 0.005f, 0.005f)));
-
+    boxNode->addMesh(box, glm::mat4(1.0), glm::rotate(glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 
     cubeNode->addChild(teapotNode, glm::translate(glm::vec3(-1.5f, 0.5f, 0.0f)));
     cubeNode->addChild(bunnyNode, glm::translate(glm::vec3(1.0f, 1.5f, 0.0f)));
@@ -243,7 +262,7 @@ int main()
     //----------------------------------------------------
     // Add the tree to the world space
     //scene->addChild(cubeNode);
-    scene->addChild(cubeNode);
+     scene->addChild(boxNode);
     // scene->addChild(cubeNode, glm::translate(glm::vec3(1.0f, 0.0f, 0.0f)), glm::rotate(glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
 
     // setting the background colour, you can change the value

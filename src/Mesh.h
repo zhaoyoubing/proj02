@@ -20,6 +20,12 @@ struct Vertex {
     glm::vec3 pos;
     glm::vec3 normal;
     glm::vec2 texCoord;
+    
+    // for normal mapping
+    // tangent
+    glm::vec3 tangent;
+    // bitangent
+    glm::vec3 bitangent;
 };
 
 // added in LabA07
@@ -31,10 +37,10 @@ struct Texture {
 
 // added in LabA07
 struct Material {
-    glm::vec3 Diffuse;
-    glm::vec3 Specular;
-    glm::vec3 Ambient;
-    float Shininess;
+    glm::vec3 diffuse;
+    glm::vec3 specular;
+    glm::vec3 ambient;
+    float shininess;
 };
 
 
@@ -50,6 +56,7 @@ protected:
     std::vector< unsigned int > indices;
 
     std::vector<Texture> textures;
+    std::vector<Texture> normals;
 
     Material material;
     

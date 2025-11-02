@@ -32,7 +32,7 @@ void Mesh::init(std::string path, GLuint id)
 void Mesh::loadModel(std::string path) 
 {
     Assimp::Importer importer;
-    const aiScene* scene = importer.ReadFile(path, aiProcess_JoinIdenticalVertices /* | aiProcess_GenNormals */ );
+    const aiScene* scene = importer.ReadFile(path, aiProcess_JoinIdenticalVertices | aiProcess_FlipUVs | aiProcess_CalcTangentSpace /* | aiProcess_GenNormals */ );
     if (NULL != scene) {
         std::cout << "load model successful" << std::endl;
     } else {
@@ -73,6 +73,19 @@ void Mesh::loadModel(std::string path)
             //vertices.push_back(normal);
 
             v.normal = normal;
+
+            // LabA08 tangent space for normal mapping
+            glm::vec3 tangent;
+            tangent.x = mesh->mTangents[i].x;
+            tangent.y = mesh->mTangents[i].y;
+            tangent.z = mesh->mTangents[i].z;
+            v.tangent = tangent;  
+
+            tangent.x = mesh->mBitangents[i].x;
+            tangent.y = mesh->mBitangents[i].y;
+            tangent.z = mesh->mBitangents[i].z;
+            v.bitangent = tangent; 
+
 
             // LabA07 Texture Coordinates
             if(mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
@@ -120,6 +133,10 @@ void Mesh::loadModel(std::string path)
         std::vector<Texture> diffuseMaps = loadMaterialTextures(material,
             aiTextureType_DIFFUSE, "texture_diffuse", dir);
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+
+        std::vector<Texture> normalMaps = loadMaterialTextures(material,
+            aiTextureType_HEIGHT, "texture_normal", dir);
+        normals.insert(normals.end(), normalMaps.begin(), normalMaps.end());
 
         this->material = loadMaterial(material);
 
@@ -170,6 +187,15 @@ void Mesh::initBuffer()
     // the second parameter: 2 coordinates (tx, ty) per texture coord	
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoord));
 
+
+    // tangent space
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
+
+    glEnableVertexAttribArray(4);
+    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bitangent));
+
+
     // bind index buffer
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idxBufID);
 
@@ -214,7 +240,7 @@ unsigned int Mesh::loadTextureAndBind(const char* path, const std::string& direc
     glGenTextures(1, &textureID);
 
     // we need flip for the bunny model
-    stbi_set_flip_vertically_on_load(true); 
+    // stbi_set_flip_vertically_on_load(true); 
 
     int width, height, nrComponents;
     unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
@@ -256,16 +282,16 @@ Material Mesh::loadMaterial(aiMaterial* mat)
     float shininess;
 
     mat->Get(AI_MATKEY_COLOR_DIFFUSE, color);
-    material.Diffuse = glm::vec3(color.r, color.b, color.g);
+    material.diffuse = glm::vec3(color.r, color.b, color.g);
 
     mat->Get(AI_MATKEY_COLOR_AMBIENT, color);
-    material.Ambient = glm::vec3(color.r, color.b, color.g);
+    material.ambient = glm::vec3(color.r, color.b, color.g);
 
     mat->Get(AI_MATKEY_COLOR_SPECULAR, color);
-    material.Specular = glm::vec3(color.r, color.b, color.g);
+    material.specular = glm::vec3(color.r, color.b, color.g);
 
     mat->Get(AI_MATKEY_SHININESS, shininess);
-    material.Shininess = shininess;
+    material.shininess = shininess;
 
     return material;
 }
@@ -302,6 +328,16 @@ void Mesh::draw(glm::mat4 matModel, glm::mat4 matView, glm::mat4 matProj)
         // Texture mapping, we only deal with one texture unit    
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textures[0].id);
+    }
+
+    GLint normalmapLoc = glGetUniformLocation(shaderId, "normalMap");
+    glUniform1i(normalmapLoc, 1); 
+
+    if (! normals.empty())
+    {
+        // Texture mapping, we only deal with one texture unit    
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, normals[0].id);
     }
 
     // 3. Bind the corresponding model's VAO

@@ -13,15 +13,16 @@ uniform vec3 viewPos;
 // LabA07 diffuse texture map only
 uniform sampler2D textureMap;
 
-// LabA08 
-//uniform sampler2D normalMap;
-
 out vec4 colour_out;
 
 void main()
 {
     // ================================================================
     // LabA07 TODO: get colour from texture map  
+    // Hint: use GLSL's texture function ： 
+    // vec4 texture(sampler2D sampler, vec2 P) 
+
+    
 
     // 1. ambient
     vec3 ambient = 0.05 * colour;

@@ -32,15 +32,13 @@ void Mesh::init(std::string path, GLuint id)
 void Mesh::loadModel(std::string path) 
 {
     Assimp::Importer importer;
+    // LabA07 change: aiProcess_FlipUVs
     const aiScene* scene = importer.ReadFile(path, aiProcess_JoinIdenticalVertices | aiProcess_FlipUVs);
     if (NULL != scene) {
         std::cout << "load model successful" << std::endl;
     } else {
         std::cout << "load model failed" << std::endl;
     }
-
-    // mNumMeshes should > 0
-    // std::cout << scene->mNumMeshes << std::endl;
 
     // LabA07
     Vertex v;
@@ -53,7 +51,6 @@ void Mesh::loadModel(std::string path)
         // read vertex position and normals
         int nVertex = mesh->mNumVertices;
         // std::cout << mesh->mNumVertices << std::endl;
-        //std::cout << "texCoord length: " << mesh->mTextureCoords[0]->Length() << std::endl;
 
         // changed in LabA07
         for (int j = 0; j < nVertex; j++)
@@ -70,7 +67,6 @@ void Mesh::loadModel(std::string path)
             normal.y = mesh->mNormals[j].y;
             normal.z = mesh->mNormals[j].z;
             //vertices.push_back(normal);
-
             v.normal = normal;
 
             // LabA07 Texture Coordinates
@@ -87,7 +83,6 @@ void Mesh::loadModel(std::string path)
             }
             vertices.push_back(v);
         }
-
 
 		int nFaces = mesh->mNumFaces;
         for (int j = 0; j < nFaces; j++ )
@@ -106,10 +101,10 @@ void Mesh::loadModel(std::string path)
 
     if (NULL != mesh && mesh->mMaterialIndex > 0)
     {
+        // get directory of the model
         std::string dir = "";
         const size_t last_slash_idx = path.rfind('/');
-        if (std::string::npos != last_slash_idx)
-        {
+        if (std::string::npos != last_slash_idx) {
             dir = path.substr(0, last_slash_idx);
         }
 
@@ -190,16 +185,18 @@ std::vector<Texture> Mesh::loadMaterialTextures(aiMaterial *mat, aiTextureType t
 {
     std::vector<Texture> textures;
 
+    // actually, we only support one texture
     int nTex = mat->GetTextureCount(type);
     for(unsigned int i = 0; i < nTex ; i++)
     {
         aiString str;
         mat->GetTexture(type, i, &str);
+
         Texture texture;
         texture.id = loadTextureAndBind(str.C_Str(), dir);
         texture.type = typeName;
-        //texture.path = std::string(str.C_Str());
-        textures.push_back(texture);
+        if (texture.id > 0)
+            textures.push_back(texture);
     }
     return textures;
 }  
@@ -209,44 +206,41 @@ unsigned int Mesh::loadTextureAndBind(const char* path, const std::string& direc
     std::string filename = std::string(path);
     filename = directory + '/' + filename;
 
-    unsigned int textureID;
-    glGenTextures(1, &textureID);
-
-    // we need flip for the bunny model
-    stbi_set_flip_vertically_on_load(true); 
-
     int width, height, nrComponents;
     unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
-    if (data)
-    {
-        GLenum format;
-        if (nrComponents == 1)
-            format = GL_RED;
-        else if (nrComponents == 3)
-            format = GL_RGB;
-        else if (nrComponents == 4)
-            format = GL_RGBA;
-
-        glBindTexture(GL_TEXTURE_2D, textureID);
-        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        stbi_image_free(data);
-    }
-    else
+    if (! data)
     {
         std::cout << "Texture failed to load at path: " << path << std::endl;
         stbi_image_free(data);
+
+        return 0;
     }
+
+    unsigned int textureID;
+    glGenTextures(1, &textureID);
+
+    GLenum format;
+    if (nrComponents == 1)
+        format = GL_RED;
+    else if (nrComponents == 3)
+        format = GL_RGB;
+    else if (nrComponents == 4)
+        format = GL_RGBA;
+
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    stbi_image_free(data);
+
 
     return textureID;
 }
-
 
 Material Mesh::loadMaterial(aiMaterial* mat) 
 {

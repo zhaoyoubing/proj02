@@ -25,6 +25,7 @@ glm::vec3 viewPos = glm::vec3(0.0f, 0.0f, 5.0f);
 // GLuint flatShader;
 GLuint blinnShader;
 GLuint phongShader;
+// added for LabA07
 GLuint texblinnShader;
 
 // Initialize shader
@@ -183,17 +184,13 @@ int main()
     }
 
  
-    //initShader( "shaders/colour.vert", "shaders/colour.frag");
-
-    // flatShader = initShader( "shaders/flat.vert", "shaders/flat.frag");
-    // initLightPosition(lightPos);
     phongShader = initShader( "shaders/blinn.vert", "shaders/phong.frag");
     setLightPosition(lightPos);
     setViewPosition(viewPos);
     blinnShader = initShader( "shaders/blinn.vert", "shaders/blinn.frag");
     setLightPosition(lightPos);
     setViewPosition(viewPos);
-
+    // added for LabA07
     texblinnShader = initShader("shaders/texblinn.vert", "shaders/texblinn.frag");
     setLightPosition(lightPos);
     setViewPosition(viewPos);
@@ -242,8 +239,8 @@ int main()
     
     //----------------------------------------------------
     // Add the tree to the world space
-    //scene->addChild(cubeNode);
     scene->addChild(cubeNode);
+    //scene->addChild(bunnyNode);
     // scene->addChild(cubeNode, glm::translate(glm::vec3(1.0f, 0.0f, 0.0f)), glm::rotate(glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
 
     // setting the background colour, you can change the value

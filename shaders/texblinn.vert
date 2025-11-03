@@ -1,4 +1,4 @@
-// Blinn-Phong and Phong shared vertex shader
+// Blinn-Phong shader with texture support
 #version 410
 
 in layout(location=0) vec3 aPos;

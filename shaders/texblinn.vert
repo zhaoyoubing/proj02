@@ -29,5 +29,7 @@ void main()
     // !! only correct for rigid body transforms
     normal = normalMatrix * aNormal;
 
-    texCoord = aTexCoord;
+    // ================================================================
+    // LabA07 TODO: output texCoord  
+    
 }

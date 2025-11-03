@@ -25,6 +25,7 @@ glm::vec3 viewPos = glm::vec3(0.0f, 0.0f, 5.0f);
 // GLuint flatShader;
 GLuint blinnShader;
 GLuint phongShader;
+
 // added for LabA07
 GLuint texblinnShader;
 
@@ -239,8 +240,8 @@ int main()
     
     //----------------------------------------------------
     // Add the tree to the world space
-    scene->addChild(cubeNode);
-    //scene->addChild(bunnyNode);
+    //scene->addChild(cubeNode);
+    scene->addChild(bunnyNode);
     // scene->addChild(cubeNode, glm::translate(glm::vec3(1.0f, 0.0f, 0.0f)), glm::rotate(glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
 
     // setting the background colour, you can change the value

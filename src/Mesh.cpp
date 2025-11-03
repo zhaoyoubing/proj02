@@ -113,12 +113,6 @@ void Mesh::loadModel(std::string path)
             aiTextureType_DIFFUSE, "texture_diffuse", dir);
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
-        // this->material = loadMaterial(material);
-
-        // we don't deal with specular maps
-        //std::vector<Texture> specularMaps = loadMaterialTextures(material, 
-        //                                    aiTextureType_SPECULAR, "texture_specular", dir);
-        //textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
     }
 
     // for debugging
@@ -157,11 +151,13 @@ void Mesh::initBuffer()
     //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (void *) (sizeof(float) * 3));
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) (sizeof(float) * 3));
 
-    // added in LabA07: Adding texture coord attribute
-    // vertex texture coords
-    glEnableVertexAttribArray(2);
-    // the second parameter: 2 coordinates (tx, ty) per texture coord	
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoord));
+    // ================================================================
+    // LabA07 TODO: Adding texture coord attribute
+    // Use glEnableVertexAttribArray()
+    
+    // Use glVertexAttribPointer() 
+    // Hint: for texCoord offset, you can use (void*)offsetof(Vertex, texCoord)
+    
 
     // bind index buffer
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idxBufID);
@@ -175,9 +171,6 @@ void Mesh::initBuffer()
     glBindVertexArray(0);
 }
 
-void Mesh::setShaderId(GLuint sid) {
-    shaderId = sid;
-}
 
 // added in LabA07
 // =====================================================
@@ -201,6 +194,8 @@ std::vector<Texture> Mesh::loadMaterialTextures(aiMaterial *mat, aiTextureType t
     return textures;
 }  
 
+// ================================================================
+// LabA07 TODO: Bind textures
 unsigned int Mesh::loadTextureAndBind(const char* path, const std::string& directory)
 {
     std::string filename = std::string(path);
@@ -227,40 +222,23 @@ unsigned int Mesh::loadTextureAndBind(const char* path, const std::string& direc
     else if (nrComponents == 4)
         format = GL_RGBA;
 
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
+    
+    // ================================================================
+    // LabA07 TODO: Bind textures with glBindTexture() and glTexImage2D()
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // ================================================================
+    // LabA07 TODO: Optional generation of Mipmap with glGenerateMipmap(GL_TEXTURE_2D)
+
+
+    // ================================================================
+    // LabA07 TODO: Setting texture parameters with glTexPrameteri()
+
 
     stbi_image_free(data);
 
 
     return textureID;
-}
-
-Material Mesh::loadMaterial(aiMaterial* mat) 
-{
-    Material material;
-    aiColor3D color(0.f, 0.f, 0.f);
-    float shininess;
-
-    mat->Get(AI_MATKEY_COLOR_DIFFUSE, color);
-    material.Diffuse = glm::vec3(color.r, color.b, color.g);
-
-    mat->Get(AI_MATKEY_COLOR_AMBIENT, color);
-    material.Ambient = glm::vec3(color.r, color.b, color.g);
-
-    mat->Get(AI_MATKEY_COLOR_SPECULAR, color);
-    material.Specular = glm::vec3(color.r, color.b, color.g);
-
-    mat->Get(AI_MATKEY_SHININESS, shininess);
-    material.Shininess = shininess;
-
-    return material;
 }
 
 // =====================================================
@@ -288,16 +266,15 @@ void Mesh::draw(glm::mat4 matModel, glm::mat4 matView, glm::mat4 matProj)
     GLuint projection_loc = glGetUniformLocation( shaderId, "projection" );
     glUniformMatrix4fv(projection_loc, 1, GL_FALSE, &mat_projection[0][0]);
 
-    // added in LabA07
-    // =====================================================
-    GLint textureLoc = glGetUniformLocation(shaderId, "textureMap");
-    glUniform1i(textureLoc, 0); 
+    // ================================================================
+    // LabA07 TODO: Set texturemap shader uniforms
 
     if (! textures.empty())
     {
-        // Texture mapping, we only deal with one texture unit    
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, textures[0].id);
+        // ================================================================
+        // LabA07 TODO: Activate texture unit 0 and bind texture  
+        
+
     }
     // =====================================================
 

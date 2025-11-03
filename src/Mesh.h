@@ -28,14 +28,6 @@ struct Texture {
     std::string type;
 };
 
-// added in LabA07
-struct Material {
-    glm::vec3 Diffuse;
-    glm::vec3 Specular;
-    glm::vec3 Ambient;
-    float Shininess;
-};
-
 // ==============================================
 
 
@@ -52,8 +44,6 @@ protected:
 
     // added in LabA07
     std::vector<Texture> textures;
-
-    // Material material;
     
     std::vector<GLuint> buffers;
 
@@ -66,7 +56,6 @@ protected:
     std::vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName, std::string dir);
     unsigned int loadTextureAndBind(const char* path, const std::string& directory);
     
-    Material Mesh::loadMaterial(aiMaterial* mat);
 
 public:
     Mesh();
@@ -74,8 +63,6 @@ public:
 
     void init(std::string path, GLuint shaderId);
     void loadModel(std::string path);
-
-    void setShaderId(GLuint sid);
     
     void draw(glm::mat4 matModel, glm::mat4 matView, glm::mat4 matProj);
 };

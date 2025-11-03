@@ -20,7 +20,8 @@ out vec4 colour_out;
 
 void main()
 {
-    vec3 colour = texture(textureMap, texCoord).rgb;
+    // ================================================================
+    // LabA07 TODO: get colour from texture map  
 
     // 1. ambient
     vec3 ambient = 0.05 * colour;

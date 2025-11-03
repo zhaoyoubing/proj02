@@ -32,7 +32,7 @@ void Mesh::init(std::string path, GLuint id)
 void Mesh::loadModel(std::string path) 
 {
     Assimp::Importer importer;
-    const aiScene* scene = importer.ReadFile(path, aiProcess_JoinIdenticalVertices /* | aiProcess_GenNormals */ );
+    const aiScene* scene = importer.ReadFile(path, aiProcess_JoinIdenticalVertices | aiProcess_FlipUVs);
     if (NULL != scene) {
         std::cout << "load model successful" << std::endl;
     } else {
@@ -55,6 +55,7 @@ void Mesh::loadModel(std::string path)
         // std::cout << mesh->mNumVertices << std::endl;
         //std::cout << "texCoord length: " << mesh->mTextureCoords[0]->Length() << std::endl;
 
+        // changed in LabA07
         for (int j = 0; j < nVertex; j++)
         {
             glm::vec3 pos; 
@@ -63,8 +64,6 @@ void Mesh::loadModel(std::string path)
             pos.z = mesh->mVertices[j].z; 
             // vertices.push_back(pos);
             v.pos = pos;
-
-            // std::cout << pos.x << pos.y << pos.z << std::endl;
 
             glm::vec3 normal;
             normal.x = mesh->mNormals[j].x;
@@ -101,10 +100,8 @@ void Mesh::loadModel(std::string path)
         }
     }
 
-    // at the moment
-    // we only deal with one material/texture
-    // loading material
-
+    // added in LabA07
+    // loading material and texture, at the moment we only deal with one material/texture
     aiMesh* mesh = scene->mMeshes[0];
 
     if (NULL != mesh && mesh->mMaterialIndex > 0)
@@ -121,7 +118,7 @@ void Mesh::loadModel(std::string path)
             aiTextureType_DIFFUSE, "texture_diffuse", dir);
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
-        this->material = loadMaterial(material);
+        // this->material = loadMaterial(material);
 
         // we don't deal with specular maps
         //std::vector<Texture> specularMaps = loadMaterialTextures(material, 
@@ -153,6 +150,7 @@ void Mesh::initBuffer()
 
     buffers.push_back(vertBufID);
 
+    // changed in LabA07 
     // set buffer data to triangle vertex and setting vertex attributes
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0] /*vertices.data()*/, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
@@ -164,7 +162,7 @@ void Mesh::initBuffer()
     //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (void *) (sizeof(float) * 3));
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) (sizeof(float) * 3));
 
-    // LabA07: Adding texture coord attribute
+    // added in LabA07: Adding texture coord attribute
     // vertex texture coords
     glEnableVertexAttribArray(2);
     // the second parameter: 2 coordinates (tx, ty) per texture coord	
@@ -186,7 +184,8 @@ void Mesh::setShaderId(GLuint sid) {
     shaderId = sid;
 }
 
-
+// added in LabA07
+// =====================================================
 std::vector<Texture> Mesh::loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName, std::string dir)
 {
     std::vector<Texture> textures;
@@ -270,6 +269,7 @@ Material Mesh::loadMaterial(aiMaterial* mat)
     return material;
 }
 
+// =====================================================
 
 
 // all drawings come here
@@ -294,6 +294,8 @@ void Mesh::draw(glm::mat4 matModel, glm::mat4 matView, glm::mat4 matProj)
     GLuint projection_loc = glGetUniformLocation( shaderId, "projection" );
     glUniformMatrix4fv(projection_loc, 1, GL_FALSE, &mat_projection[0][0]);
 
+    // added in LabA07
+    // =====================================================
     GLint textureLoc = glGetUniformLocation(shaderId, "textureMap");
     glUniform1i(textureLoc, 0); 
 
@@ -303,6 +305,8 @@ void Mesh::draw(glm::mat4 matModel, glm::mat4 matView, glm::mat4 matProj)
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textures[0].id);
     }
+    // =====================================================
+
 
     // 3. Bind the corresponding model's VAO
     glBindVertexArray(buffers[0]);

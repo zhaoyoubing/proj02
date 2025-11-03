@@ -11,9 +11,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 
+// added in LabA07
+// ==============================================
 #include <assimp/material.h>
-
-
 
 // added in LabA07
 struct Vertex {
@@ -38,20 +38,24 @@ struct Material {
 };
 
 
+// ==============================================
+
+
 class Mesh {
 
 protected:
+    // changed in LabA07
     // array of vertices and normals
     //std::vector< glm::vec3 > vertices; 
-
     std::vector<Vertex> vertices;
 
     // triangle vertex indices
     std::vector< unsigned int > indices;
 
+    // added in LabA07
     std::vector<Texture> textures;
 
-    Material material;
+    // Material material;
     
     std::vector<GLuint> buffers;
 
@@ -60,8 +64,10 @@ protected:
 
     void initBuffer();
 
+    // added in LabA07
     std::vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName, std::string dir);
     unsigned int loadTextureAndBind(const char* path, const std::string& directory);
+    
     Material Mesh::loadMaterial(aiMaterial* mat);
 
 public:

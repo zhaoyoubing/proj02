@@ -32,7 +32,6 @@ struct Vertex {
 struct Texture {
     GLuint id;
     std::string type;
-    //std::string path;
 };
 
 // added in LabA07

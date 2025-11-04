@@ -14,8 +14,6 @@ uniform mat4 view;
 uniform mat4 projection;
 
 
-
-
 // out vec3 colour_vert;
 //out vec3 normal;
 out vec3 fragPos;

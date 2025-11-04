@@ -20,12 +20,6 @@ out vec4 colour_out;
 
 void main()
 {
-    // RGBA
-    //colour_out = vec4(1.0, 0.0, 0.0, 1.0);
-    //colour_out = vec4(colour_vert, 1.0);
-
-    // manually set R G B of the surface colour, here is RED
-    //vec3 colour = vec3(1.0, 0.0, 0.0);
     vec3 colour = texture(textureMap, texCoord).rgb;
 
     // obtain normal from normal map in range [0,1]

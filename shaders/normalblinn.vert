@@ -23,7 +23,6 @@ out vec2 texCoord;
 out mat3 TBN;
 
 
-
 void main()
 {
     // homogeneous coordinate

@@ -22,11 +22,11 @@ glm::vec3 lightPos = glm::vec3(5.0f, 5.0f, 10.0f);
 //glm::vec3 viewPos = glm::vec3(0.0f, 0.0f, 5.0f);
 glm::vec3 viewPos = glm::vec3(0.0f, 0.0f, 5.0f);
 
-// GLuint flatShader;
 GLuint blinnShader;
 GLuint phongShader;
 GLuint texblinnShader;
-GLuint normalblinnShader;
+// LabA08 Normal map
+GLuint normalmapShader;
 
 // Initialize shader
 GLuint initShader(std::string pathVert, std::string pathFrag) 
@@ -178,7 +178,7 @@ int main()
     }
 
     // create a GLFW window
-    window = glfwCreateWindow(640, 640, "Hello OpenGL 7", NULL, NULL);
+    window = glfwCreateWindow(640, 640, "Hello OpenGL 8", NULL, NULL);
     glfwMakeContextCurrent(window);
 
     // register the key event callback function
@@ -209,7 +209,7 @@ int main()
     setLightPosition(lightPos);
     setViewPosition(viewPos);
 
-    normalblinnShader = initShader("shaders/normalblinn2.vert", "shaders/normalblinn2.frag");
+    normalmapShader = initShader("shaders/normalmap.vert", "shaders/normalmap.frag");
     setLightPosition(lightPos);
     setViewPosition(viewPos);
 
@@ -237,7 +237,7 @@ int main()
     //bunny->init("models/bunny_normal.obj", texblinnShader);
 
     std::shared_ptr<Mesh> box = std::make_shared<Mesh>();
-    box->init("models/Box_normal.obj", normalblinnShader);
+    box->init("models/Box_normal.obj", normalmapShader);
 
     
     //----------------------------------------------------
@@ -278,7 +278,9 @@ int main()
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        scene->draw(matModelRoot, matView, matProj);
+        //scene->draw(matModelRoot, matView, matProj);
+        // for LabA08 Normal Map
+        box->draw(matModelRoot, matView, matProj);
         
         glfwSwapBuffers(window);
     }

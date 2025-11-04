@@ -1,3 +1,5 @@
+// LabA08 Normal Map
+// normalmap.frag
 #version 410
 
 // for lighting
@@ -9,15 +11,13 @@ in vec3 tangentLightPos;
 in vec3 tangentViewPos;
 in vec3 tangentFragPos;
 
-//in mat3 TBN;
-
 // uniform vec3 lightPos;
 // uniform vec3 viewPos;
 
 // LabA07 diffuse texture map only
 uniform sampler2D textureMap;
 
-// LabA08 
+// added for LabA08 Normal map
 uniform sampler2D normalMap;
 
 out vec4 colour_out;
@@ -34,8 +34,6 @@ void main()
 
     // transform normal vector to range [-1,1]
     normal = normalize(normal * 2.0 - 1.0); 
-    // normal = normalize(TBN * normal); 
-
 
     // 1. ambient
     vec3 ambient = 0.05 * colour;

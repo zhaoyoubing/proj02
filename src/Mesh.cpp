@@ -188,7 +188,7 @@ void Mesh::initBuffer()
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoord));
 
 
-    // tangent space
+    // LabA08: tangents and bitangents
     glEnableVertexAttribArray(3);
     glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
 
@@ -330,6 +330,7 @@ void Mesh::draw(glm::mat4 matModel, glm::mat4 matView, glm::mat4 matProj)
         glBindTexture(GL_TEXTURE_2D, textures[0].id);
     }
 
+    // for LabA08 Normal Map
     GLint normalmapLoc = glGetUniformLocation(shaderId, "normalMap");
     glUniform1i(normalmapLoc, 1); 
 

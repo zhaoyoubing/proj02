@@ -1,10 +1,12 @@
-// Blinn-Phong and Phong shared vertex shader
+// LabA08 Normal Map
+// normalmap.vert
 #version 410
 
 in layout(location=0) vec3 aPos;
 in layout(location=1) vec3 aNormal;
 in layout(location=2) vec2 aTexCoord;
 
+// added for LabA08 Normal Map
 in layout(location=3) vec3 aTangent;
 in layout(location=4) vec3 aBitangent;
 
@@ -13,21 +15,18 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
+// moved from the fragment shader for LabA08 Normal Map
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 
-
-// out vec3 colour_vert;
 //out vec3 normal;
 out vec3 fragPos;
 out vec2 texCoord;
 
+// added for LabA08 Normal Map
 out vec3 tangentLightPos;
 out vec3 tangentViewPos;
 out vec3 tangentFragPos;
-
-// for normal mapping
-// out mat3 TBN;
 
 
 void main()
@@ -37,12 +36,9 @@ void main()
     
     fragPos = vec3(model * vec4(aPos, 1.0));
 
-    // convert 4x4 modelling matrix to 3x3
-    mat3 normalMatrix = mat3(model);
-    
-    // output normal to the fragment shader
-    // !! only correct for rigid body transforms
-    //normal = normalMatrix * aNormal;
+    // commented out for LabA08 
+    // mat3 normalMatrix = mat3(model);
+    // normal = normalMatrix * aNormal;
 
     texCoord = aTexCoord;
 

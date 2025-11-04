@@ -70,24 +70,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
     if (action == GLFW_PRESS) {
 
-        if (mods & GLFW_MOD_CONTROL) {
-
-            // translation in world space
-            if (GLFW_KEY_LEFT == key) {
-                mat = glm::translate(glm::mat4(1.0f), glm::vec3(transStep, 0.0f, 0.0f));
-                matModelRoot = mat * matModelRoot;
-            } else if (GLFW_KEY_RIGHT == key ) {
-                mat = glm::translate(glm::mat4(1.0f), glm::vec3(-transStep, 0.0f, 0.0f));
-                matModelRoot = mat * matModelRoot;
-            } else if (GLFW_KEY_UP == key) {
-                mat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, transStep, 0.0f));
-                matModelRoot = mat * matModelRoot;
-            } if (GLFW_KEY_DOWN == key) {
-                mat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -transStep, 0.0f));
-                matModelRoot = mat * matModelRoot;
-            }
-        }
-
         // camera control
         if (GLFW_KEY_LEFT == key) {
             // pan left, rotate around Y, CCW
@@ -141,26 +123,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
             // move backward along Z
             mat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -transStep));
             matView = mat * matView;
-        } 
-
-        // translation along world axis
-        else if (GLFW_KEY_H == key ) {
-            //if (modes & GLFW_MOD_CONTROL)
-            // move left along -X
-            mat = glm::translate(glm::mat4(1.0f), glm::vec3(transStep, 0.0f, 0.0f));
-            matView = matView * mat;
-        } else if (GLFW_KEY_L == key) {
-            // move right along X
-            mat = glm::translate(glm::mat4(1.0f), glm::vec3(-transStep, 0.0f, 0.0f));
-            matView = matView * mat;
-        } if (GLFW_KEY_J == key ) {
-            // move forward along Z
-            mat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -transStep));
-            matView = matView * mat;
-        } else if (GLFW_KEY_K == key) {
-            // move backward along -Z
-            mat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, transStep));
-            matView = matView * mat;
         } 
     }
     

@@ -4,33 +4,26 @@
 
 // for lighting
 in vec3 fragPos;
-// in vec3 normal;
 in vec2 texCoord;
 
-in vec3 tangentLightPos;
-in vec3 tangentViewPos;
-in vec3 tangentFragPos;
+// LabA08 TODO: add the inputs of tangentLightPos,
+// tangentViewPos, tangentFragPos
 
-// uniform vec3 lightPos;
-// uniform vec3 viewPos;
 
 // LabA07 diffuse texture map only
 uniform sampler2D textureMap;
 
-// added for LabA08 Normal map
+// LabA08 TODO: add the normalMap uniform
 uniform sampler2D normalMap;
 
 out vec4 colour_out;
 
 void main()
 {
-
-    // manually set R G B of the surface colour, here is RED
-    //vec3 colour = vec3(1.0, 0.0, 0.0);
     vec3 colour = texture(textureMap, texCoord).rgb;
 
-    // obtain normal from normal map in range [0,1]
-    vec3 normal = texture(normalMap, texCoord).rgb;
+    // LabA08 TODO: read normals from the normal map
+
 
     // transform normal vector to range [-1,1]
     normal = normalize(normal * 2.0 - 1.0); 

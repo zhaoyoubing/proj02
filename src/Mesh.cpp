@@ -39,8 +39,6 @@ void Mesh::loadModel(std::string path)
         std::cout << "load model failed" << std::endl;
     }
 
-    // mNumMeshes should > 0
-    // std::cout << scene->mNumMeshes << std::endl;
 
     // LabA07
     Vertex v;
@@ -52,8 +50,6 @@ void Mesh::loadModel(std::string path)
         
         // read vertex position and normals
         int nVertex = mesh->mNumVertices;
-        // std::cout << mesh->mNumVertices << std::endl;
-        //std::cout << "texCoord length: " << mesh->mTextureCoords[0]->Length() << std::endl;
 
         for (int j = 0; j < nVertex; j++)
         {
@@ -61,30 +57,15 @@ void Mesh::loadModel(std::string path)
             pos.x = mesh->mVertices[j].x;
             pos.y = mesh->mVertices[j].y;
             pos.z = mesh->mVertices[j].z; 
-            // vertices.push_back(pos);
             v.pos = pos;
-
-            // std::cout << pos.x << pos.y << pos.z << std::endl;
 
             glm::vec3 normal;
             normal.x = mesh->mNormals[j].x;
             normal.y = mesh->mNormals[j].y;
             normal.z = mesh->mNormals[j].z;
-            //vertices.push_back(normal);
-
             v.normal = normal;
 
-            // LabA08 tangent space for normal mapping
-            glm::vec3 tangent;
-            tangent.x = mesh->mTangents[i].x;
-            tangent.y = mesh->mTangents[i].y;
-            tangent.z = mesh->mTangents[i].z;
-            v.tangent = tangent;  
-
-            tangent.x = mesh->mBitangents[i].x;
-            tangent.y = mesh->mBitangents[i].y;
-            tangent.z = mesh->mBitangents[i].z;
-            v.bitangent = tangent; 
+            // LabA08 TODO: set tangent and bitagent of a vertex
 
 
             // LabA07 Texture Coordinates
@@ -116,7 +97,6 @@ void Mesh::loadModel(std::string path)
 
     // at the moment
     // we only deal with one material/texture
-    // loading material
 
     aiMesh* mesh = scene->mMeshes[0];
 
@@ -138,12 +118,6 @@ void Mesh::loadModel(std::string path)
             aiTextureType_HEIGHT, "texture_normal", dir);
         normals.insert(normals.end(), normalMaps.begin(), normalMaps.end());
 
-        this->material = loadMaterial(material);
-
-        // we don't deal with specular maps
-        //std::vector<Texture> specularMaps = loadMaterialTextures(material, 
-        //                                    aiTextureType_SPECULAR, "texture_specular", dir);
-        //textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
     }
 
     // for debugging
@@ -188,12 +162,7 @@ void Mesh::initBuffer()
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoord));
 
 
-    // LabA08: tangents and bitangents
-    glEnableVertexAttribArray(3);
-    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
-
-    glEnableVertexAttribArray(4);
-    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bitangent));
+    // LabA08 TODO: add tangents and bitangents vertex attributes
 
 
     // bind index buffer
@@ -330,15 +299,15 @@ void Mesh::draw(glm::mat4 matModel, glm::mat4 matView, glm::mat4 matProj)
         glBindTexture(GL_TEXTURE_2D, textures[0].id);
     }
 
-    // for LabA08 Normal Map
+    // LabA08 TODO: Set the normalMap uniform
     GLint normalmapLoc = glGetUniformLocation(shaderId, "normalMap");
     glUniform1i(normalmapLoc, 1); 
 
+   
     if (! normals.empty())
     {
-        // Texture mapping, we only deal with one texture unit    
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, normals[0].id);
+         // LabA08 TODO: activate texture unit 1 and bind the normal map texture id
+
     }
 
     // 3. Bind the corresponding model's VAO

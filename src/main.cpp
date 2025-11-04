@@ -256,7 +256,8 @@ int main()
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        scene->draw(matModelRoot, matView, matProj);
+        //scene->draw(matModelRoot, matView, matProj);
+        bunny->draw(glm::scale(glm::vec3(0.005f, 0.005f, 0.005f)), matView, matProj);
         
         glfwSwapBuffers(window);
     }

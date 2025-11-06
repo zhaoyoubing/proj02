@@ -12,6 +12,16 @@ void Node::addMesh(std::shared_ptr<Mesh> mesh, glm::mat4 trans, glm::mat4 rot, g
     meshMats.push_back(trans * rot * scale);
 }
 
+void Node::setShaderId(GLuint sid) {
+    for (auto & m : meshes) {
+        m->setShaderId(sid);
+    }
+
+    for (auto & n : childNodes) {
+        n->setShaderId(sid);
+    }
+}
+
 // all drawings go to Mesh::draw()
 void Node::draw(glm::mat4 matModel, glm::mat4 matView, glm::mat4 matProj)
 {

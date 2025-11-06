@@ -27,6 +27,7 @@ public:
     void addChild(std::shared_ptr<Node> child, glm::mat4 trans = glm::mat4(1.0), glm::mat4 rot = glm::mat4(1.0));
     void addMesh(std::shared_ptr<Mesh> mesh, glm::mat4 trans = glm::mat4(1.0), glm::mat4 rot = glm::mat4(1.0), glm::mat4 scale = glm::mat4(1.0));
 
+    void setShaderId(GLuint sid);
     void draw(glm::mat4 matModel, glm::mat4 matView, glm::mat4 matProj);
 
 };

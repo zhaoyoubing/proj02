@@ -23,9 +23,9 @@ struct Vertex {
     
     // for normal mapping
     // tangent
-    glm::vec3 tangent;
+    // glm::vec3 tangent;
     // bitangent
-    glm::vec3 bitangent;
+    // glm::vec3 bitangent;
 };
 
 // added in LabA07
@@ -56,7 +56,7 @@ protected:
     std::vector< unsigned int > indices;
 
     std::vector<Texture> textures;
-    std::vector<Texture> normals;
+    // std::vector<Texture> normals;
 
     Material material;
     

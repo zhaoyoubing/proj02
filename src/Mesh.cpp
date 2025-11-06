@@ -74,6 +74,7 @@ void Mesh::loadModel(std::string path)
 
             v.normal = normal;
 
+            /*
             // LabA08 tangent space for normal mapping
             glm::vec3 tangent;
             tangent.x = mesh->mTangents[i].x;
@@ -85,6 +86,7 @@ void Mesh::loadModel(std::string path)
             tangent.y = mesh->mBitangents[i].y;
             tangent.z = mesh->mBitangents[i].z;
             v.bitangent = tangent; 
+            */
 
 
             // LabA07 Texture Coordinates
@@ -134,11 +136,13 @@ void Mesh::loadModel(std::string path)
             aiTextureType_DIFFUSE, "texture_diffuse", dir);
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
+        /*
         std::vector<Texture> normalMaps = loadMaterialTextures(material,
             aiTextureType_HEIGHT, "texture_normal", dir);
         normals.insert(normals.end(), normalMaps.begin(), normalMaps.end());
 
         this->material = loadMaterial(material);
+        */
 
         // we don't deal with specular maps
         //std::vector<Texture> specularMaps = loadMaterialTextures(material, 
@@ -189,11 +193,11 @@ void Mesh::initBuffer()
 
 
     // tangent space
-    glEnableVertexAttribArray(3);
-    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
+    //glEnableVertexAttribArray(3);
+    //glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
 
-    glEnableVertexAttribArray(4);
-    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bitangent));
+    //glEnableVertexAttribArray(4);
+    //glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bitangent));
 
 
     // bind index buffer
@@ -323,21 +327,27 @@ void Mesh::draw(glm::mat4 matModel, glm::mat4 matView, glm::mat4 matProj)
     GLint textureLoc = glGetUniformLocation(shaderId, "textureMap");
     glUniform1i(textureLoc, 0); 
 
+    GLint hasTextureLoc = glGetUniformLocation(shaderId, "hasTexture");
+    glUniform1i(textureLoc, 0);
+
     if (! textures.empty())
     {
         // Texture mapping, we only deal with one texture unit    
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textures[0].id);
+
+        glUniform1i(hasTextureLoc, GL_TRUE);
+    }
+    else {
+        glUniform1i(hasTextureLoc, GL_FALSE);
     }
 
-    GLint normalmapLoc = glGetUniformLocation(shaderId, "normalMap");
-    glUniform1i(normalmapLoc, 1); 
 
-    if (! normals.empty())
+    //if (bShadow)
     {
-        // Texture mapping, we only deal with one texture unit    
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, normals[0].id);
+        GLint loc = glGetUniformLocation(shaderId, "depthMap");
+        glUniform1i(loc, 1); 
+       
     }
 
     // 3. Bind the corresponding model's VAO

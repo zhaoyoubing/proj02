@@ -227,6 +227,7 @@ unsigned int Mesh::loadTextureAndBind(const char* path, const std::string& direc
     else if (nrComponents == 4)
         format = GL_RGBA;
 
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureID);
     glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
@@ -291,14 +292,17 @@ void Mesh::draw(glm::mat4 matModel, glm::mat4 matView, glm::mat4 matProj)
     // added in LabA07
     // =====================================================
     GLint textureLoc = glGetUniformLocation(shaderId, "textureMap");
+    // always use texture unit 0
     glUniform1i(textureLoc, 0); 
 
+    /*
     if (! textures.empty())
     {
         // Texture mapping, we only deal with one texture unit    
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textures[0].id);
     }
+    */
     // =====================================================
 
 

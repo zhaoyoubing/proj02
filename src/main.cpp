@@ -357,7 +357,7 @@ int main()
     }
 
     // create a GLFW window
-    window = glfwCreateWindow(width, height, "Hello OpenGL 7", NULL, NULL);
+    window = glfwCreateWindow(width, height, "Hello OpenGL 10 Bloom", NULL, NULL);
     glfwMakeContextCurrent(window);
 
     // register the key event callback function

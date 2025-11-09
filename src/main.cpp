@@ -1,4 +1,5 @@
 #include <iostream>
+#include <windows.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -19,14 +20,185 @@ glm::mat4 matView = glm::mat4(1.0);
 glm::mat4 matProj = glm::ortho(-2.0f,2.0f,-2.0f,2.0f, -2.0f,2.0f);
 
 glm::vec3 lightPos = glm::vec3(5.0f, 5.0f, 10.0f);
-//glm::vec3 viewPos = glm::vec3(0.0f, 0.0f, 5.0f);
 glm::vec3 viewPos = glm::vec3(0.0f, 0.0f, 5.0f);
 
-// GLuint flatShader;
 GLuint blinnShader;
-GLuint phongShader;
-// added for LabA07
 GLuint texblinnShader;
+
+//==================================================
+// for bloom effects
+
+GLuint bloomrenderShader;
+GLuint bloomfilterShader;
+GLuint bloomblurShader;
+GLuint bloomblendShader;
+
+
+GLuint colourFBO, blurFBO;
+GLuint colourTex, blurtex[2];
+
+int width = 800;
+int height = 800;
+int bloomBufWidth;
+int bloomBufHeight;
+
+std::shared_ptr<Node> scene;
+std::shared_ptr<Mesh> square;
+
+void initRenderToTexture()
+{
+    // Generate and bind the framebuffer
+    glGenFramebuffers(1, &colourFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, colourFBO);
+
+    // Create the texture object
+    glGenTextures(1, &colourTex);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, colourTex);
+    glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGB32F, width, height);
+
+    // Bind the texture to the colour FBO
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colourTex, 0);
+
+    // Create the depth buffer
+    GLuint depthBuf;
+    glGenRenderbuffers(1, &depthBuf);
+    glBindRenderbuffer(GL_RENDERBUFFER, depthBuf);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+
+    // Bind the depth buffer to the FBO
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+                              GL_RENDERBUFFER, depthBuf);
+
+    // Set the targets for the fragment output variables
+    GLenum drawBuffers[] = {GL_COLOR_ATTACHMENT0};
+    glDrawBuffers(1, drawBuffers);
+
+    // Create an FBO for the bright-pass filter and blur
+    glGenFramebuffers(1, &blurFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, blurFBO);
+
+    // Create two texture objects to ping-pong for the bright-pass filter
+    // and the two-pass blur
+    bloomBufWidth = width / 4;
+    bloomBufHeight = height / 4;
+    glGenTextures(2, blurtex);
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, blurtex[0]);
+    glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGB32F, bloomBufWidth, bloomBufHeight);
+
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D, blurtex[1]);
+    glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGB32F, bloomBufWidth, bloomBufHeight);
+
+    // Bind tex1 to the FBO
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, blurtex[0], 0);
+
+    //glDrawBuffers(1, drawBuffers);
+
+    // unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+    // glDrawBuffers(2, attachments);  
+
+    // Unbind the framebuffer, and revert to default framebuffer
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+}
+
+void render()
+{
+	//glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+	glViewport(0,0,width,height);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, colourFBO);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
+    
+    scene->setShaderId(bloomrenderShader);
+    scene->draw(matModelRoot, matView, matProj);
+}
+
+void filter() 
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, blurFBO);
+
+    // glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // We're writing to tex1 this time
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, blurtex[0], 0);
+
+    // if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    //        std::cerr << "Framebuffer " << blurFBO << " incomplete!" << std::endl;
+
+    glViewport(0,0,bloomBufWidth, bloomBufHeight);
+    glDisable(GL_DEPTH_TEST);
+    glClearColor(0,0,0,0);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    square->setShaderId(bloomfilterShader);
+    //square->setTextureId(GL_TEXTURE1, colourTex);
+    //glm::mat4 matProj = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
+    square->draw(glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f));
+
+    //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
+    //glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    
+    glFlush();
+}
+
+void blur(int pass)
+{
+
+    GLuint loc = glGetUniformLocation(bloomblurShader, "pass" );
+    glUniform1i(loc, pass);
+
+    //glClear(GL_COLOR_BUFFER_BIT);
+
+    //glBindFramebuffer(GL_FRAMEBUFFER, blurFBO);
+
+    // We're writing to tex2 this time
+    if ((pass % 2) == 0)
+    {
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, blurtex[1], 0);
+
+        glActiveTexture(GL_TEXTURE5);
+        glBindTexture(GL_TEXTURE_2D, blurtex[0]);
+        //glClear(GL_COLOR_BUFFER_BIT);
+    }
+    else 
+    {
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, blurtex[0], 0);
+
+        glActiveTexture(GL_TEXTURE5);
+        glBindTexture(GL_TEXTURE_2D, blurtex[1]);
+        
+    }
+       
+
+    //glClear(GL_COLOR_BUFFER_BIT);
+    // Render the full-screen quad
+    square->setShaderId(bloomblurShader);
+    square->draw(glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f));
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
+    glFlush();
+}
+
+
+void blend()
+{
+
+    // Bind to the default framebuffer, this time we're going to
+    // actually draw to the screen!
+    glBindFramebuffer(GL_FRAMEBUFFER,0);
+
+    //glClearColor(0.25f, 0.5f, 0.75f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT );
+    glViewport(0,0,width,height);
+
+    // Render the full-screen quad
+    square->setShaderId(bloomblendShader);
+    square->draw(glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f));    
+}
 
 // Initialize shader
 GLuint initShader(std::string pathVert, std::string pathFrag) 
@@ -81,6 +253,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         // camera control
         if (GLFW_KEY_LEFT == key) {
             // pan left, rotate around Y, CCW
+            std::cout << "left arrow" << std::endl;
             mat = glm::rotate(glm::radians(-angleStep), glm::vec3(0.0, 1.0, 0.0));
             matView = mat * matView;
         } else if (GLFW_KEY_RIGHT == key ) {
@@ -168,7 +341,7 @@ int main()
     }
 
     // create a GLFW window
-    window = glfwCreateWindow(640, 640, "Hello OpenGL 7", NULL, NULL);
+    window = glfwCreateWindow(width, height, "Hello OpenGL 7", NULL, NULL);
     glfwMakeContextCurrent(window);
 
     // register the key event callback function
@@ -183,17 +356,27 @@ int main()
         return -1;
     }
 
- 
-    phongShader = initShader( "shaders/blinn.vert", "shaders/phong.frag");
-    setLightPosition(lightPos);
-    setViewPosition(viewPos);
     blinnShader = initShader( "shaders/blinn.vert", "shaders/blinn.frag");
     setLightPosition(lightPos);
     setViewPosition(viewPos);
-    // added for LabA07
+    
     texblinnShader = initShader("shaders/texblinn.vert", "shaders/texblinn.frag");
     setLightPosition(lightPos);
     setViewPosition(viewPos);
+
+    //==============================================================================
+    // added for LabA10 Bloom
+    bloomrenderShader = initShader("shaders/bloom.vert", "shaders/bloomrender.frag");
+    setLightPosition(lightPos);
+    setViewPosition(viewPos);
+
+    bloomfilterShader = initShader("shaders/bloom.vert", "shaders/bloomfilter.frag");
+
+    bloomblurShader = initShader("shaders/bloom.vert", "shaders/bloomblur.frag");
+
+    bloomblendShader = initShader("shaders/bloom.vert", "shaders/bloomblend.frag");
+    //==============================================================================
+
 
     // set the eye at (0, 0, 5), looking at the centre of the world
     // try to change the eye position
@@ -218,10 +401,12 @@ int main()
     std::shared_ptr<Mesh> bunny = std::make_shared<Mesh>();
     bunny->init("models/bunny_normal.obj", texblinnShader);
 
-    
+
+    square = Mesh::createSquare();
+
     //----------------------------------------------------
     // Nodes
-    std::shared_ptr<Node> scene = std::make_shared<Node>();
+    scene = std::make_shared<Node>();
     std::shared_ptr<Node> teapotNode = std::make_shared<Node>();
     std::shared_ptr<Node> cubeNode = std::make_shared<Node>();
     std::shared_ptr<Node> bunnyNode = std::make_shared<Node>();
@@ -243,21 +428,37 @@ int main()
     //scene->addChild(bunnyNode);
     // scene->addChild(cubeNode, glm::translate(glm::vec3(1.0f, 0.0f, 0.0f)), glm::rotate(glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
 
+    initRenderToTexture();
+    
     // setting the background colour, you can change the value
     glClearColor(0.25f, 0.5f, 0.75f, 1.0f);
     
     glEnable(GL_DEPTH_TEST);
     //glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+    glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 
     // setting the event loop
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        render();
+        
+        filter();
+        
+        for (int i = 0; i < 10; i++)
+        {
+            blur(i);
+            //Sleep(100);
+        }
+
+        blend();
+        
 
         //scene->draw(matModelRoot, matView, matProj);
-        bunny->draw(glm::scale(glm::vec3(0.005f, 0.005f, 0.005f)), matView, matProj);
+        //bunny->draw(glm::scale(glm::vec3(0.005f, 0.005f, 0.005f)), matView, matProj);
         
         glfwSwapBuffers(window);
     }

@@ -24,6 +24,7 @@ struct Vertex {
 
 // added in LabA07
 struct Texture {
+    GLuint uid;
     GLuint id;
     std::string type;
 };
@@ -72,12 +73,18 @@ public:
     Mesh();
     ~Mesh();
 
+
     void init(std::string path, GLuint shaderId);
     void loadModel(std::string path);
 
     void setShaderId(GLuint sid);
     
     void draw(glm::mat4 matModel, glm::mat4 matView, glm::mat4 matProj);
+
+    // for raw models
+    void setTextureId(GLuint uid, GLuint tid);
+    // factory methods for creation of raw models
+    static std::shared_ptr<Mesh> createSquare();
 };
 
 #endif

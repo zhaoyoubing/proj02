@@ -1,5 +1,15 @@
 #include "Node.h"
 
+void Node::setShaderId(GLuint sid) {
+    for (auto & m : meshes) {
+        m->setShaderId(sid);
+    }
+
+    for (auto & n : childNodes) {
+        n->setShaderId(sid);
+    }
+}
+
 void Node::addChild(std::shared_ptr<Node> child, glm::mat4 trans, glm::mat4 rot )
 {
     childNodes.push_back(child);

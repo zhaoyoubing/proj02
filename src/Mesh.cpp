@@ -78,7 +78,7 @@ void Mesh::loadModel(std::string path)
                 v.texCoord = vec;
             }
             else {
-                std::cout << "tex coord zero" << std::endl;
+                //std::cout << "tex coord zero" << std::endl;
                 v.texCoord = glm::vec2(0.0f, 0.0f);
             }
             vertices.push_back(v);
@@ -193,6 +193,7 @@ std::vector<Texture> Mesh::loadMaterialTextures(aiMaterial *mat, aiTextureType t
         mat->GetTexture(type, i, &str);
 
         Texture texture;
+        texture.uid = GL_TEXTURE0;
         texture.id = loadTextureAndBind(str.C_Str(), dir);
         texture.type = typeName;
         if (texture.id > 0)
@@ -296,7 +297,7 @@ void Mesh::draw(glm::mat4 matModel, glm::mat4 matView, glm::mat4 matProj)
     if (! textures.empty())
     {
         // Texture mapping, we only deal with one texture unit    
-        glActiveTexture(GL_TEXTURE0);
+        glActiveTexture(textures[0].uid);
         glBindTexture(GL_TEXTURE_2D, textures[0].id);
     }
     // =====================================================
@@ -311,3 +312,44 @@ void Mesh::draw(glm::mat4 matModel, glm::mat4 matView, glm::mat4 matProj)
     // 5. Unset vertex buffer
     glBindVertexArray(0);
 }
+
+void Mesh::setTextureId(GLuint uid, GLuint tid) {
+    textures.clear();
+    textures = {
+        {uid, tid, "diffuse_map"}
+    };
+}
+
+ std::shared_ptr<Mesh> Mesh::createSquare()
+ {
+    std::shared_ptr<Mesh> obj = std::make_shared<Mesh>();
+    obj->vertices = {
+        {glm::vec3(-1.0f, -1.0f, 0.0f), 
+         glm::vec3(0.0f, 0.0f, 1.0f),
+         glm::vec2(0.0f, 0.0f)
+        },
+        {
+         glm::vec3(1.0f, -1.0f, 0.0f), 
+         glm::vec3(0.0f, 0.0f, 1.0f),
+         glm::vec2(1.0f, 0.0f)
+        },
+        {
+         glm::vec3(1.0f, 1.0f, 0.0f), 
+         glm::vec3(0.0f, 0.0f, 1.0f),
+         glm::vec2(1.0f, 1.0f)
+        },
+        {
+         glm::vec3(-1.0f, 1.0f, 0.0f), 
+         glm::vec3(0.0f, 0.0f, 1.0f),
+         glm::vec2(0.0f, 1.0f)
+        }
+    };
+
+    obj->indices = {
+        0, 1, 2, 0, 2, 3
+    };
+
+    obj->initBuffer();
+
+    return obj;
+ }

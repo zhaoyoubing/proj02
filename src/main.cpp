@@ -223,6 +223,22 @@ void setViewPosition(glm::vec3 eyePos)
     glUniform3fv(viewpos_loc, 1, glm::value_ptr(eyePos));
 }
 
+/*
+void window_size_callback(GLFWwindow* window, int w, int h)
+{
+    //int width, height;
+    //glfwGetWindowSize(window, &width, &height);
+
+    width = w;
+    height = h;
+
+    glViewport(0, 0, width, height);
+
+    matProj = glm::perspective(glm::radians(60.0f), width/(float)height, 2.0f, 8.0f);
+}
+
+*/
+
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     glm::mat4 mat = glm::mat4(1.0);
@@ -347,6 +363,7 @@ int main()
     // register the key event callback function
     glfwSetKeyCallback(window, key_callback);
 
+    //glfwSetWindowSizeCallback(window, window_size_callback);
 
     // loading glad
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))

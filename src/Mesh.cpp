@@ -165,10 +165,6 @@ void Mesh::initBuffer()
     // remember VAO
     glBindVertexArray(vao);
     buffers.push_back(vao);
-    
-    std::cout << "vertBufId: " << vertBufID << std::endl;
-
-    buffers.push_back(vertBufID);
 
     // set buffer data to triangle vertex and setting vertex attributes
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0] /*vertices.data()*/, GL_STATIC_DRAW);
@@ -198,9 +194,6 @@ void Mesh::initBuffer()
 
     // bind index buffer
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idxBufID);
-
-    std::cout << "idxBufId: " << idxBufID << std::endl;
-    buffers.push_back(idxBufID);
 
     // set buffer data for triangle index
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
@@ -323,12 +316,6 @@ void Mesh::draw(glm::mat4 matModel, glm::mat4 matView, glm::mat4 matProj)
     GLint textureLoc = glGetUniformLocation(shaderId, "textureMap");
     glUniform1i(textureLoc, 0); 
 
-    if (! textures.empty())
-    {
-        // Texture mapping, we only deal with one texture unit    
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, textures[0].id);
-    }
 
     // for LabA08 Normal Map
     GLint normalmapLoc = glGetUniformLocation(shaderId, "normalMap");

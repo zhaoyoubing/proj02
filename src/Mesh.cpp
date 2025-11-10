@@ -135,9 +135,6 @@ void Mesh::initBuffer()
     glBindVertexArray(vao);
     buffers.push_back(vao);
     
-    std::cout << "vertBufId: " << vertBufID << std::endl;
-
-    buffers.push_back(vertBufID);
 
     // changed in LabA07 
     // set buffer data to triangle vertex and setting vertex attributes
@@ -162,8 +159,6 @@ void Mesh::initBuffer()
     // bind index buffer
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idxBufID);
 
-    std::cout << "idxBufId: " << idxBufID << std::endl;
-    buffers.push_back(idxBufID);
 
     // set buffer data for triangle index
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
@@ -269,13 +264,7 @@ void Mesh::draw(glm::mat4 matModel, glm::mat4 matView, glm::mat4 matProj)
     // ================================================================
     // LabA07 TODO: Set texturemap shader uniforms
 
-    if (! textures.empty())
-    {
-        // ================================================================
-        // LabA07 TODO: Activate texture unit 0 and bind texture  
-        
 
-    }
     // =====================================================
 
 

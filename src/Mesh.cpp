@@ -316,6 +316,12 @@ void Mesh::draw(glm::mat4 matModel, glm::mat4 matView, glm::mat4 matProj)
     GLint textureLoc = glGetUniformLocation(shaderId, "textureMap");
     glUniform1i(textureLoc, 0); 
 
+    if (! textures.empty())
+    {
+        // Texture mapping, we only deal with one texture unit    
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, textures[0].id);
+    }
 
     // for LabA08 Normal Map
     GLint normalmapLoc = glGetUniformLocation(shaderId, "normalMap");

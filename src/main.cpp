@@ -33,8 +33,9 @@ GLuint bloomfilterShader;
 GLuint bloomblurShader;
 GLuint bloomblendShader;
 
-
+// framebuffer ID
 GLuint colourFBO, blurFBO;
+// render texture ID and blurring buffer ID
 GLuint colourTex, blurtex[2];
 
 int width = 800;
@@ -60,6 +61,10 @@ void initRenderToTexture()
     // Bind the texture to the colour FBO
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colourTex, 0);
 
+    // Set the targets for the fragment output variables
+    GLenum drawBuffers[] = {GL_COLOR_ATTACHMENT0};
+    glDrawBuffers(1, drawBuffers);
+
     // Create the depth buffer
     GLuint depthBuf;
     glGenRenderbuffers(1, &depthBuf);
@@ -70,24 +75,22 @@ void initRenderToTexture()
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
                               GL_RENDERBUFFER, depthBuf);
 
-    // Set the targets for the fragment output variables
-    GLenum drawBuffers[] = {GL_COLOR_ATTACHMENT0};
-    glDrawBuffers(1, drawBuffers);
 
     // Create an FBO for the bright-pass filter and blur
     glGenFramebuffers(1, &blurFBO);
     glBindFramebuffer(GL_FRAMEBUFFER, blurFBO);
 
-    // Create two texture objects to ping-pong for the bright-pass filter
-    // and the two-pass blur
+    // the bloom buffer should use a lower resolution to support blurring 
     bloomBufWidth = width / 4;
     bloomBufHeight = height / 4;
+
+    // Create two texture objects to ping-pong blur 
     glGenTextures(2, blurtex);
     glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D, blurtex[0]);
     glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGB32F, bloomBufWidth, bloomBufHeight);
 
-    glActiveTexture(GL_TEXTURE3);
+    glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D, blurtex[1]);
     glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGB32F, bloomBufWidth, bloomBufHeight);
 
@@ -101,7 +104,6 @@ void initRenderToTexture()
 
     // Unbind the framebuffer, and revert to default framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 }
 
 void render()
@@ -160,7 +162,7 @@ void blur(int pass)
     {
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, blurtex[1], 0);
 
-        glActiveTexture(GL_TEXTURE5);
+        glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, blurtex[0]);
         //glClear(GL_COLOR_BUFFER_BIT);
     }
@@ -168,7 +170,7 @@ void blur(int pass)
     {
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, blurtex[0], 0);
 
-        glActiveTexture(GL_TEXTURE5);
+        glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, blurtex[1]);
         
     }

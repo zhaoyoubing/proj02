@@ -1,8 +1,6 @@
 // bloomfilter.frag
 #version 430
 
-//in vec3 fragPos;
-//in vec3 normal;
 in vec2 texCoord;
 
 // render-to-texture of the scene generated in the 1st pass

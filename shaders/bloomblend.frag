@@ -16,6 +16,8 @@ void main()
     // additive blending
     vec3 blendColour = renderColour + bloomColour; 
     
+    // set "result = bloomColour" to test blurring
+    // vec3 result = bloomColour;
     vec3 result = blendColour;
 
     // =============================================

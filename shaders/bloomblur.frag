@@ -1,8 +1,6 @@
 // bloomblur.frag
 #version 430
   
-//in vec3 fragPos;
-//in vec3 normal;
 in vec2 texCoord;
 layout (binding=2)  uniform sampler2D texblur;
 uniform float weight[5] = float[] (0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216);

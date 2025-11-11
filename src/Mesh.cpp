@@ -78,7 +78,7 @@ void Mesh::loadModel(std::string path)
                 v.texCoord = vec;
             }
             else {
-                std::cout << "tex coord zero" << std::endl;
+                //std::cout << "tex coord zero" << std::endl;
                 v.texCoord = glm::vec2(0.0f, 0.0f);
             }
             vertices.push_back(v);

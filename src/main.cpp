@@ -27,6 +27,7 @@ GLuint blinnShader;
 GLuint phongShader;
 // added for LabA07
 GLuint texblinnShader;
+GLuint fogShader;
 
 // Initialize shader
 GLuint initShader(std::string pathVert, std::string pathFrag) 
@@ -195,6 +196,10 @@ int main()
     setLightPosition(lightPos);
     setViewPosition(viewPos);
 
+    fogShader = initShader("shaders/fogtex.vert", "shaders/fogtex.frag");
+    setLightPosition(lightPos);
+    setViewPosition(viewPos);
+
     // set the eye at (0, 0, 5), looking at the centre of the world
     // try to change the eye position
     viewPos = glm::vec3(0.0f, 2.0f, 5.0f);
@@ -203,12 +208,12 @@ int main()
     // set the Y field of view angle to 60 degrees, width/height ratio to 1.0, and a near plane of 3.5, far plane of 6.5
     // try to play with the FoV
     //matProj = glm::perspective(glm::radians(60.0f), 1.0f, 2.0f, 8.0f);
-    matProj = glm::perspective(glm::radians(60.0f), 1.0f, 2.0f, 8.0f);
+    matProj = glm::perspective(glm::radians(60.0f), 1.0f, 2.0f, 100.0f);
 
     //----------------------------------------------------
     // Meshes
     std::shared_ptr<Mesh> cube = std::make_shared<Mesh>();
-    cube->init("models/cube.obj", blinnShader);
+    cube->init("models/cube.obj", fogShader);
 
 
     std::shared_ptr<Mesh> teapot = std::make_shared<Mesh>();
@@ -229,12 +234,13 @@ int main()
     //----------------------------------------------------
     // Build the tree
     teapotNode->addMesh(teapot);
-    cubeNode->addMesh(cube, glm::mat4(1.0), glm::mat4(1.0), glm::scale(glm::vec3(2.0f, 0.25f, 1.5f)));
-    bunnyNode->addMesh(bunny, glm::mat4(1.0), glm::mat4(1.0), glm::scale(glm::vec3(0.005f, 0.005f, 0.005f)));
+    for (int i = 0; i < 200; i++)
+        cubeNode->addMesh(cube, glm::translate(glm::vec3(0.f, 0.f, - i * 0.5f)), glm::mat4(1.0), glm::scale(glm::vec3(1.0f, 1.0f, 0.1f)));
+    //bunnyNode->addMesh(bunny, glm::mat4(1.0), glm::mat4(1.0), glm::scale(glm::vec3(0.005f, 0.005f, 0.005f)));
 
 
-    cubeNode->addChild(teapotNode, glm::translate(glm::vec3(-1.5f, 0.5f, 0.0f)));
-    cubeNode->addChild(bunnyNode, glm::translate(glm::vec3(1.0f, 1.5f, 0.0f)));
+    //cubeNode->addChild(teapotNode, glm::translate(glm::vec3(-1.5f, 0.5f, 0.0f)));
+    //cubeNode->addChild(bunnyNode, glm::translate(glm::vec3(1.0f, 1.5f, 0.0f)));
     // cubeNode->addChild(teapotNode, glm::translate(glm::vec3(0.0f, 1.0f, 0.0f)), glm::rotate(glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
     
     //----------------------------------------------------

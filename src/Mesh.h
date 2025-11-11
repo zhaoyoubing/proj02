@@ -83,6 +83,7 @@ public:
 
     // for raw models
     void setTextureId(GLuint uid, GLuint tid);
+    
     // factory methods for creation of raw models
     static std::shared_ptr<Mesh> createSquare();
 };

@@ -148,13 +148,11 @@ void blur(int pass)
 
     glActiveTexture(GL_TEXTURE2);
 
-    
     if ((pass % 2) == 0)
     {
         // rending from texture 1 and writing to texture 2
         glBindTexture(GL_TEXTURE_2D, blurtex[0]);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, blurtex[1], 0);        
-        
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, blurtex[1], 0);          
     }
     else 
     {

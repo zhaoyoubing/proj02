@@ -19,6 +19,8 @@
 
 #define MAX_BONE_INFLUENCE 4  // <<<<<<<<<<<<<<<<<<<<<<<<
 
+inline glm::mat4 ConvertMatrixToGLMFormat(const aiMatrix4x4& from);
+
 struct Vertex {
     glm::vec3 pos;
     glm::vec3 normal;
@@ -73,8 +75,6 @@ protected:
 
 
     // array of vertices and normals
-    //std::vector< glm::vec3 > vertices; 
-
     std::vector<Vertex> vertices;
 
     // triangle vertex indices
@@ -102,6 +102,11 @@ public:
 
     void init(std::string path, GLuint shaderId);
     void loadModel(std::string path);
+
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    std::map<std::string, BoneInfo> & getBoneInfoMap() { return boneInfoMap; }
+    int getBoneCount() {return boneCounter; }
+    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     void setShaderId(GLuint sid);
     

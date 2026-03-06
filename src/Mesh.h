@@ -13,9 +13,12 @@
 
 #include <assimp/material.h>
 
+#include <assimp/scene.h>  // <<<<<<<<<<<<<<<<<<<<<<<<
+#include <map>      // <<<<<<<<<<<<<<<<<<<<<<<<
+#include "Bone.h"   // <<<<<<<<<<<<<<<<<<<<<<<<
 
+#define MAX_BONE_INFLUENCE 4  // <<<<<<<<<<<<<<<<<<<<<<<<
 
-// added in LabA07
 struct Vertex {
     glm::vec3 pos;
     glm::vec3 normal;
@@ -26,6 +29,14 @@ struct Vertex {
     glm::vec3 tangent;
     // bitangent
     glm::vec3 bitangent;
+
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    // bone info added
+    //bone indexes which will influence this vertex
+    int boneIDs[MAX_BONE_INFLUENCE];
+    //weights from each bone
+    float weights[MAX_BONE_INFLUENCE];
+    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 };
 
 // added in LabA07
@@ -47,6 +58,20 @@ struct Material {
 class Mesh {
 
 protected:
+
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    std::map<std::string, BoneInfo> boneInfoMap; //
+    int boneCounter = 0;
+
+    auto& GetBoneInfoMap() { return boneInfoMap; }
+    int& GetBoneCount() { return boneCounter; }  
+    
+    void SetVertexBoneDataToDefault(Vertex& vertex);
+    void SetVertexBoneData(Vertex& vertex, int boneID, float weight);
+    void ExtractBoneWeightForVertices(std::vector<Vertex> & vertices, aiMesh* mesh, const aiScene* scene);
+    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
     // array of vertices and normals
     //std::vector< glm::vec3 > vertices; 
 

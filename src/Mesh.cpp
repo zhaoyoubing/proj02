@@ -93,11 +93,6 @@ void Mesh::ExtractBoneWeightForVertices(std::vector<Vertex>& vertices, aiMesh* m
             float weight = weights[weightIndex].mWeight;
             assert(vertexId <= vertices.size());
             SetVertexBoneData(vertices[vertexId], boneID, weight);
-            
-            // for debugging
-            //std::cout << weight <<  " ";
-            //if (numWeights % 5 == 0)
-            //    std::cout << std::endl;
         }
     }
 }
@@ -119,7 +114,7 @@ void Mesh::loadModel(std::string path)
     // std::cout << scene->mNumMeshes << std::endl;
 
     // LabA07
-    //Vertex v;
+    Vertex v;
 
     // at the moment we only handle one mesh
     for (int i = 0; i < scene->mNumMeshes; i++)
@@ -133,13 +128,8 @@ void Mesh::loadModel(std::string path)
 
         for (int j = 0; j < nVertex; j++)
         {
-            Vertex v;
 
-            SetVertexBoneDataToDefault(v);
-
-            //vertex.pos = AssimpGLMHelpers::GetGLMVec(mesh->mVertices[i]);
-            //vertex.normal = AssimpGLMHelpers::GetGLMVec(mesh->mNormals[i]);
-
+            SetVertexBoneDataToDefault(v);   // <<<<<<<<<<<<<<<<<<<<<<<<<<
 
             glm::vec3 pos; 
             pos.x = mesh->mVertices[j].x;
@@ -198,8 +188,7 @@ void Mesh::loadModel(std::string path)
             }
         }
 
-        // very important
-        ExtractBoneWeightForVertices(vertices, mesh, scene);
+        ExtractBoneWeightForVertices(vertices, mesh, scene);  // <<<<<<<<<<<<<<<<<
     }
 
 
@@ -399,7 +388,7 @@ Material Mesh::loadMaterial(aiMaterial* mat)
 void Mesh::draw(glm::mat4 matModel, glm::mat4 matView, glm::mat4 matProj)
 {
     // 1. Bind the correct shader program
-    // glUseProgram(shaderId);
+    glUseProgram(shaderId);
 
     //std::cout << "shader: " << shaderId << std::endl;
 

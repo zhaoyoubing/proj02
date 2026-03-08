@@ -13,13 +13,15 @@
 
 #include <assimp/material.h>
 
-#include <assimp/scene.h>  // <<<<<<<<<<<<<<<<<<<<<<<<
-#include <map>      // <<<<<<<<<<<<<<<<<<<<<<<<
-#include "Bone.h"   // <<<<<<<<<<<<<<<<<<<<<<<<
+// >>>>>>>>>>>>>>>>>>>>>>>
+#include <assimp/scene.h> 
+#include <map> 
+#include "Bone.h" 
 
-#define MAX_BONE_INFLUENCE 4  // <<<<<<<<<<<<<<<<<<<<<<<<
+#define MAX_BONE_INFLUENCE 4  
 
 inline glm::mat4 ConvertMatrixToGLMFormat(const aiMatrix4x4& from);
+// <<<<<<<<<<<<<<<<<<<<<<<<
 
 struct Vertex {
     glm::vec3 pos;

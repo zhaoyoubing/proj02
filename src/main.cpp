@@ -12,6 +12,7 @@
 #include "Mesh.h"
 #include "Node.h"
 
+
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 #include "Animation.h"
 #include "Animator.h"
@@ -20,7 +21,9 @@
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 bool animate = true;
+GLuint boneShader;
 // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 
 static Shader shader;
 
@@ -47,7 +50,6 @@ GLuint blinnShader;
 GLuint phongShader;
 GLuint texblinnShader;
 GLuint normalblinnShader;
-GLuint boneShader;
 
 // Initialize shader
 GLuint initShader(std::string pathVert, std::string pathFrag) 
@@ -235,9 +237,11 @@ int main()
     //setLightPosition(lightPos);
     //setViewPosition(viewPos);
 
+    // >>>>>>>>>>>>>>>>>>>>>>>>>
     boneShader = initShader("shaders/bone.vert", "shaders/bone.frag");
     setLightPosition(lightPos);
     setViewPosition(viewPos);
+    // <<<<<<<<<<<<<<<<<<<<<<<<<
 
     // set the eye at (0, 0, 5), looking at the centre of the world
     matView = glm::lookAt(viewPos, viewCenter, glm::vec3(0, 1, 0)); 
@@ -246,13 +250,15 @@ int main()
     matProj = glm::perspective(glm::radians(fov), wView / (float) hView, near, far);
 
     std::shared_ptr<Mesh> anim_model = std::make_shared<Mesh>();
-    // anim_model->init("models/vampire/dancing_vampire.dae", boneShader);
-    // Animation danceAnimation("models/vampire/dancing_vampire.dae", anim_model.get());
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>
+    anim_model->init("models/vampire/dancing_vampire.dae", boneShader);
+    Animation danceAnimation("models/vampire/dancing_vampire.dae", anim_model.get());
 
-    anim_model->init("models/mannequin/Capoeira_Mannequin.dae", boneShader);
-    Animation danceAnimation("models/mannequin/Capoeira_Mannequin.dae", anim_model.get());
+    // anim_model->init("models/mannequin/Capoeira_Mannequin.dae", boneShader);
+    // Animation danceAnimation("models/mannequin/Capoeira_Mannequin.dae", anim_model.get());
     
     Animator animator(&danceAnimation);
+    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
    
     // setting the background colour, you can change the value
@@ -260,7 +266,7 @@ int main()
     
     glEnable(GL_DEPTH_TEST);
 
-    //
+
     if (animate) {
         scale = glm::vec3(100.0, 100.0, 100.0);
         matModelRoot = glm::scale(matModelRoot, scale);
@@ -274,44 +280,27 @@ int main()
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // per-frame time logic
-        // --------------------
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        // input
-        // -----
-        // processInput(window);
-        
         if (animate)
             animator.UpdateAnimation(deltaTime);
 
         glUseProgram(boneShader);
-
+        
         // update bone matrices in the shader
         auto transforms = animator.GetFinalBoneMatrices();
         for (int i = 0; i < transforms.size(); ++i) {
             glm::mat4 mat = transforms[i];
             std::string name = "finalBonesMatrices[" + std::to_string(i) + "]";
             glUniformMatrix4fv(glGetUniformLocation(boneShader, name.c_str()), 1, GL_FALSE, &mat[0][0]);
-            
-            /*
-            for (auto j = 0; j < 4; j++) {
-                for (auto k = 0; k < 4; k++)
-                    std::cout << mat[j][k] << " ";
-                std::cout << std::endl;
-            }
-            std::cout << "==================== [" << i << "]" << std::endl;
-            */
 
         }
-
+        
         anim_model->draw(matModelRoot, matView, matProj);
         
         glfwSwapBuffers(window);
-
-        //break;
     }
 
     glfwTerminate();

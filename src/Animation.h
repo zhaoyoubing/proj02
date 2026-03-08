@@ -29,7 +29,7 @@ class Animation
 public:
 	Animation() = default;
 
-	Animation(const std::string& animationPath, Mesh * model)
+	Animation(const std::string animationPath, Mesh * model)
 	{
 		Assimp::Importer importer;
 		const aiScene* scene = importer.ReadFile(animationPath, aiProcess_Triangulate);

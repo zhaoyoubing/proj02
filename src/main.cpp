@@ -12,21 +12,42 @@
 #include "Mesh.h"
 #include "Node.h"
 
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+#include "Animation.h"
+#include "Animator.h"
+
+// timing
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
+bool animate = true;
+// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 static Shader shader;
 
 glm::mat4 matModelRoot = glm::mat4(1.0);
+
+
 glm::mat4 matView = glm::mat4(1.0);
 glm::mat4 matProj = glm::ortho(-2.0f,2.0f,-2.0f,2.0f, -2.0f,2.0f);
 
-glm::vec3 lightPos = glm::vec3(5.0f, 5.0f, 10.0f);
-//glm::vec3 viewPos = glm::vec3(0.0f, 0.0f, 5.0f);
-glm::vec3 viewPos = glm::vec3(0.0f, 0.0f, 5.0f);
+glm::vec3 scale = glm::vec3(1.0, 1.0, 1.0);
+
+// camera settings
+glm::vec3 lightPos = glm::vec3(200.0f, 300.0f, 200.0f);
+glm::vec3 viewPos = glm::vec3(0.0f, 100.0f, 200.0f);
+glm::vec3 viewCenter = glm::vec3(0.0f, 100.0f, 0.0f);
+int wView = 800;
+int hView = 800;
+float fov = 70.0;
+float near = 0.1;
+float far = 400.0;
 
 // GLuint flatShader;
 GLuint blinnShader;
 GLuint phongShader;
 GLuint texblinnShader;
 GLuint normalblinnShader;
+GLuint boneShader;
 
 // Initialize shader
 GLuint initShader(std::string pathVert, std::string pathFrag) 
@@ -51,14 +72,17 @@ void setViewPosition(glm::vec3 eyePos)
     glUniform3fv(viewpos_loc, 1, glm::value_ptr(eyePos));
 }
 
-void window_size_callback(GLFWwindow* window, int width, int height)
+void window_size_callback(GLFWwindow* window, int w, int h)
 {
     //int width, height;
     //glfwGetWindowSize(window, &width, &height);
 
-    glViewport(0, 0, width, height);
+    wView = w;
+    hView = h;
 
-    matProj = glm::perspective(glm::radians(60.0f), width/(float)height, 2.0f, 8.0f);
+    glViewport(0, 0, w, h);
+
+    matProj = glm::perspective(glm::radians(fov), w /(float) h, near, far);
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -119,7 +143,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         } else if (GLFW_KEY_R == key) {
             //std::cout << "R pressed" << std::endl;
             // reset
-            matView = glm::lookAt(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)); 
+            matView = glm::lookAt(viewPos, viewCenter, glm::vec3(0, 1, 0)); 
             matModelRoot = glm::mat4(1.0f);
         }
 
@@ -178,7 +202,7 @@ int main()
     }
 
     // create a GLFW window
-    window = glfwCreateWindow(640, 640, "Hello OpenGL 7", NULL, NULL);
+    window = glfwCreateWindow(wView, hView, "Hello Skeletal Animation", NULL, NULL);
     glfwMakeContextCurrent(window);
 
     // register the key event callback function
@@ -195,11 +219,9 @@ int main()
         return -1;
     }
 
-    // flatShader = initShader( "shaders/flat.vert", "shaders/flat.frag");
-    // initLightPosition(lightPos);
-    phongShader = initShader( "shaders/blinn.vert", "shaders/phong.frag");
-    setLightPosition(lightPos);
-    setViewPosition(viewPos);
+    
+    //viewPos = matModelRoot * glm::vec4(viewPos, 1.0);
+    //viewCenter = matModelRoot * glm::vec4(viewCenter, 1.0);
 
     blinnShader = initShader( "shaders/blinn.vert", "shaders/blinn.frag");
     setLightPosition(lightPos);
@@ -209,67 +231,41 @@ int main()
     setLightPosition(lightPos);
     setViewPosition(viewPos);
 
-    normalblinnShader = initShader("shaders/normalblinn2.vert", "shaders/normalblinn2.frag");
+    //normalblinnShader = initShader("shaders/normalblinn2.vert", "shaders/normalblinn2.frag");
+    //setLightPosition(lightPos);
+    //setViewPosition(viewPos);
+
+    boneShader = initShader("shaders/bone.vert", "shaders/bone.frag");
     setLightPosition(lightPos);
     setViewPosition(viewPos);
 
     // set the eye at (0, 0, 5), looking at the centre of the world
-    // try to change the eye position
-    viewPos = glm::vec3(0.0f, 2.0f, 5.0f);
-    matView = glm::lookAt(viewPos, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)); 
+    matView = glm::lookAt(viewPos, viewCenter, glm::vec3(0, 1, 0)); 
 
     // set the Y field of view angle to 60 degrees, width/height ratio to 1.0, and a near plane of 3.5, far plane of 6.5
-    // try to play with the FoV
-    //matProj = glm::perspective(glm::radians(60.0f), 1.0f, 2.0f, 8.0f);
-    matProj = glm::perspective(glm::radians(60.0f), 1.0f, 2.0f, 8.0f);
+    matProj = glm::perspective(glm::radians(fov), wView / (float) hView, near, far);
 
-    //----------------------------------------------------
-    // Meshes
-    std::shared_ptr<Mesh> cube = std::make_shared<Mesh>();
-    //cube->init("models/cube.obj", blinnShader);
+    std::shared_ptr<Mesh> anim_model = std::make_shared<Mesh>();
+    // anim_model->init("models/vampire/dancing_vampire.dae", boneShader);
+    // Animation danceAnimation("models/vampire/dancing_vampire.dae", anim_model.get());
 
-
-    std::shared_ptr<Mesh> teapot = std::make_shared<Mesh>();
-    //teapot->init("models/teapot.obj", blinnShader);
-
-
-    std::shared_ptr<Mesh> bunny = std::make_shared<Mesh>();
-    //bunny->init("models/bunny_normal.obj", texblinnShader);
-
-    std::shared_ptr<Mesh> box = std::make_shared<Mesh>();
-    box->init("models/Box_normal.obj", normalblinnShader);
-
+    anim_model->init("models/mannequin/Capoeira_Mannequin.dae", boneShader);
+    Animation danceAnimation("models/mannequin/Capoeira_Mannequin.dae", anim_model.get());
     
-    //----------------------------------------------------
-    // Nodes
-    std::shared_ptr<Node> scene = std::make_shared<Node>();
-    std::shared_ptr<Node> teapotNode = std::make_shared<Node>();
-    std::shared_ptr<Node> cubeNode = std::make_shared<Node>();
-    std::shared_ptr<Node> bunnyNode = std::make_shared<Node>();
-    std::shared_ptr<Node> boxNode = std::make_shared<Node>();
-    
-    //----------------------------------------------------
-    // Build the tree
-    teapotNode->addMesh(teapot);
-    cubeNode->addMesh(cube, glm::mat4(1.0), glm::mat4(1.0), glm::scale(glm::vec3(2.0f, 0.25f, 1.5f)));
-    bunnyNode->addMesh(bunny, glm::mat4(1.0), glm::mat4(1.0), glm::scale(glm::vec3(0.005f, 0.005f, 0.005f)));
-    boxNode->addMesh(box, glm::mat4(1.0), glm::rotate(glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+    Animator animator(&danceAnimation);
 
-    cubeNode->addChild(teapotNode, glm::translate(glm::vec3(-1.5f, 0.5f, 0.0f)));
-    cubeNode->addChild(bunnyNode, glm::translate(glm::vec3(1.0f, 1.5f, 0.0f)));
-    // cubeNode->addChild(teapotNode, glm::translate(glm::vec3(0.0f, 1.0f, 0.0f)), glm::rotate(glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-    
-    //----------------------------------------------------
-    // Add the tree to the world space
-    //scene->addChild(cubeNode);
-     scene->addChild(boxNode);
-    // scene->addChild(cubeNode, glm::translate(glm::vec3(1.0f, 0.0f, 0.0f)), glm::rotate(glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
-
+   
     // setting the background colour, you can change the value
     glClearColor(0.25f, 0.5f, 0.75f, 1.0f);
     
     glEnable(GL_DEPTH_TEST);
-    //glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+
+    //
+    if (animate) {
+        scale = glm::vec3(100.0, 100.0, 100.0);
+        matModelRoot = glm::scale(matModelRoot, scale);
+    }
+     
 
     // setting the event loop
     while (!glfwWindowShouldClose(window))
@@ -278,9 +274,44 @@ int main()
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        scene->draw(matModelRoot, matView, matProj);
+        // per-frame time logic
+        // --------------------
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
+        // input
+        // -----
+        // processInput(window);
+        
+        if (animate)
+            animator.UpdateAnimation(deltaTime);
+
+        glUseProgram(boneShader);
+
+        // update bone matrices in the shader
+        auto transforms = animator.GetFinalBoneMatrices();
+        for (int i = 0; i < transforms.size(); ++i) {
+            glm::mat4 mat = transforms[i];
+            std::string name = "finalBonesMatrices[" + std::to_string(i) + "]";
+            glUniformMatrix4fv(glGetUniformLocation(boneShader, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+            
+            /*
+            for (auto j = 0; j < 4; j++) {
+                for (auto k = 0; k < 4; k++)
+                    std::cout << mat[j][k] << " ";
+                std::cout << std::endl;
+            }
+            std::cout << "==================== [" << i << "]" << std::endl;
+            */
+
+        }
+
+        anim_model->draw(matModelRoot, matView, matProj);
         
         glfwSwapBuffers(window);
+
+        //break;
     }
 
     glfwTerminate();

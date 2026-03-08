@@ -93,6 +93,11 @@ void Mesh::ExtractBoneWeightForVertices(std::vector<Vertex>& vertices, aiMesh* m
             float weight = weights[weightIndex].mWeight;
             assert(vertexId <= vertices.size());
             SetVertexBoneData(vertices[vertexId], boneID, weight);
+            
+            // for debugging
+            //std::cout << weight <<  " ";
+            //if (numWeights % 5 == 0)
+            //    std::cout << std::endl;
         }
     }
 }
@@ -100,7 +105,10 @@ void Mesh::ExtractBoneWeightForVertices(std::vector<Vertex>& vertices, aiMesh* m
 void Mesh::loadModel(std::string path) 
 {
     Assimp::Importer importer;
-    const aiScene* scene = importer.ReadFile(path, aiProcess_JoinIdenticalVertices | aiProcess_FlipUVs | aiProcess_CalcTangentSpace /* | aiProcess_GenNormals */ );
+    const aiScene* scene = importer.ReadFile(path, aiProcess_JoinIdenticalVertices 
+        | aiProcess_FlipUVs | aiProcess_CalcTangentSpace /* | aiProcess_GenNormals */ 
+        | aiProcess_Triangulate);
+
     if (NULL != scene) {
         std::cout << "load model successful" << std::endl;
     } else {
@@ -189,7 +197,11 @@ void Mesh::loadModel(std::string path)
                 indices.push_back(face.mIndices[k]); 
             }
         }
+
+        // very important
+        ExtractBoneWeightForVertices(vertices, mesh, scene);
     }
+
 
     // at the moment
     // we only deal with one material/texture
@@ -197,7 +209,7 @@ void Mesh::loadModel(std::string path)
 
     aiMesh* mesh = scene->mMeshes[0];
 
-    if (NULL != mesh && mesh->mMaterialIndex > 0)
+    if (NULL != mesh && mesh->mMaterialIndex >= 0)
     {
         std::string dir = "";
         const size_t last_slash_idx = path.rfind('/');
@@ -272,6 +284,15 @@ void Mesh::initBuffer()
     glEnableVertexAttribArray(4);
     glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bitangent));
 
+    // >>>>>>>>>>>>>>>>>>>>>>>>>
+    // ids
+    glEnableVertexAttribArray(5);
+    glVertexAttribIPointer(5, 4, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, boneIDs));
+
+    // weights
+    glEnableVertexAttribArray(6);
+    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, weights));
+    // <<<<<<<<<<<<<<<<<<<<<<<<<
 
     // bind index buffer
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idxBufID);
@@ -374,12 +395,11 @@ Material Mesh::loadMaterial(aiMaterial* mat)
 }
 
 
-
 // all drawings come here
 void Mesh::draw(glm::mat4 matModel, glm::mat4 matView, glm::mat4 matProj)
 {
     // 1. Bind the correct shader program
-    glUseProgram(shaderId);
+    // glUseProgram(shaderId);
 
     //std::cout << "shader: " << shaderId << std::endl;
 

@@ -13,6 +13,7 @@
 #include "Node.h"
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+/*
 #include "Animation.h"
 #include "Animator.h"
 
@@ -20,13 +21,12 @@
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 bool animate = true;
+*/
 // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 static Shader shader;
 
 glm::mat4 matModelRoot = glm::mat4(1.0);
-
-
 glm::mat4 matView = glm::mat4(1.0);
 glm::mat4 matProj = glm::ortho(-2.0f,2.0f,-2.0f,2.0f, -2.0f,2.0f);
 
@@ -42,12 +42,11 @@ float fov = 70.0;
 float near = 0.1;
 float far = 400.0;
 
-// GLuint flatShader;
+
 GLuint blinnShader;
-GLuint phongShader;
 GLuint texblinnShader;
 GLuint normalblinnShader;
-GLuint boneShader;
+// GLuint boneShader;
 
 // Initialize shader
 GLuint initShader(std::string pathVert, std::string pathFrag) 
@@ -219,9 +218,6 @@ int main()
         return -1;
     }
 
-    
-    //viewPos = matModelRoot * glm::vec4(viewPos, 1.0);
-    //viewCenter = matModelRoot * glm::vec4(viewCenter, 1.0);
 
     blinnShader = initShader( "shaders/blinn.vert", "shaders/blinn.frag");
     setLightPosition(lightPos);
@@ -235,9 +231,11 @@ int main()
     //setLightPosition(lightPos);
     //setViewPosition(viewPos);
 
+    /*
     boneShader = initShader("shaders/bone.vert", "shaders/bone.frag");
     setLightPosition(lightPos);
     setViewPosition(viewPos);
+    */
 
     // set the eye at (0, 0, 5), looking at the centre of the world
     matView = glm::lookAt(viewPos, viewCenter, glm::vec3(0, 1, 0)); 
@@ -246,13 +244,13 @@ int main()
     matProj = glm::perspective(glm::radians(fov), wView / (float) hView, near, far);
 
     std::shared_ptr<Mesh> anim_model = std::make_shared<Mesh>();
-    // anim_model->init("models/vampire/dancing_vampire.dae", boneShader);
+    anim_model->init("models/vampire/dancing_vampire.dae", texblinnShader);
     // Animation danceAnimation("models/vampire/dancing_vampire.dae", anim_model.get());
 
-    anim_model->init("models/mannequin/Capoeira_Mannequin.dae", boneShader);
-    Animation danceAnimation("models/mannequin/Capoeira_Mannequin.dae", anim_model.get());
+    anim_model->init("models/mannequin/Capoeira_Mannequin.dae", texblinnShader);
+    // Animation danceAnimation("models/mannequin/Capoeira_Mannequin.dae", anim_model.get());
     
-    Animator animator(&danceAnimation);
+    //Animator animator(&danceAnimation);
 
    
     // setting the background colour, you can change the value
@@ -260,13 +258,13 @@ int main()
     
     glEnable(GL_DEPTH_TEST);
 
-    //
+    /*
     if (animate) {
         scale = glm::vec3(100.0, 100.0, 100.0);
         matModelRoot = glm::scale(matModelRoot, scale);
     }
+    */
      
-
     // setting the event loop
     while (!glfwWindowShouldClose(window))
     {
@@ -276,36 +274,27 @@ int main()
 
         // per-frame time logic
         // --------------------
+        /*
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
-
-        // input
-        // -----
-        // processInput(window);
         
         if (animate)
             animator.UpdateAnimation(deltaTime);
+        */
 
-        glUseProgram(boneShader);
+        //glUseProgram(blinnShader);
 
         // update bone matrices in the shader
+        /*
         auto transforms = animator.GetFinalBoneMatrices();
         for (int i = 0; i < transforms.size(); ++i) {
             glm::mat4 mat = transforms[i];
             std::string name = "finalBonesMatrices[" + std::to_string(i) + "]";
             glUniformMatrix4fv(glGetUniformLocation(boneShader, name.c_str()), 1, GL_FALSE, &mat[0][0]);
-            
-            /*
-            for (auto j = 0; j < 4; j++) {
-                for (auto k = 0; k < 4; k++)
-                    std::cout << mat[j][k] << " ";
-                std::cout << std::endl;
-            }
-            std::cout << "==================== [" << i << "]" << std::endl;
-            */
 
         }
+        */
 
         anim_model->draw(matModelRoot, matView, matProj);
         

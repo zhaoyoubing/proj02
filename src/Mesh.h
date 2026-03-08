@@ -13,9 +13,11 @@
 
 #include <assimp/material.h>
 
+/*
 #include <assimp/scene.h>  // <<<<<<<<<<<<<<<<<<<<<<<<
 #include <map>      // <<<<<<<<<<<<<<<<<<<<<<<<
 #include "Bone.h"   // <<<<<<<<<<<<<<<<<<<<<<<<
+*/
 
 #define MAX_BONE_INFLUENCE 4  // <<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -35,9 +37,9 @@ struct Vertex {
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     // bone info added
     //bone indexes which will influence this vertex
-    int boneIDs[MAX_BONE_INFLUENCE];
+    // int boneIDs[MAX_BONE_INFLUENCE];
     //weights from each bone
-    float weights[MAX_BONE_INFLUENCE];
+    // float weights[MAX_BONE_INFLUENCE];
     // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 };
 
@@ -62,6 +64,7 @@ class Mesh {
 protected:
 
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    /*
     std::map<std::string, BoneInfo> boneInfoMap; //
     int boneCounter = 0;
 
@@ -71,6 +74,7 @@ protected:
     void SetVertexBoneDataToDefault(Vertex& vertex);
     void SetVertexBoneData(Vertex& vertex, int boneID, float weight);
     void ExtractBoneWeightForVertices(std::vector<Vertex> & vertices, aiMesh* mesh, const aiScene* scene);
+    */
     // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
@@ -104,8 +108,8 @@ public:
     void loadModel(std::string path);
 
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    std::map<std::string, BoneInfo> & getBoneInfoMap() { return boneInfoMap; }
-    int getBoneCount() {return boneCounter; }
+    // std::map<std::string, BoneInfo> & getBoneInfoMap() { return boneInfoMap; }
+    // int getBoneCount() {return boneCounter; }
     // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     void setShaderId(GLuint sid);

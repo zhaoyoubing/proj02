@@ -29,6 +29,7 @@ void Mesh::init(std::string path, GLuint id)
     initBuffer();
 }
 
+/*
 void Mesh::SetVertexBoneDataToDefault(Vertex& vertex)
 {
     for (int i = 0; i < MAX_BONE_INFLUENCE; i++)
@@ -102,6 +103,8 @@ void Mesh::ExtractBoneWeightForVertices(std::vector<Vertex>& vertices, aiMesh* m
     }
 }
 
+*/
+
 void Mesh::loadModel(std::string path) 
 {
     Assimp::Importer importer;
@@ -119,7 +122,7 @@ void Mesh::loadModel(std::string path)
     // std::cout << scene->mNumMeshes << std::endl;
 
     // LabA07
-    //Vertex v;
+    Vertex v;
 
     // at the moment we only handle one mesh
     for (int i = 0; i < scene->mNumMeshes; i++)
@@ -133,13 +136,7 @@ void Mesh::loadModel(std::string path)
 
         for (int j = 0; j < nVertex; j++)
         {
-            Vertex v;
-
-            SetVertexBoneDataToDefault(v);
-
-            //vertex.pos = AssimpGLMHelpers::GetGLMVec(mesh->mVertices[i]);
-            //vertex.normal = AssimpGLMHelpers::GetGLMVec(mesh->mNormals[i]);
-
+            // SetVertexBoneDataToDefault(v);
 
             glm::vec3 pos; 
             pos.x = mesh->mVertices[j].x;
@@ -199,7 +196,7 @@ void Mesh::loadModel(std::string path)
         }
 
         // very important
-        ExtractBoneWeightForVertices(vertices, mesh, scene);
+        // ExtractBoneWeightForVertices(vertices, mesh, scene);
     }
 
 
@@ -284,6 +281,7 @@ void Mesh::initBuffer()
     glEnableVertexAttribArray(4);
     glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bitangent));
 
+    /*
     // >>>>>>>>>>>>>>>>>>>>>>>>>
     // ids
     glEnableVertexAttribArray(5);
@@ -293,6 +291,7 @@ void Mesh::initBuffer()
     glEnableVertexAttribArray(6);
     glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, weights));
     // <<<<<<<<<<<<<<<<<<<<<<<<<
+    */
 
     // bind index buffer
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idxBufID);
@@ -399,7 +398,7 @@ Material Mesh::loadMaterial(aiMaterial* mat)
 void Mesh::draw(glm::mat4 matModel, glm::mat4 matView, glm::mat4 matProj)
 {
     // 1. Bind the correct shader program
-    // glUseProgram(shaderId);
+    glUseProgram(shaderId);
 
     //std::cout << "shader: " << shaderId << std::endl;
 

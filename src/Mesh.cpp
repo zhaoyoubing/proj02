@@ -204,7 +204,8 @@ void Mesh::loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string
             tex_diffuse.loadTexture(filepath);
             tex_diffuse.type = typeName;
         }
-        else if (aiTextureType_NORMALS == type) {
+        else if ((aiTextureType_HEIGHT == type) 
+            || (aiTextureType_NORMALS == type)) {
             tex_normal.loadTexture(filepath);
             tex_normal.type = typeName;
         }

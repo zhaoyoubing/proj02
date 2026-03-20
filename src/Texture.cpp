@@ -3,6 +3,12 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
+Texture::Texture()
+{
+    id = -1;
+}
+
+/*
 Texture::Texture(std::string path) : width(100), height(100)
 {
 	generateTexture(path);
@@ -12,12 +18,13 @@ Texture::Texture(std::string path, int w, int h) : width(w), height(h)
 {
 	generateTexture(path);
 }
+*/
 
 Texture::~Texture()
 {
 }
 
-void Texture::generateTexture(std::string path) 
+void Texture::loadTexture(std::string path) 
 {
 	// Load texture
 	glGenTextures(1, &id);

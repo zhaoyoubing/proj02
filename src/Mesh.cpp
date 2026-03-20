@@ -121,9 +121,9 @@ void Mesh::loadModel(std::string path)
         }
 
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-        std::vector<Texture> diffuseMaps = loadMaterialTextures(material,
-            aiTextureType_DIFFUSE, "texture_diffuse", dir);
-        textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+        loadMaterialTextures(material,aiTextureType_DIFFUSE, "texture_diffuse", dir);
+        
+        //textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
         // this->material = loadMaterial(material);
 
@@ -187,28 +187,36 @@ void Mesh::setShaderId(GLuint sid) {
 
 // added in LabA07
 // =====================================================
-std::vector<Texture> Mesh::loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName, std::string dir)
+void Mesh::loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName, std::string dir)
 {
-    //std::vector<Texture> textures;
-
+    
     // actually, we only support one texture
     int nTex = mat->GetTextureCount(type);
-    for(unsigned int i = 0; i < nTex ; i++)
+
+    // we only load one texture
+    for(unsigned int i = 0; i < 1 ; i++)
     {
         aiString str;
         mat->GetTexture(type, i, &str);
+        std::string filepath = dir + '/' + std::string(str.C_Str());
 
-        Texture texture(dir + '/' + std::string(str.C_Str()));
-        texture.type = typeName;
+        if (aiTextureType_DIFFUSE == type) {
+            tex_diffuse.loadTexture(filepath);
+            tex_diffuse.type = typeName;
+        }
+        else if (aiTextureType_NORMALS == type) {
+            tex_normal.loadTexture(filepath);
+            tex_normal.type = typeName;
+        }
 
         /*
         texture.id = loadTextureAndBind(str.C_Str(), dir);
         texture.type = typeName;
         */
-        if (texture.id > 0)
-            textures.push_back(texture);
+        //if (tex.id > 0)
+        //    textures.push_back(texture);
     }
-    return textures;
+    //return textures;
 }  
 /*
 unsigned int Mesh::loadTextureAndBind(const char* path, const std::string& directory)
@@ -301,8 +309,8 @@ void Mesh::draw(glm::mat4 matModel, glm::mat4 matView, glm::mat4 matProj)
     glUniformMatrix4fv(projection_loc, 1, GL_FALSE, &mat_projection[0][0]);
 
     // Diffuse texture
-    if (textures.size() > 0) {
-        textures[0].bindTexture();
+    if (tex_diffuse.id > 0) {
+        tex_diffuse.bindTexture();
         GLint textureLoc = glGetUniformLocation(shaderId, "textureMap");
         // always use texture unit 0 for diffuse texture
         glUniform1i(textureLoc, 0);

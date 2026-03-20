@@ -14,12 +14,14 @@ public:
     int width, height;
     std::string type;
 
-	Texture(std::string path);
-	Texture(std::string path, int w, int h);
+    Texture();
+	//Texture(std::string path);
+	//Texture(std::string path, int w, int h);
 	~Texture();
-	void bindTexture();
 
-	void generateTexture(std::string path);
+
+	void loadTexture(std::string path);
+    void bindTexture();
 
 	
 };

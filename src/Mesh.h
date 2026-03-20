@@ -52,7 +52,8 @@ protected:
     std::vector< unsigned int > indices;
 
     // added in LabA07
-    std::vector<Texture> textures;
+    Texture tex_diffuse;
+    Texture tex_normal;
 
     // Material material;
     
@@ -66,8 +67,7 @@ protected:
     
     void initBuffer();
 
-    // added in LabA07
-    std::vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName, std::string dir);
+    void loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName, std::string dir);
     //unsigned int loadTextureAndBind(const char* path, const std::string& directory);
     
     Material Mesh::loadMaterial(aiMaterial* mat);

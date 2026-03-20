@@ -8,8 +8,8 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb/stb_image.h>
+//#define STB_IMAGE_IMPLEMENTATION
+//#include <stb/stb_image.h>
 
 #include "Grid.h"
 #include "Octree.h"
@@ -189,7 +189,7 @@ void Mesh::setShaderId(GLuint sid) {
 // =====================================================
 std::vector<Texture> Mesh::loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName, std::string dir)
 {
-    std::vector<Texture> textures;
+    //std::vector<Texture> textures;
 
     // actually, we only support one texture
     int nTex = mat->GetTextureCount(type);
@@ -198,15 +198,19 @@ std::vector<Texture> Mesh::loadMaterialTextures(aiMaterial *mat, aiTextureType t
         aiString str;
         mat->GetTexture(type, i, &str);
 
-        Texture texture;
+        Texture texture(dir + '/' + std::string(str.C_Str()));
+        texture.type = typeName;
+
+        /*
         texture.id = loadTextureAndBind(str.C_Str(), dir);
         texture.type = typeName;
+        */
         if (texture.id > 0)
             textures.push_back(texture);
     }
     return textures;
 }  
-
+/*
 unsigned int Mesh::loadTextureAndBind(const char* path, const std::string& directory)
 {
     std::string filename = std::string(path);
@@ -248,6 +252,7 @@ unsigned int Mesh::loadTextureAndBind(const char* path, const std::string& direc
 
     return textureID;
 }
+*/
 
 Material Mesh::loadMaterial(aiMaterial* mat) 
 {
@@ -295,11 +300,13 @@ void Mesh::draw(glm::mat4 matModel, glm::mat4 matView, glm::mat4 matProj)
     GLuint projection_loc = glGetUniformLocation( shaderId, "projection" );
     glUniformMatrix4fv(projection_loc, 1, GL_FALSE, &mat_projection[0][0]);
 
-    // added in LabA07
-    // =====================================================
-    GLint textureLoc = glGetUniformLocation(shaderId, "textureMap");
-    // always use texture unit 0
-    glUniform1i(textureLoc, 0); 
+    // Diffuse texture
+    if (textures.size() > 0) {
+        textures[0].bindTexture();
+        GLint textureLoc = glGetUniformLocation(shaderId, "textureMap");
+        // always use texture unit 0 for diffuse texture
+        glUniform1i(textureLoc, 0);
+    }
 
     // =====================================================
     // LabA 11 Spatial Data Structures

@@ -15,16 +15,19 @@
 // ==============================================
 #include <assimp/material.h>
 
+#include "Texture.h"
 // added in LabA11
 #include "Spatial.h"
 
 
 
 // added in LabA07
+/*
 struct Texture {
     GLuint id;
     std::string type;
 };
+*/
 
 // added in LabA07
 struct Material {
@@ -65,7 +68,7 @@ protected:
 
     // added in LabA07
     std::vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName, std::string dir);
-    unsigned int loadTextureAndBind(const char* path, const std::string& directory);
+    //unsigned int loadTextureAndBind(const char* path, const std::string& directory);
     
     Material Mesh::loadMaterial(aiMaterial* mat);
 

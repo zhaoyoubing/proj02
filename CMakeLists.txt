@@ -16,7 +16,7 @@ find_package(glfw3 REQUIRED)
 # Ideally, it should be put under external/ and used as an external library
 # to avoid unnecessary compiling
 add_executable(run01 src/main.cpp src/glad.c src/shader.cpp src/Mesh.cpp src/Texture.cpp src/MeshFactory.cpp 
- src/PlaneMesh.cpp src/ClothSim.cpp src/Spatial.cpp)
+ src/PlaneMesh.cpp src/ClothSim.cpp src/GLWin.cpp src/Interaction.cpp src/Spatial.cpp)
 
 # specify include directories
 target_include_directories(run01 PRIVATE 

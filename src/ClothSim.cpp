@@ -53,6 +53,7 @@ void ClothSim::reInit()
 	}
 }
 
+// get the neighbour id on different directions
 int ClothSim::getId(int direction, int id) {
 	if (DIRS.WEST == direction) { return id - 1; }
 	else if (DIRS.NORTHWEST == direction) { return id + res_x - 1;}
@@ -64,6 +65,7 @@ int ClothSim::getId(int direction, int id) {
 	else {return id - res_x - 1;}
 }
 
+// TODO: calculate spring force
 glm::vec3 ClothSim::getSpringForce(int direction, int id) {
 
 	float restLength = 0;
@@ -73,16 +75,19 @@ glm::vec3 ClothSim::getSpringForce(int direction, int id) {
 
 	glm::vec3 delta = mesh->vertices[id].pos - mesh->vertices[getId(direction, id)].pos;
 	float deltaLength = glm::length(delta); // distance
+
+	// [TODO 1]: calculate and return spring force based on Hooke's law
 	float diff = (deltaLength - restLength) / deltaLength;
 
 	return delta * diff * spring_factor;
 }
 
 // Method functions
-void ClothSim::accumulateForces(GLFWwindow *window) {
+void ClothSim::accumulateForces() {
 		
 	// F(v) = Mg + Fwind + Fairresistance - k*sum(x_current - x_rest)
 
+	// accumulate spring forces from eight directions
 	for (int v = 0; v < mesh->vertices.size(); v++) {
 		
 		glm::vec3 wind = glm::vec3(0, 0, 0);
@@ -141,17 +146,14 @@ void ClothSim::accumulateForces(GLFWwindow *window) {
 			
 		}
 
-		// Calculate normals
+		// Calculate new normals
 		glm::vec3 normal = glm::vec3(0);
 		for (int i = 1; i < spring_directions.size(); i++) {
 			normal += glm::cross(spring_directions[i], spring_directions[i-1]);
 		}
-		
 		mesh->vertices[v].normal = glm::normalize(normal);
-		//mesh->vertices[v].normal.y = -mesh->vertices[v].normal.y;
 
-		// Wind
-		
+		// Wind force
 		glm::vec3 pos = mesh->vertices[v].pos;
 
 		wind.x = sin(pos.x*pos.y*glfwGetTime());
@@ -159,48 +161,54 @@ void ClothSim::accumulateForces(GLFWwindow *window) {
 		wind.z = sin(cos(5* pos.x* pos.y* pos.z));
 		wind *= wind_factor;
 
-		// Wind Resistance 
+		// calculate Wind Resistance force
 		normal = mesh->vertices[v].normal;
-		glm::vec3 F_air_resistance = - air_resistance *  velocities[v] * glm::abs(glm::dot(normal, velocities[v]));
+		glm::vec3 F_air_resistance = - air_resist_factor *  velocities[v] * glm::abs(glm::dot(normal, velocities[v]));
 
-
-		// Sphere
-		pos = mesh->vertices[v].pos;
-
-		glm::vec3 sphere_center = glm::vec3(0, 4.0f, 0.0f);
+		// Advanced: Test Sphere Intersection
 		float sphere_radius = 4.0f;
 		float sphere_friction = 0.8f;
+		glm::vec3 sphere_center = glm::vec3(0, 4.0f, 0.0f);
+		
+		pos = mesh->vertices[v].pos;
+
+		// [TODO 4]: sphere intesection
+		// check if the vertex position falls into the sphere
 		if (glm::length(sphere_center - pos) < sphere_radius) {
-			glm::vec3 dir = glm::normalize(sphere_center - pos );
+
+			// if it is true: 
+			// 1. push the vertex position outwards
+			//    use larger factors if the intersection is deeper
+			glm::vec3 dir = glm::normalize(sphere_center - pos);
 			float factor = sphere_radius - glm::length(sphere_center - pos);
-			
-			// comment the following two lines to disable sphere 
 			mesh->vertices[v].pos -= factor * dir;
+
+			// 2. downscale the velocity using the sphere friction
 			velocities[v] *= sphere_friction;
 		}
 
-		
 		// Controls
-		if (glfwGetKey(window, GLFW_KEY_SPACE)) {
-			playSimulation = true;
+		//if (glfwGetKey(window, GLFW_KEY_SPACE)) {
+		//	playSimulation = true;
+		//}
+
+		if (bWind) {
+			wind = dirWind * glm::length(mesh->vertices[v].normal * glm::normalize(dirWind));
 		}
 
-		if (glfwGetKey(window, GLFW_KEY_V)) {
-			
-			glm::vec3 dir = glm::vec3(20, 0, 10);
-			wind = dir * glm::length(mesh->vertices[v].normal * glm::normalize(dir));
-		}
+		//if (glfwGetKey(window, GLFW_KEY_R)) {
+		//	reInit();
+		//}
 
-		if (glfwGetKey(window, GLFW_KEY_R)) {
-			reInit();
-		}
-
-		if (glfwGetKey(window, GLFW_KEY_G))
-			gravity *= -1.0f;
+		//if (glfwGetKey(window, GLFW_KEY_G))
+		//	gravity *= -1.0f;
 
 		if (playSimulation) {
+
+			// F(v) = Mg + Fwind + Fairresistance - spring
+			// [TODO 2]: accumulate gravity, wind, air resistance and spring forces
+			
 			forces[v] = wind + F_air_resistance + gravity - spring;
-			//forces[v] = gravity - spring;
 		}
 
 
@@ -220,6 +228,7 @@ void ClothSim::accumulateForces(GLFWwindow *window) {
 
 void ClothSim::forwardEulerIntegration(float dt) {
 
+	// [TODO 3]: calculate acceleration and velocities using forces
 	for (int v = 0; v < mesh->vertices.size(); v++) {
 		glm::vec3 acceleration = forces[v] * 1.0f; // mass
 		velocities[v] = damping_factor*velocities[v] + acceleration * dt;
@@ -253,8 +262,8 @@ void ClothSim::verletIntegration(float dt, int n_iterations) {
 /* ============================= //
 	UPDATE SIMULATION by one time step
 // ============================= */ 
-void ClothSim::tick(float dt, GLFWwindow *window) {
-	accumulateForces(window);
+void ClothSim::tick(float dt) {
+	accumulateForces();
 	
 	//verletIntegration(dt, 1);
 	forwardEulerIntegration(dt);

@@ -1,6 +1,4 @@
 #include <iostream>
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
@@ -12,11 +10,14 @@
 
 #include "shader.h"
 #include "Mesh.h"
-//#include "Node.h"
 
 #include "Interaction.h"
 #include "MeshFactory.h"
 #include "ClothSim.h"
+#include "AppMain.h"
+
+
+App app;
 
 static Shader shader;
 
@@ -25,15 +26,13 @@ glm::mat4 matModelRoot = glm::mat4(1.0);
 glm::vec3 lightPos = glm::vec3(5.0f, 5.0f, 10.0f);
 glm::vec3 viewPos_default = glm::vec3(0.0f, 6.0f, 6.0f);
 
-// We are using mesh list instead of scenegraph to demo our picking and collision detection
-std::vector< std::shared_ptr <Mesh> > meshList;
-std::vector< glm::mat4 > meshMatList;
-
 GLuint texblinnShader;
 
 // viewport width and height
 int width = 800;
 int height = 800;
+
+
 
 // Initialize shader
 GLuint initShader(std::string pathVert, std::string pathFrag) 
@@ -60,11 +59,11 @@ void setViewPosition(glm::vec3 eyePos)
 
 int main()
 {
-    std::unique_ptr<GLWin> glWin = GLWin::createWin(width, height);
+    app.glWin = GLWin::createWin(width, height, "Hello Mass-Spring");
     
-    GLFWwindow *window = glWin->getGLFWwin();
+    GLFWwindow *window = app.glWin->getGLFWwin();
 
-    camera = std::make_shared<ArcballCamera>(
+    app.camera = std::make_shared<ArcballCamera>(
         viewPos_default,
         glm::vec3(0,0,0), // target
         20.0f,             // distance
@@ -74,24 +73,25 @@ int main()
         200.0f
     );
 
-
     texblinnShader = initShader("shaders/texblinn.vert", "shaders/texblinn.frag");
     setLightPosition(lightPos);
-    setViewPosition(camera->eye);
+    setViewPosition(app.camera->eye);
 
     std::shared_ptr<PlaneMesh> cloth = MeshFactory::createPlane(PlaneMesh::XZ, 20, 22, 20, 20, 10.0f, "models/carpet.png");
     cloth->setShaderId(texblinnShader);
 
-    std::shared_ptr<ClothSim> sim = std::make_shared<ClothSim>(cloth);
+    app.sim = std::make_shared<ClothSim>(cloth);
   
     // setting the background colour, you can change the value
     glClearColor(0.25f, 0.5f, 0.75f, 1.0f);
     glEnable(GL_DEPTH_TEST);
     //glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
+    std::cout << "==================================" << std::endl;
     std::cout << "Space key: start cloth simulation" << std::endl;
     std::cout << "v: wind" << std::endl;
     std::cout << "g: reverse gravity" << std::endl;
+    std::cout << "==================================" << std::endl;
 
     // setting the event loop
     while (!glfwWindowShouldClose(window))
@@ -101,9 +101,9 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // time step of 0.005 second
-        sim->tick(0.005, window);
+        app.sim->tick(0.005);
 
-        cloth->draw(matModelRoot, camera->matView, camera->matProj);
+        cloth->draw(matModelRoot, app.camera->matView, app.camera->matProj);
 
         glfwSwapBuffers(window);
     }

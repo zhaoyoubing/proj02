@@ -11,17 +11,14 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 
-#include <assimp/material.h>
-
 #include "Material.h"
 #include "Texture.h"
 #include "Spatial.h"
 
 
-
 class Mesh {
 
-protected:
+public:
     // changed in LabA07
     // array of vertices and normals
     //std::vector< glm::vec3 > vertices; 
@@ -43,12 +40,6 @@ protected:
     // added in LabA 11
     bool bPicked = false;
     
-    void initBuffer();
-
-    void loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName, std::string dir);
-    //unsigned int loadTextureAndBind(const char* path, const std::string& directory);
-    
-    Material Mesh::loadMaterial(aiMaterial* mat);
 
 public:
 
@@ -57,14 +48,12 @@ public:
     Mesh();
     ~Mesh();
 
-    void init(std::string path, GLuint shaderId);
-    void loadModel(std::string path);
+    void initBuffer();
 
     void initSpatial(bool useOctree, glm::mat4 mat);
 
     void setShaderId(GLuint sid);
 
-    // added in LabA 11
     void setPicked(bool b) { bPicked = b; }
     
     void draw(glm::mat4 matModel, glm::mat4 matView, glm::mat4 matProj);

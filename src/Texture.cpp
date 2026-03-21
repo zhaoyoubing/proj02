@@ -36,7 +36,7 @@ void Texture::loadTexture(std::string path)
 	int nrComponents;
 	unsigned char* image = stbi_load(path.c_str(), &width, &height, &nrComponents, 0);
 
-	GLenum format;
+	GLenum format = GL_RGBA;
 	if (nrComponents == 1)
 		format = GL_RED;
 	else if (nrComponents == 3)

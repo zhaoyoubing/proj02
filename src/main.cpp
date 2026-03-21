@@ -14,6 +14,7 @@
 
 //#include "ArcballCamera.h"
 #include "Interaction.h"
+#include "MeshFactory.h"
 
 
 static Shader shader;
@@ -33,13 +34,9 @@ std::vector< glm::mat4 > meshMatList;
 // GLuint flatShader;
 GLuint blinnShader;
 GLuint phongShader;
-// added for LabA07
 GLuint texblinnShader;
 
-// LabA 12 Interaction Arcball camera
-//std::shared_ptr<ArcballCamera> camera;
-
-
+// viewport width and height
 int width = 800;
 int height = 800;
 
@@ -65,7 +62,6 @@ void setViewPosition(glm::vec3 eyePos)
     GLuint viewpos_loc = glGetUniformLocation(shader.program, "viewPos" );
     glUniform3fv(viewpos_loc, 1, glm::value_ptr(eyePos));
 }
-
 
 
 int main()
@@ -121,37 +117,22 @@ int main()
     setLightPosition(lightPos);
     setViewPosition(camera->eye);
 
-    // set the eye at (0, 0, 5), looking at the centre of the world
-    // try to change the eye position
-    //viewPos = glm::vec3(0.0f, 2.0f, 5.0f);
-    // matView = glm::lookAt(viewPos, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)); 
-
-    // set the Y field of view angle to 60 degrees, width/height ratio to 1.0, and a near plane of 3.5, far plane of 6.5
-    // try to play with the FoV
-    //matProj = glm::perspective(glm::radians(60.0f), 1.0f, 2.0f, 8.0f);
-    // setting to a close near plane and a farway far plane to test collision detection
-    // matProj = glm::perspective(glm::radians(60.0f), 1.0f, 0.5f, 20.0f);
-
-    // matView = camera->matView;
-    // matProj = camera->matProj;
-
     //----------------------------------------------------
     // Meshes
-    std::shared_ptr<Mesh> cube = std::make_shared<Mesh>();
-    cube->init("models/cube.obj", blinnShader);
+    std::shared_ptr<Mesh> cube = MeshFactory::importAssimp("models/cube.obj");
+    cube->setShaderId(blinnShader);
 
     glm::mat4 mat = glm::mat4(1.0);
 
-    
-    std::shared_ptr<Mesh> teapot = std::make_shared<Mesh>();
-    teapot->init("models/teapot.obj", texblinnShader);
+    std::shared_ptr<Mesh> teapot = MeshFactory::importAssimp("models/teapot.obj");
+    teapot->setShaderId(blinnShader);
     meshList.push_back(teapot);
     mat = glm::translate(glm::vec3(-2.0f, 1.0f, 0.0f));
     meshMatList.push_back(mat); // TRS
     teapot->initSpatial(true, mat);
     
-    std::shared_ptr<Mesh> bunny = std::make_shared<Mesh>();
-    bunny->init("models/bunny_normal.obj", texblinnShader);
+    std::shared_ptr<Mesh> bunny = MeshFactory::importAssimp("models/bunny_normal.obj");
+    bunny->setShaderId(texblinnShader);
     meshList.push_back(bunny);
     mat = glm::translate(glm::vec3(1.5f, 1.5f, 0.0f)) *
           glm::scale(glm::vec3(0.005f, 0.005f, 0.005f));

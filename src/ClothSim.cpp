@@ -74,8 +74,9 @@ glm::vec3 ClothSim::getSpringForce(int direction, int id) {
 	glm::vec3 delta = mesh->vertices[id].pos - mesh->vertices[getId(direction, id)].pos;
 	float deltaLength = glm::length(delta); // distance
 
-	// [TODO 1]: calculate and return spring force based on Hooke's law
-	float diff = (deltaLength - restLength) / deltaLength;
+	// [TODO 1]: calculate diff and return spring force based on Hooke's law
+	// replace 0 with your formula
+	float diff = 0;
 
 	return delta * diff * spring_factor;
 }
@@ -171,18 +172,21 @@ void ClothSim::accumulateForces() {
 		pos = mesh->vertices[v].pos;
 
 		// [TODO 4]: sphere intesection
-		// check if the vertex position falls into the sphere
-		if (glm::length(sphere_center - pos) < sphere_radius) {
+		// replace false with checking if the vertex position falls into the sphere
+		if ( false ) {
 
 			// if it is true: 
-			// 1. push the vertex position outwards
+			// 1. push back the vertex position back to the sphere surface
 			//    use larger factors if the intersection is deeper
-			glm::vec3 dir = glm::normalize(sphere_center - pos);
-			float factor = sphere_radius - glm::length(sphere_center - pos);
-			mesh->vertices[v].pos -= factor * dir;
 
-			// 2. downscale the velocity using the sphere friction
-			velocities[v] *= sphere_friction;
+			// 1.1 calculate the outward direction.
+			// glm::vec3 dir = ???;
+
+			// 1.2 push back the vertex position back to the sphere surface
+			// mesh->vertices[v].pos -= factor * dir;
+
+			// 2. downscale the vertex velocity using sphere friction
+			// velocities[v] *= ???;
 		}
 
 
@@ -194,10 +198,9 @@ void ClothSim::accumulateForces() {
 
 			// F(v) = Mg + Fwind + Fairresistance - spring
 			// [TODO 2]: accumulate gravity, wind, air resistance and spring forces
-			
-			forces[v] = wind + F_air_resistance + gravity - spring;
+			// replace 0 with your formula
+			forces[v] = glm::vec3(0);
 		}
-
 
 		// Pinned vertices
 		if (v > mesh->vertices.size() - res_x - 1) {
@@ -218,8 +221,12 @@ void ClothSim::forwardEulerIntegration(float dt) {
 	// [TODO 3]: calculate acceleration and velocities using forces
 	for (int v = 0; v < mesh->vertices.size(); v++) {
 		glm::vec3 acceleration = forces[v] * 1.0f; // mass
-		velocities[v] = damping_factor*velocities[v] + acceleration * dt;
-		mesh->vertices[v].pos = mesh->vertices[v].pos + velocities[v] * dt;
+
+		// 3.1 update velocity using acceleration
+		// velocities[v] = damping_factor * velocities[v] + ??;
+
+		// 3.2 update position using velocity
+		// mesh->vertices[v].pos = ??;
 	}
 }
 

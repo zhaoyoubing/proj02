@@ -11,33 +11,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 
-// added in LabA07
-// ==============================================
 #include <assimp/material.h>
 
+#include "Material.h"
 #include "Texture.h"
-// added in LabA11
 #include "Spatial.h"
 
-
-
-// added in LabA07
-/*
-struct Texture {
-    GLuint id;
-    std::string type;
-};
-*/
-
-// added in LabA07
-struct Material {
-    glm::vec3 Diffuse;
-    glm::vec3 Specular;
-    glm::vec3 Ambient;
-    float Shininess;
-};
-
-// ==============================================
 
 
 class Mesh {
@@ -47,7 +26,6 @@ protected:
     // array of vertices and normals
     //std::vector< glm::vec3 > vertices; 
     std::vector<Vertex> vertices;
-
     // triangle vertex indices
     std::vector< unsigned int > indices;
 

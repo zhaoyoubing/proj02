@@ -1,16 +1,16 @@
 #include "PlaneMesh.h"
 
 
-void PlaneMesh::createXZ(float height) {
+void PlaneMesh::createXZ() {
 
-        float leapWid = (float) width / (float) resWid;
+        //leapWid = (float) width / (float) resWid;
         //float offset_x = (float) width / 2.0f - (float) leapWid / 2.0f; // center
 
-        float leapLen = (float) length / (float) resLen;
+        //leapLen = (float) length / (float) resLen;
         //float offset_z = (float) length / 2.0f - (float) leapLen / 2.0f; // center
 
         //restLengthX = leap_x;
-        // restLengthZ = leap_z;
+        //restLengthZ = leap_z;
         //restLengthXZ = sqrt(pow(leap_x, 2) + pow(leap_z, 2));
 
         Vertex v;

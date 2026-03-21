@@ -22,10 +22,12 @@ public:
     float leapWid;
     float leapLen;
 
+    float height = 0.0;
+
 
     PlaneMesh(int direction, float wid, float len,
-        int res_width = 5, int res_length = 5,
-        float orig_width = 0, float orig_length = 0)
+        int res_width, int res_length,
+        float orig_width = 0, float orig_length = 0, float h = 0)
     {
 
         dir = direction;
@@ -38,6 +40,13 @@ public:
         orgWid = orig_width;
         orgLen = orig_length;
 
+        leapWid = (float)width / (float)resWid;
+        //float offset_x = (float) width / 2.0f - (float) leapWid / 2.0f; // center
+
+        leapLen = (float)length / (float)resLen;
+        //float offset_z = (float) length / 2.0f - (float) leapLen / 2.0f; // center
+
+        height = h;
 
         if (XY == dir) {
             createXY();
@@ -50,9 +59,9 @@ public:
         }
     }
 
-    void createXZ(float height = 0.0);
-    void createXY(float height = 0.0) {}
-    void createYZ(float height = 0.0) {}
+    void createXZ();
+    void createXY() {}
+    void createYZ() {}
 
 };
 

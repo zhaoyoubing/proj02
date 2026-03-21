@@ -16,12 +16,38 @@
 
 Mesh::Mesh()
 {
-
+    bbox.min = glm::vec3(0, 0, 0);
+    bbox.max = glm::vec3(1, 1, 1);
 }
 
 Mesh::~Mesh()
 {
 
+}
+
+void Mesh::updateBox() {
+    glm::vec3 min(FLT_MAX, FLT_MAX, FLT_MAX);
+    glm::vec3 max(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+
+    for (int i = 0; i < vertices.size(); i++)
+    {
+        Vertex v = vertices[i];
+        glm::vec3 pos = v.pos;
+
+        if (min.x > pos.x)
+            min.x = pos.x;
+        if (min.y > pos.y)
+            min.y = pos.y;
+        if (min.z > pos.z)
+            min.z = pos.z;
+
+        if (max.x < pos.x)
+            max.x = pos.x;
+        if (max.y < pos.y)
+            max.y = pos.y;
+        if (max.z < pos.z)
+            max.z = pos.z;
+    }
 }
 
 void Mesh::initSpatial(bool useOctree, glm::mat4 mat)
@@ -37,6 +63,8 @@ void Mesh::initSpatial(bool useOctree, glm::mat4 mat)
 
 void Mesh::initBuffer()
 {
+    updateBox();
+
     // create vertex buffer
     GLuint vao;
     glGenVertexArrays(1, &vao);
@@ -50,17 +78,14 @@ void Mesh::initBuffer()
     glBindVertexArray(vao);
     buffers.push_back(vao);
 
-
     // changed in LabA07 
     // set buffer data to triangle vertex and setting vertex attributes
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0] /*vertices.data()*/, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0] /*vertices.data()*/, GL_DYNAMIC_DRAW);
     glEnableVertexAttribArray(0);
-    //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, 0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
 
     // set normal attributes
     glEnableVertexAttribArray(1);
-    //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (void *) (sizeof(float) * 3));
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) (sizeof(float) * 3));
 
     // added in LabA07: Adding texture coord attribute
@@ -76,6 +101,19 @@ void Mesh::initBuffer()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
 
     glBindVertexArray(0);
+}
+
+void Mesh::updateVertexBuffer()
+{
+    glBindVertexArray(buffers[0]);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0] /*vertices.data()*/, GL_DYNAMIC_DRAW);
+    
+    //glEnableVertexAttribArray(0);
+    //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+
+    // set normal attributes
+    //glEnableVertexAttribArray(1);
+    //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float) * 3));
 }
 
 void Mesh::setShaderId(GLuint sid) {

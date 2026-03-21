@@ -13,6 +13,7 @@
 
 
 #include "ArcballCamera.h"
+#include "Mesh.h"
 
 std::shared_ptr<ArcballCamera> camera;
 
@@ -87,7 +88,7 @@ void mouse_button_callback(GLFWwindow *win, int button, int action, int mods)
             middleDown = false;
         }
     }
-
+    /*
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
     {
         glm::vec3 rayOrig = camera->eye;
@@ -108,6 +109,7 @@ void mouse_button_callback(GLFWwindow *win, int button, int action, int mods)
             }
         }
     }
+    */
 }
 
 void CursorPosCallback(GLFWwindow* window, double x, double y)

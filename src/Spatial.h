@@ -13,9 +13,18 @@ struct Ray
     glm::vec3 dir;
 };
 
-struct AABB
+class AABB
 {
+public:
     glm::vec3 min, max;
+
+    glm::vec3 getDimension() {
+        return max - min;
+    }
+
+    glm::vec3 getCenter() {
+        return (max + min) * 0.5f;
+    }
 };
 
 // added in LabA07

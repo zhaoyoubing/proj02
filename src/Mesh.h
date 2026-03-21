@@ -37,6 +37,8 @@ public:
     // this will be Material in the future
     GLuint shaderId;
 
+    AABB bbox;
+
     // added in LabA 11
     bool bPicked = false;
     
@@ -49,14 +51,17 @@ public:
     ~Mesh();
 
     void initBuffer();
-
-    void initSpatial(bool useOctree, glm::mat4 mat);
-
+    void updateVertexBuffer();
+    void draw(glm::mat4 matModel, glm::mat4 matView, glm::mat4 matProj);
     void setShaderId(GLuint sid);
 
-    void setPicked(bool b) { bPicked = b; }
+    void updateBox();
     
-    void draw(glm::mat4 matModel, glm::mat4 matView, glm::mat4 matProj);
+    void initSpatial(bool useOctree, glm::mat4 mat);
+    void setPicked(bool b) { bPicked = b; }
+
+
+
 };
 
 #endif

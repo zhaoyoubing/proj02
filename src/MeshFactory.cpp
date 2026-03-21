@@ -152,9 +152,9 @@ Material MeshFactory::loadAssimpMaterial(aiMaterial* mat)
     return material;
 }
 
-std::shared_ptr<PlaneMesh> MeshFactory::createPlane(int direction, float width, float length, int resWid, int resLen, std::string texPath) {
+std::shared_ptr<PlaneMesh> MeshFactory::createPlane(int direction, float width, float length, int resWid, int resLen, float height, std::string texPath) {
     std::shared_ptr<PlaneMesh> plane 
-            = std::make_shared<PlaneMesh>(direction, width, length, resWid, resLen, - width/ 2.0, -length / 2.0);
+            = std::make_shared<PlaneMesh>(direction, width, length, resWid, resLen, - width/ 2.0, -length / 2.0, height);
    
     plane->tex_diffuse.loadTexture(texPath);
     //plane.setTexture(tex);

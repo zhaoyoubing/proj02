@@ -9,6 +9,8 @@ double lastX, lastY;
 
 extern int width;
 extern int height;
+extern bool bWireframe;
+
 //extern std::vector< std::shared_ptr <Mesh> > meshList;
 extern glm::vec3 viewPos_default;
 extern glm::mat4 matModelRoot;
@@ -153,6 +155,8 @@ void key_callback_sim(GLFWwindow* window, int key, int scancode, int action, int
 
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
+    key_callback_sim(window, key, scancode, action, mods);
+
     glm::mat4 mat = glm::mat4(1.0);
 
     float angleStep = 5.0f;
@@ -160,7 +164,7 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 
     if (action == GLFW_PRESS)
     {
-        //std::cout << "key pressed" << std::endl;
+        // std::cout << "key pressed" << std::endl;
         /*
         // we don't allow objects to move for picking and collision detection
         if (mods & GLFW_MOD_CONTROL) {
@@ -180,6 +184,17 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
         }
         */
 
+        if (GLFW_KEY_X == key)
+        {
+            bWireframe = ! bWireframe;
+
+            if (bWireframe)
+                glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+            else
+                glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+        }
+
+        /*
         if (GLFW_KEY_R == key)
         {
             // std::cout << "R pressed" << std::endl;
@@ -188,10 +203,11 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
             matModelRoot = glm::mat4(1.0f);
 
             return;
-        } 
+        }
+        */
 
-        glm::mat4 nextMatView = app.camera->matView;
-        glm::vec3 nextViewPos = app.camera->eye;
+        // glm::mat4 nextMatView = app.camera->matView;
+        // glm::vec3 nextViewPos = app.camera->eye;
 
         // camera control
         /*

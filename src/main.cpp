@@ -32,6 +32,8 @@ GLuint texblinnShader;
 int width = 800;
 int height = 800;
 
+bool bWireframe = false;
+
 
 
 // Initialize shader
@@ -66,7 +68,7 @@ int main()
     app.camera = std::make_shared<ArcballCamera>(
         viewPos_default,
         glm::vec3(0,0,0), // target
-        20.0f,             // distance
+        20.0f,            // distance
         60.0f,            // FOV
         float(width) / float(height),
         0.1f,
@@ -85,12 +87,15 @@ int main()
     // setting the background colour, you can change the value
     glClearColor(0.25f, 0.5f, 0.75f, 1.0f);
     glEnable(GL_DEPTH_TEST);
-    //glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+    glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+
 
     std::cout << "==================================" << std::endl;
-    std::cout << "Space key: Start cloth simulation" << std::endl;
+    std::cout << "Space key: Start simulation" << std::endl;
     std::cout << "v: Enable/Disable wind" << std::endl;
     std::cout << "g: Inverse gravity" << std::endl;
+    std::cout << "x: Toggle wireframe" << std::endl;
+    std::cout << "r: Reset" << std::endl;
     std::cout << "==================================" << std::endl;
 
     // setting the event loop

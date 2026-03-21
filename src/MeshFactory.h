@@ -8,14 +8,11 @@
 #include "Material.h"
 #include "PlaneMesh.h"
 
-
-//#include "ClothSim"
-
 class MeshFactory {
 public:
     static std::shared_ptr<Mesh> importAssimp(std::string path); 
     static std::shared_ptr<PlaneMesh> createPlane(int direction, float width, float length, 
-        int resWid, int resLen, float height, std::string texFile);
+        int resWid, int resLen, float height, std::string texFile="");
 
 private:
     static Material MeshFactory::loadAssimpMaterial(aiMaterial* mat);

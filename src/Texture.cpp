@@ -8,17 +8,6 @@ Texture::Texture()
     id = -1;
 }
 
-/*
-Texture::Texture(std::string path) : width(100), height(100)
-{
-	generateTexture(path);
-}
-
-Texture::Texture(std::string path, int w, int h) : width(w), height(h)
-{
-	generateTexture(path);
-}
-*/
 
 Texture::~Texture()
 {

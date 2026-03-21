@@ -7,8 +7,6 @@
 
 ClothSim::ClothSim(std::shared_ptr<PlaneMesh> pMesh)
 {
-	//playSimulation = true;
-
 	mesh = pMesh;
 	res_x = mesh->resWid;
 	res_z = mesh->resLen;

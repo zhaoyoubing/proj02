@@ -11,6 +11,7 @@ std::shared_ptr<Mesh> MeshFactory::importAssimp(std::string path)
 
     Assimp::Importer importer;
     // LabA07 change: aiProcess_FlipUVs
+    // TODO: can add triangulate and create bitangents for normal mapping
     const aiScene* scene = importer.ReadFile(path, aiProcess_JoinIdenticalVertices | aiProcess_FlipUVs);
     if (NULL != scene) {
         std::cout << "load model successful" << std::endl;
@@ -29,21 +30,18 @@ std::shared_ptr<Mesh> MeshFactory::importAssimp(std::string path)
         int nVertex = mesh->mNumVertices;
         // std::cout << mesh->mNumVertices << std::endl;
 
-        // changed in LabA07
         for (int j = 0; j < nVertex; j++)
         {
             glm::vec3 pos; 
             pos.x = mesh->mVertices[j].x;
             pos.y = mesh->mVertices[j].y;
             pos.z = mesh->mVertices[j].z; 
-            // vertices.push_back(pos);
             v.pos = pos;
 
             glm::vec3 normal;
             normal.x = mesh->mNormals[j].x;
             normal.y = mesh->mNormals[j].y;
             normal.z = mesh->mNormals[j].z;
-            //vertices.push_back(normal);
             v.normal = normal;
 
             if(mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
@@ -88,8 +86,6 @@ std::shared_ptr<Mesh> MeshFactory::importAssimp(std::string path)
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
         loadAssimpMaterialTextures(outMesh, material,aiTextureType_DIFFUSE, "texture_diffuse", dir);
         
-        //textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-
         // this->material = loadMaterial(material);
 
         // we don't deal with specular maps
@@ -155,9 +151,11 @@ Material MeshFactory::loadAssimpMaterial(aiMaterial* mat)
 std::shared_ptr<PlaneMesh> MeshFactory::createPlane(int direction, float width, float length, int resWid, int resLen, float height, std::string texPath) {
     std::shared_ptr<PlaneMesh> plane 
             = std::make_shared<PlaneMesh>(direction, width, length, resWid, resLen, - width/ 2.0, -length / 2.0, height);
-   
-    plane->tex_diffuse.loadTexture(texPath);
-    //plane.setTexture(tex);
+
+    if (texPath != "")
+        plane->tex_diffuse.loadTexture(texPath);
+    else
+        plane->tex_diffuse.id = -1;
 
     plane->initBuffer();
 

@@ -17,7 +17,7 @@ int GLWin::init(std::string title)
 
     // register the key event callback function
     glfwSetKeyCallback(window, key_callback);
-    glfwSetKeyCallback(window, key_callback_sim);
+    //glfwSetKeyCallback(window, key_callback_sim);
     
     // register the mouse button event callback function
     glfwSetMouseButtonCallback(window, mouse_button_callback);

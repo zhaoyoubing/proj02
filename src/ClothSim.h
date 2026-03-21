@@ -19,9 +19,11 @@ public:
 	// simulation step
 	void tick(float dt);
 
-	void setPlaySimulation(bool b) {
-		playSimulation = b;
+	void setPlaySim(bool b) {
+		bPlaySim = b;
 	}
+
+	bool getPlaySim() { return bPlaySim; }
 
 	void setInverseGravity() { gravity *= -1; }
 
@@ -69,7 +71,6 @@ private:
 	
 	void init();
 
-
 	// Properties
 	std::vector<glm::vec3> forces;
 	std::vector<glm::vec3> velocities;
@@ -79,7 +80,7 @@ private:
 	std::vector<glm::vec3> prev_velocities;
 	std::vector<glm::vec3> prev_accelerations;
 	
-	bool playSimulation = false;
+	bool bPlaySim = false;
 
 	// rest spring length
 	float restLengthX, restLengthZ, restLengthXZ = 0;

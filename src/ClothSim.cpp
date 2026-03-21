@@ -187,23 +187,12 @@ void ClothSim::accumulateForces() {
 			velocities[v] *= sphere_friction;
 		}
 
-		// Controls
-		//if (glfwGetKey(window, GLFW_KEY_SPACE)) {
-		//	playSimulation = true;
-		//}
 
 		if (bWind) {
 			wind = dirWind * glm::length(mesh->vertices[v].normal * glm::normalize(dirWind));
 		}
 
-		//if (glfwGetKey(window, GLFW_KEY_R)) {
-		//	reInit();
-		//}
-
-		//if (glfwGetKey(window, GLFW_KEY_G))
-		//	gravity *= -1.0f;
-
-		if (playSimulation) {
+		if (bPlaySim) {
 
 			// F(v) = Mg + Fwind + Fairresistance - spring
 			// [TODO 2]: accumulate gravity, wind, air resistance and spring forces

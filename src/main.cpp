@@ -88,9 +88,9 @@ int main()
     //glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
     std::cout << "==================================" << std::endl;
-    std::cout << "Space key: start cloth simulation" << std::endl;
-    std::cout << "v: wind" << std::endl;
-    std::cout << "g: reverse gravity" << std::endl;
+    std::cout << "Space key: Start cloth simulation" << std::endl;
+    std::cout << "v: Enable/Disable wind" << std::endl;
+    std::cout << "g: Inverse gravity" << std::endl;
     std::cout << "==================================" << std::endl;
 
     // setting the event loop

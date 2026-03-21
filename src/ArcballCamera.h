@@ -5,8 +5,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-// 2025.12.09: we should have a separate Camera class in the future
-
 class ArcballCamera {
 private:
     glm::quat rotation;

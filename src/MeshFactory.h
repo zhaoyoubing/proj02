@@ -6,14 +6,17 @@
 
 #include "Mesh.h"
 #include "Material.h"
+#include "PlaneMesh.h"
 
 
-//#include "ClothSimMesh"
+//#include "ClothSim"
 
 class MeshFactory {
 public:
     static std::shared_ptr<Mesh> importAssimp(std::string path); 
-    //static std::shared_ptr<ClothSimMesh> genClothSimMesh();
+    static std::shared_ptr<PlaneMesh> createPlane(int direction, float width, float length, 
+        int resWid, int resLen, std::string texFile);
+
 private:
     static Material MeshFactory::loadAssimpMaterial(aiMaterial* mat);
     static void loadAssimpMaterialTextures(std::shared_ptr<Mesh> pMesh, aiMaterial *mat, aiTextureType type, std::string typeName, std::string dir);

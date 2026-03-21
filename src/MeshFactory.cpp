@@ -109,7 +109,6 @@ std::shared_ptr<Mesh> MeshFactory::importAssimp(std::string path)
 
 void MeshFactory::loadAssimpMaterialTextures(std::shared_ptr<Mesh> pMesh, aiMaterial *mat, aiTextureType type, std::string typeName, std::string dir)
 {
-    
     // actually, we only support one texture
     int nTex = mat->GetTextureCount(type);
 
@@ -122,12 +121,12 @@ void MeshFactory::loadAssimpMaterialTextures(std::shared_ptr<Mesh> pMesh, aiMate
 
         if (aiTextureType_DIFFUSE == type) {
             pMesh->tex_diffuse.loadTexture(filepath);
-            pMesh->tex_diffuse.type = typeName;
+            //pMesh->tex_diffuse.type = typeName;
         }
         else if ((aiTextureType_HEIGHT == type) 
             || (aiTextureType_NORMALS == type)) {
             pMesh->tex_normal.loadTexture(filepath);
-            pMesh->tex_normal.type = typeName;
+            //pMesh->tex_normal.type = typeName;
         }
     }
 }  
@@ -151,4 +150,16 @@ Material MeshFactory::loadAssimpMaterial(aiMaterial* mat)
     material.Shininess = shininess;
 
     return material;
+}
+
+std::shared_ptr<PlaneMesh> MeshFactory::createPlane(int direction, float width, float length, int resWid, int resLen, std::string texPath) {
+    std::shared_ptr<PlaneMesh> plane 
+            = std::make_shared<PlaneMesh>(direction, width, length, resWid, resLen, - width/ 2.0, -length / 2.0);
+   
+    plane->tex_diffuse.loadTexture(texPath);
+    //plane.setTexture(tex);
+
+    plane->initBuffer();
+
+    return plane;
 }

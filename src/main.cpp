@@ -16,7 +16,6 @@
 #include "Interaction.h"
 #include "MeshFactory.h"
 
-
 static Shader shader;
 
 glm::mat4 matModelRoot = glm::mat4(1.0);
@@ -24,7 +23,7 @@ glm::mat4 matModelRoot = glm::mat4(1.0);
 // glm::mat4 matProj = glm::ortho(-2.0f,2.0f,-2.0f,2.0f, -2.0f,2.0f);
 
 glm::vec3 lightPos = glm::vec3(5.0f, 5.0f, 10.0f);
-glm::vec3 viewPos_default = glm::vec3(0.0f, 2.0f, 6.0f);
+glm::vec3 viewPos_default = glm::vec3(0.0f, 6.0f, 6.0f);
 // glm::vec3 viewPos = viewPos_default;
 
 // We are using mesh list instead of scenegraph to demo our picking and collision detection
@@ -106,9 +105,6 @@ int main()
         return -1;
     }
 
-    phongShader = initShader( "shaders/blinn.vert", "shaders/phong.frag");
-    setLightPosition(lightPos);
-    setViewPosition(camera->eye);
     blinnShader = initShader( "shaders/blinn.vert", "shaders/blinn.frag");
     setLightPosition(lightPos);
     setViewPosition(camera->eye);
@@ -138,6 +134,9 @@ int main()
           glm::scale(glm::vec3(0.005f, 0.005f, 0.005f));
     meshMatList.push_back( mat ); // TRS
     bunny->initSpatial(true, mat);
+
+    std::shared_ptr<PlaneMesh> cloth = MeshFactory::createPlane(PlaneMesh::XZ, 5, 5, 10, 10, "models/carpet.png");
+    cloth->setShaderId(texblinnShader);
   
 
     //----------------------------------------------------
@@ -180,11 +179,14 @@ int main()
         //scene->draw(matModelRoot, matView, matProj);
         // bunny->draw(glm::scale(glm::vec3(0.005f, 0.005f, 0.005f)), matView, matProj);
 
-
+        /*
         for (int i = 0; i < meshList.size(); i++ ) {
             std::shared_ptr<Mesh> pMesh = meshList[i];
             pMesh->draw(matModelRoot * meshMatList[i], camera->matView, camera->matProj);
         }
+        */
+
+        cloth->draw(matModelRoot, camera->matView, camera->matProj);
 
         glfwSwapBuffers(window);
     }

@@ -169,9 +169,6 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
         {
             // std::cout << "R pressed" << std::endl;
             //  reset
-            // viewPos = viewPos_default;
-            // matView = glm::lookAt(viewPos, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-
             camera->reset(viewPos_default, glm::vec3(0, 0, 0));
             matModelRoot = glm::mat4(1.0f);
 
@@ -182,6 +179,7 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
         glm::vec3 nextViewPos = camera->eye;
 
         // camera control
+        /*
         if (mods & GLFW_MOD_CONTROL) {
             if (GLFW_KEY_LEFT == key) {
                 // pan left, rotate around Y, CCW
@@ -269,7 +267,7 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
             nextMatView = camera->matView * mat;
             nextViewPos.z -= transStep;
         }
-
+        */
 
         // check collision detection
         AABB mybox{ nextViewPos - 0.2f, nextViewPos + 0.2f };

@@ -12,7 +12,8 @@ class Texture
 public:
     GLuint id;
     int width, height;
-    std::string type;
+    
+	//std::string type;
 
     Texture();
 	//Texture(std::string path);

@@ -66,18 +66,32 @@ int ClothSim::getId(int direction, int id) {
 // TODO: calculate spring force
 glm::vec3 ClothSim::getSpringForce(int direction, int id) {
 
-	float restLength = 0;
-	if (direction == DIRS.NORTH || direction == DIRS.SOUTH) restLength = restLengthZ;
-	else if(direction == DIRS.WEST || direction == DIRS.EAST) restLength = restLengthX;
-	else restLength = restLengthXZ;
+	// the rest spring length
+	float lenRest = 0;
+	if (direction == DIRS.NORTH || direction == DIRS.SOUTH) lenRest = restLengthZ;
+	else if(direction == DIRS.WEST || direction == DIRS.EAST) lenRest = restLengthX;
+	else lenRest = restLengthXZ;
 
-	glm::vec3 delta = mesh->vertices[id].pos - mesh->vertices[getId(direction, id)].pos;
-	float deltaLength = glm::length(delta); // distance
+	// the spring vector
+	glm::vec3 vSpring = mesh->vertices[id].pos - mesh->vertices[getId(direction, id)].pos;
+	// the spring length
+	float lenSpring = glm::length(vSpring); // distance
+	
+	// the unit vector of spring direction
+	glm::vec3 vSpringUnit = vSpring /lenSpring;
 
-	// [TODO 1]: calculate and return spring force based on Hooke's law
-	float diff = (deltaLength - restLength) / deltaLength;
+	// [TODO 1]: calculate spring force vector based on Hooke's law F = -k delta_x
+	// 1.1 calculate the spring length change delta_x using lenSpring and lenRest
+	// replace 0 with your formula
+	float delta_x = lenSpring - lenRest;
 
-	return delta * diff * spring_factor;
+	// 1.2 Use Hooke's law F = -k * delta_x * vSpringUnit
+	// k : spring_factor
+	// replace glm::vec3(0.0) with your formula 
+	// glm::vec3 spring_force = glm::vec3(0.0);
+	glm::vec3 spring_force = - spring_factor * delta_x * vSpringUnit;
+	
+	return spring_force;
 }
 
 // Method functions
@@ -171,17 +185,25 @@ void ClothSim::accumulateForces() {
 		pos = mesh->vertices[v].pos;
 
 		// [TODO 4]: sphere intesection
-		// check if the vertex position falls into the sphere
-		if (glm::length(sphere_center - pos) < sphere_radius) {
+		// 4.1 replace false with checking if the vertex position falls into the sphere
+		//if (false) {
+		if ( glm::length(pos - sphere_center) < sphere_radius ) {
 
 			// if it is true: 
-			// 1. push the vertex position outwards
-			//    use larger factors if the intersection is deeper
-			glm::vec3 dir = glm::normalize(sphere_center - pos);
-			float factor = sphere_radius - glm::length(sphere_center - pos);
-			mesh->vertices[v].pos -= factor * dir;
+			// push back the vertex position back to the sphere surface
 
-			// 2. downscale the velocity using the sphere friction
+			// 4.2 calculate the outward vector direction
+			// from the sphere center to the vertex position pos
+			glm::vec3 outDir = pos - sphere_center;
+
+			// 4.3 normalise the vector using glm::normalize(glm::vec3)
+			glm::vec3 outDirUnit = glm::normalize(outDir);
+
+			// 4.4 push back the vertex position back to the sphere surface
+			// using sphere_center, outDirUnit and sphere radius
+			mesh->vertices[v].pos = sphere_center + sphere_radius * outDirUnit;
+
+			// 4.5 downscale the vertex velocity using sphere_friction (< 1)
 			velocities[v] *= sphere_friction;
 		}
 
@@ -192,10 +214,10 @@ void ClothSim::accumulateForces() {
 
 		if (bPlaySim) {
 
-			// F(v) = Mg + Fwind + Fairresistance - spring
+			// F(v) = gravity + Fwind + Fairresistance + spring
 			// [TODO 2]: accumulate gravity, wind, air resistance and spring forces
 			
-			forces[v] = wind + F_air_resistance + gravity - spring;
+			forces[v] = wind + F_air_resistance + gravity + spring;
 		}
 
 
@@ -218,11 +240,18 @@ void ClothSim::forwardEulerIntegration(float dt) {
 	// [TODO 3]: calculate acceleration and velocities using forces
 	for (int v = 0; v < mesh->vertices.size(); v++) {
 		glm::vec3 acceleration = forces[v] * 1.0f; // mass
-		velocities[v] = damping_factor*velocities[v] + acceleration * dt;
-		mesh->vertices[v].pos = mesh->vertices[v].pos + velocities[v] * dt;
+
+		// 3.1 update velocity using acceleration
+		velocities[v] = damping_factor * velocities[v] + acceleration * dt;
+
+		// 3.2 update position using velocity
+		mesh->vertices[v].pos = mesh->vertices[v].pos + velocities[v] * dt ;
+
+		// add ground checking
+		if (mesh->vertices[v].pos.y < -5.0)
+			mesh->vertices[v].pos.y = -5.0;
 	}
 }
-
 /*
 void ClothSim::backwardEulerIntegration(float dt) {
 

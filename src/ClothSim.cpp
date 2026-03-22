@@ -67,27 +67,30 @@ int ClothSim::getId(int direction, int id) {
 glm::vec3 ClothSim::getSpringForce(int direction, int id) {
 
 	// the rest spring length
-	float restLength = 0;
-	if (direction == DIRS.NORTH || direction == DIRS.SOUTH) restLength = restLengthZ;
-	else if(direction == DIRS.WEST || direction == DIRS.EAST) restLength = restLengthX;
-	else restLength = restLengthXZ;
+	float lenRest = 0;
+	if (direction == DIRS.NORTH || direction == DIRS.SOUTH) lenRest = restLengthZ;
+	else if(direction == DIRS.WEST || direction == DIRS.EAST) lenRest = restLengthX;
+	else lenRest = restLengthXZ;
 
-	// [TODO 1]: calculate spring force vector based on Hooke's law
 	// the spring vector
 	glm::vec3 vSpring = mesh->vertices[id].pos - mesh->vertices[getId(direction, id)].pos;
 	// the spring length
 	float lenSpring = glm::length(vSpring); // distance
-
+	
 	// the unit vector of spring direction
 	glm::vec3 vSpringUnit = vSpring /lenSpring;
 
 	// [TODO 1]: calculate spring force vector based on Hooke's law F = -k delta_x
-	// calculate the length change delta_x, replace 0 with your formula
-	float delta_x = 0;
+	// 1.1 calculate the spring length change delta_x using lenSpring and lenRest
+	// replace 0 with your formula
+	float delta_x = lenSpring - lenRest;
 
-	// Hooke's law F = -k delta_x * vSpringUnit
+	// 1.2 Use Hooke's law F = -k * delta_x * vSpringUnit
 	// k : spring_factor
-	glm::vec3 spring_force = glm::vec3(0.0);
+	// replace glm::vec3(0.0) with your formula 
+	// glm::vec3 spring_force = glm::vec3(0.0);
+	glm::vec3 spring_force = - spring_factor * delta_x * vSpringUnit;
+	
 	return spring_force;
 }
 
@@ -182,21 +185,26 @@ void ClothSim::accumulateForces() {
 		pos = mesh->vertices[v].pos;
 
 		// [TODO 4]: sphere intesection
-		// replace false with checking if the vertex position falls into the sphere
-		if ( false ) {
+		// 4.1 replace false with checking if the vertex position falls into the sphere
+		//if (false) {
+		if ( glm::length(pos - sphere_center) < sphere_radius ) {
 
 			// if it is true: 
-			// 1. push back the vertex position back to the sphere surface
-			//    use larger factors if the intersection is deeper
+			// push back the vertex position back to the sphere surface
 
-			// 1.1 calculate the outward direction.
-			// glm::vec3 dir = ???;
+			// 4.2 calculate the outward vector direction
+			// from the sphere center to the vertex position pos
+			glm::vec3 outDir = pos - sphere_center;
 
-			// 1.2 push back the vertex position back to the sphere surface
-			// mesh->vertices[v].pos -= factor * dir;
+			// 4.3 normalise the vector using glm::normalize(glm::vec3)
+			glm::vec3 outDirUnit = glm::normalize(outDir);
 
-			// 2. downscale the vertex velocity using sphere friction
-			// velocities[v] *= ???;
+			// 4.4 push back the vertex position back to the sphere surface
+			// using sphere_center, outDirUnit and sphere radius
+			mesh->vertices[v].pos = sphere_center + sphere_radius * outDirUnit;
+
+			// 4.5 downscale the vertex velocity using sphere_friction (< 1)
+			velocities[v] *= sphere_friction;
 		}
 
 
@@ -205,10 +213,9 @@ void ClothSim::accumulateForces() {
 		}
 
 		if (bPlaySim) {
-
-			// F(v) = Mg + Fwind + Fairresistance - spring
+			// F(v) = (gravity force) + (wind force) + (airresistance force, optional) + (spring force)
 			// [TODO 2]: accumulate gravity, wind, air resistance and spring forces
-			forces[v] = gravity;
+			forces[v] = gravity + spring + wind;
 		}
 
 		// Pinned vertices

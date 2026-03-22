@@ -23,7 +23,7 @@ static Shader shader;
 
 glm::mat4 matModelRoot = glm::mat4(1.0);
 
-glm::vec3 lightPos = glm::vec3(5.0f, 5.0f, 10.0f);
+glm::vec3 lightPos = glm::vec3(5.0f, -15.0f, 10.0f);
 glm::vec3 viewPos_default = glm::vec3(0.0f, 6.0f, 6.0f);
 
 GLuint texblinnShader;

@@ -130,9 +130,9 @@ void key_callback_sim(GLFWwindow* window, int key, int scancode, int action, int
         // Controls
         if (GLFW_KEY_SPACE == key) {
             // there are bugs on disable simulation
-            //if (app.sim->getPlaySim() )
-            //    app.sim->setPlaySim(false);
-            //else
+            if (app.sim->getPlaySim() )
+                app.sim->setPlaySim(false);
+            else
                 app.sim->setPlaySim(true);
         }
 

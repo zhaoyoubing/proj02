@@ -66,19 +66,29 @@ int ClothSim::getId(int direction, int id) {
 // TODO: calculate spring force
 glm::vec3 ClothSim::getSpringForce(int direction, int id) {
 
+	// the rest spring length
 	float restLength = 0;
 	if (direction == DIRS.NORTH || direction == DIRS.SOUTH) restLength = restLengthZ;
 	else if(direction == DIRS.WEST || direction == DIRS.EAST) restLength = restLengthX;
 	else restLength = restLengthXZ;
 
-	glm::vec3 delta = mesh->vertices[id].pos - mesh->vertices[getId(direction, id)].pos;
-	float deltaLength = glm::length(delta); // distance
+	// [TODO 1]: calculate spring force vector based on Hooke's law
+	// the spring vector
+	glm::vec3 vSpring = mesh->vertices[id].pos - mesh->vertices[getId(direction, id)].pos;
+	// the spring length
+	float lenSpring = glm::length(vSpring); // distance
 
-	// [TODO 1]: calculate diff and return spring force based on Hooke's law
-	// replace 0 with your formula
-	float diff = 0;
+	// the unit vector of spring direction
+	glm::vec3 vSpringUnit = vSpring /lenSpring;
 
-	return delta * diff * spring_factor;
+	// [TODO 1]: calculate spring force vector based on Hooke's law F = -k delta_x
+	// calculate the length change delta_x, replace 0 with your formula
+	float delta_x = 0;
+
+	// Hooke's law F = -k delta_x * vSpringUnit
+	// k : spring_factor
+	glm::vec3 spring_force = glm::vec3(0.0);
+	return spring_force;
 }
 
 // Method functions
@@ -198,8 +208,7 @@ void ClothSim::accumulateForces() {
 
 			// F(v) = Mg + Fwind + Fairresistance - spring
 			// [TODO 2]: accumulate gravity, wind, air resistance and spring forces
-			// replace 0 with your formula
-			forces[v] = glm::vec3(0);
+			forces[v] = gravity;
 		}
 
 		// Pinned vertices
@@ -223,10 +232,14 @@ void ClothSim::forwardEulerIntegration(float dt) {
 		glm::vec3 acceleration = forces[v] * 1.0f; // mass
 
 		// 3.1 update velocity using acceleration
-		// velocities[v] = damping_factor * velocities[v] + ??;
+		velocities[v] = damping_factor * velocities[v] + acceleration * dt;
 
 		// 3.2 update position using velocity
-		// mesh->vertices[v].pos = ??;
+		mesh->vertices[v].pos = mesh->vertices[v].pos + velocities[v] * dt ;
+
+		// add ground checking
+		if (mesh->vertices[v].pos.y < -5.0)
+			mesh->vertices[v].pos.y = -5.0;
 	}
 }
 

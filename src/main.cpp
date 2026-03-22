@@ -15,6 +15,7 @@
 #include "MeshFactory.h"
 #include "ClothSim.h"
 #include "AppMain.h"
+#include "SphereMesh.h"
 
 
 App app;
@@ -26,6 +27,7 @@ glm::mat4 matModelRoot = glm::mat4(1.0);
 glm::vec3 lightPos = glm::vec3(5.0f, 5.0f, 10.0f);
 glm::vec3 viewPos_default = glm::vec3(0.0f, 6.0f, 6.0f);
 
+GLuint blinnShader;
 GLuint texblinnShader;
 
 // viewport width and height
@@ -75,14 +77,22 @@ int main()
         200.0f
     );
 
+    blinnShader = initShader("shaders/blinn.vert", "shaders/blinn.frag");
+    setLightPosition(lightPos);
+    setViewPosition(app.camera->eye);
+
     texblinnShader = initShader("shaders/texblinn.vert", "shaders/texblinn.frag");
     setLightPosition(lightPos);
     setViewPosition(app.camera->eye);
 
-    std::shared_ptr<PlaneMesh> cloth = MeshFactory::createPlane(PlaneMesh::XZ, 20, 22, 20, 20, 10.0f, "models/carpet.png");
-    cloth->setShaderId(texblinnShader);
+    //std::shared_ptr<PlaneMesh> cloth = MeshFactory::createPlane(PlaneMesh::XZ, 20, 22, 20, 20, 10.0f, "models/carpet.png");
+    //cloth->setShaderId(texblinnShader);
 
-    app.sim = std::make_shared<ClothSim>(cloth);
+    std::shared_ptr<SphereMesh> ball = std::make_shared<SphereMesh>(20, 20, 5.0f);
+    ball->setShaderId(blinnShader);
+
+    app.sim = std::make_shared<RigidSim>();
+    //app.sim->add(ball);
   
     // setting the background colour, you can change the value
     glClearColor(0.25f, 0.5f, 0.75f, 1.0f);
@@ -106,9 +116,9 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // time step of 0.005 second
-        app.sim->tick(0.005);
+        //app.sim->tick(0.005);
 
-        cloth->draw(matModelRoot, app.camera->matView, app.camera->matProj);
+        ball->draw(matModelRoot, app.camera->matView, app.camera->matProj);
 
         glfwSwapBuffers(window);
     }

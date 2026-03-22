@@ -127,6 +127,7 @@ void key_callback_sim(GLFWwindow* window, int key, int scancode, int action, int
     //std::cout << "simulation key callback " << std::endl;
     if (action == GLFW_PRESS)
     {
+        /*
         // Controls
         if (GLFW_KEY_SPACE == key) {
             // there are bugs on disable simulation
@@ -149,7 +150,7 @@ void key_callback_sim(GLFWwindow* window, int key, int scancode, int action, int
 
         if (GLFW_KEY_G == key)
             app.sim->setInverseGravity();
-
+        */
     }
 }
 

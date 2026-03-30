@@ -65,19 +65,21 @@ void Mesh::initBuffer()
 {
     updateBox();
 
-    // create vertex buffer
+    // create VAO
     GLuint vao;
     glGenVertexArrays(1, &vao);
-    GLuint vertBufID;
-    glGenBuffers(1, &vertBufID);
-    glBindBuffer(GL_ARRAY_BUFFER, vertBufID);
-    GLuint idxBufID;
-    glGenBuffers(1, &idxBufID);
-    
-    // remember VAO
     glBindVertexArray(vao);
     buffers.push_back(vao);
 
+    GLuint vertBufID;
+    glGenBuffers(1, &vertBufID);
+    glBindBuffer(GL_ARRAY_BUFFER, vertBufID);
+    
+    // create and bind index buffer
+    GLuint idxBufID;
+    glGenBuffers(1, &idxBufID);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idxBufID);
+    
     // changed in LabA07 
     // set buffer data to triangle vertex and setting vertex attributes
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0] /*vertices.data()*/, GL_DYNAMIC_DRAW);
@@ -93,9 +95,6 @@ void Mesh::initBuffer()
     glEnableVertexAttribArray(2);
     // the second parameter: 2 coordinates (tx, ty) per texture coord	
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
-
-    // bind index buffer
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idxBufID);
 
     // set buffer data for triangle index
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);

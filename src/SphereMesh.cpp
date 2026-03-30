@@ -72,7 +72,7 @@ void SphereMesh::create_sphere() {
 	}
 
 	// Middle piece
-	for (int i = 1; i < res_theta; i++) 
+	for (int i = 2; i < res_theta; i++) 
     {
         phi = 0;
         pos.y = cos(i * stepTheta);
@@ -114,12 +114,17 @@ void SphereMesh::create_sphere() {
 	}
 
 	// Bottom piece
-	
+	glm::vec3 bottom = glm::normalize(glm::vec3(0, -1, 0));
+    v.pos = radius * bottom;
+    v.normal = bottom;
+    v.uv = glm::vec2(0, 1.0);
+    vertices.push_back(v);
+
     phi = 0;
-	
+
     for (int j = 0; j < res_phi; j++) {
         idx++;
-
+/*
 		pos.y = cos(PI - stepTheta);
         float cr = sin(PI - stepTheta);
         pos.x = cr * cos(phi);
@@ -129,25 +134,23 @@ void SphereMesh::create_sphere() {
         v.normal = pos;
         v.uv = glm::vec2(j / (float) res_phi, (1 - 1 / (float) res_theta));
         vertices.push_back(v);
-
+*/
         if (j > 0) {
-            indices.push_back(idx);
-            indices.push_back(idx - 1);
-            indices.push_back(res_phi * res_theta + 1);
+            indices.push_back(idx - res_phi);
+            indices.push_back(idx - res_phi - 1);
+            indices.push_back(res_phi * ( res_theta - 1) + 1);
         } else {
-            indices.push_back(res_phi * res_theta);
-            indices.push_back(idx);
-            indices.push_back(res_phi * res_theta + 1);
+            // j = 0
+            indices.push_back(res_phi * ( res_theta - 1) );
+            indices.push_back(idx - res_phi);
+            indices.push_back(res_phi * ( res_theta - 1) + 1);
         }
 
-        phi += stepPhi;
+        //phi += stepPhi;
 
 	}
 
-    glm::vec3 bottom = glm::normalize(glm::vec3(0, -1, 0));
-    v.pos = radius * bottom;
-    v.normal = bottom;
-    v.uv = glm::vec2(0, 1.0);
-    vertices.push_back(v);
+    std::cout << vertices.size() << std::endl;
+    std::cout << indices.size() << std::endl;
 
 }

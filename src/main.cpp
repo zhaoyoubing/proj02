@@ -16,6 +16,7 @@
 #include "ClothSim.h"
 #include "AppMain.h"
 #include "SphereMesh.h"
+#include "RigidSphere.h"
 
 
 App app;
@@ -25,7 +26,7 @@ static Shader shader;
 glm::mat4 matModelRoot = glm::mat4(1.0);
 
 glm::vec3 lightPos = glm::vec3(5.0f, 5.0f, 10.0f);
-glm::vec3 viewPos_default = glm::vec3(0.0f, 6.0f, 6.0f);
+glm::vec3 viewPos_default = glm::vec3(0.0f, 0.0f, 100.0f);
 
 GLuint blinnShader;
 GLuint texblinnShader;
@@ -70,7 +71,7 @@ int main()
     app.camera = std::make_shared<ArcballCamera>(
         viewPos_default,
         glm::vec3(0,0,0), // target
-        20.0f,            // distance
+        100.0f,            // distance
         60.0f,            // FOV
         float(width) / float(height),
         0.1f,
@@ -81,9 +82,9 @@ int main()
     setLightPosition(lightPos);
     setViewPosition(app.camera->eye);
 
-    texblinnShader = initShader("shaders/texblinn.vert", "shaders/texblinn.frag");
-    setLightPosition(lightPos);
-    setViewPosition(app.camera->eye);
+    //texblinnShader = initShader("shaders/texblinn.vert", "shaders/texblinn.frag");
+    //setLightPosition(lightPos);
+    //setViewPosition(app.camera->eye);
 
     //std::shared_ptr<PlaneMesh> cloth = MeshFactory::createPlane(PlaneMesh::XZ, 20, 22, 20, 20, 10.0f, "models/carpet.png");
     //cloth->setShaderId(texblinnShader);
@@ -92,7 +93,13 @@ int main()
     ball->setShaderId(blinnShader);
 
     app.sim = std::make_shared<RigidSim>();
-    //app.sim->add(ball);
+
+    std::shared_ptr<RigidSphere> ball1 = std::make_shared<RigidSphere>(1.0f);
+    ball1->setMesh(ball);
+    std::shared_ptr<RigidObj> ball1Obj = std::dynamic_pointer_cast<RigidObj>(ball1);
+    ball1Obj->setPosition(glm::vec3(0, 50.0f, 0));
+    ball1Obj->setVelocity(glm::vec3(-5.0, 0.0f, 0.0f));
+    app.sim->add(ball1Obj);
   
     // setting the background colour, you can change the value
     glClearColor(0.25f, 0.5f, 0.75f, 1.0f);
@@ -116,9 +123,11 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // time step of 0.005 second
-        //app.sim->tick(0.005);
+        app.sim->tick(0.001);
 
-        ball->draw(matModelRoot, app.camera->matView, app.camera->matProj);
+        app.sim->draw();
+
+        //ball->draw(matModelRoot, app.camera->matView, app.camera->matProj);
 
         glfwSwapBuffers(window);
     }

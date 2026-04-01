@@ -8,8 +8,13 @@
 class RigidSphere : public RigidObj {
 
 public:
-    std::shared_ptr<SphereMesh> mesh;
-    RigidSphere() { }
+    float r = 1.0f;
+    //std::shared_ptr<SphereMesh> mesh;
+    RigidSphere() { r = 1.0f; }
+    RigidSphere(float ar) { r = ar; }
+
+    CollisionInfo testCollisionWith(std::shared_ptr<RigidObj>  obj2);
+    CollisionInfo testCollisionWith(std::shared_ptr<RigidSphere> obj2);
 };
 
 #endif

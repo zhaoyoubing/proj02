@@ -4,6 +4,7 @@
 #include <memory>
 #include "GLWin.h"
 #include "RigidSim.h"
+#include "ArcballCamera.h"
 
 class App {
 public:

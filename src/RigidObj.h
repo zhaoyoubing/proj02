@@ -3,22 +3,75 @@
 
 
 #include <vector>
+#include <memory>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 
+#include "Mesh.h"
+
+struct CollisionInfo {
+    bool isColliding;
+    glm::vec3 peneAxis;          // Minimum Penetration Axis
+    float peneDepth; // How deep a rigid body is inside another
+};
 
 class RigidObj
 {
-    glm::vec3 pos;
+public:
+    glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f);
+    // glm::quat rot = glm::quat(1.0f, 0.0f, 0.0f, 0.0f); // rotation
+    glm::vec3 scale  = glm::vec3(1.0f, 1.0f, 1.0f);
 
-    float mass;
-    glm::vec3 force;
-    glm::vec3 velocity;
-    glm::vec3 acceler;
+
+    float mass = 1.0;
+    glm::vec3 force = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 linearVel = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 linearAcc = glm::vec3(0.0f, 0.0f, 0.0f);
+
+    // To be introduced in 2027
+    // glm::vec3 angularVel;
+    // glm::vec3 angularAcc;
+
+    std::shared_ptr<Mesh> mesh;
+
+    void applyLinearForce(glm::vec3 force);
+    void applyLinearImpulse(glm::vec3 impulse);
+    void integrateForces(float dt);
+    void integrateVelocity(float dt);
+
+
+    void setPosition(glm::vec3 apos) { 
+        pos = apos; 
+    }
+
+    void setVelocity(glm::vec3 vel) {
+        linearVel = vel;
+    }
+
+
+    void setMesh(std::shared_ptr<Mesh> m) { mesh = m; }
+    void setMass(float m) { mass = m; }
+
+    void draw(glm::mat4 matView, glm::mat4 matProj) {
+        glm::mat4 matTrans = glm::translate(pos);
+        //glm::mat4 matRot    = glm::mat4_cast(rot);
+        glm::mat4 matScale  = glm::scale(glm::mat4(1.0f), scale);
+
+        glm::mat4 mvp = matTrans * matScale;
+
+        mesh->draw(mvp, matView, matProj);
+    }
+
+    CollisionInfo testCollisionWith(std::shared_ptr<RigidObj> obj) {
+        CollisionInfo info;
+        info.isColliding = false;
+        return info; 
+    }
 };
 
+/*
 class RigidSphere : public RigidObj 
 {
 public:
@@ -27,5 +80,6 @@ public:
 
     bool ifIntersect(RigidSphere & sphere);
 };
+*/
 
 #endif

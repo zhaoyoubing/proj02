@@ -14,17 +14,17 @@ void RigidSim::tick(float dt)
     }
 
     // collision detection and collision response
-    for (auto& obj1 : objList) 
-        for (auto& obj2 : objList) {
+    for (int i = 0; i < objList.size(); i++)
+        for (int j = i + 1; j < objList.size(); j++)
+    {
+        std::shared_ptr<RigidObj> obj1 = objList[i];
+        std::shared_ptr<RigidObj> obj2 = objList[j];
 
-            if (obj1 == obj2)
-                continue;
+        CollisionInfo info = obj1->testCollisionWith(obj2);
 
-            CollisionInfo info = obj1->testCollisionWith(obj2);
-
-            if (info.isColliding) {
-                collisionResponse(obj1, obj2, info);
-            }
+        if (info.isColliding) {
+            collisionResponse(obj1, obj2, info);
+        }
     }
 
     // integrate velocity and draw
@@ -45,8 +45,9 @@ void RigidSim::draw()
 // calculate impulse and modify object velocity
 void RigidSim::collisionResponse(std::shared_ptr<RigidObj> a, std::shared_ptr<RigidObj> b, CollisionInfo collisionInfo) 
 {
-    glm::vec3 peneAxis = collisionInfo.peneAxis;
-    float penetrationDepth = collisionInfo.peneDepth;
+    glm::vec3 normal = collisionInfo.normal;
+    float peneDepth = collisionInfo.peneDepth;
+    glm::vec3 offsetPos = normal * peneDepth;
 
     /*
     // code for rotation
@@ -79,11 +80,25 @@ void RigidSim::collisionResponse(std::shared_ptr<RigidObj> a, std::shared_ptr<Ri
     // to push them apart. It's the reaction of the collision.
     glm::vec3 relativeVel = a->linearVel - b->linearVel;
 
-    float J = -(1 + COEF_ELASITY) * glm::dot(relativeVel, peneAxis) /
-        ( (1.0f / a->mass) + (1.0f / b->mass) );
+    float denom = (1.0f / a->mass) + (1.0f / b->mass);
 
-    // Impulse is given by j * n (Minimum Penetration Axis)
-    glm::vec3 impulse = J * peneAxis;
+    if (! b->dynamic) {
+        denom = (1.0f / a->mass);
+        offsetPos = offsetPos * 2.0f;
+    }
+    else {
+        b->pos -= offsetPos;
+    }
+
+    a->pos += offsetPos;
+
+    //if (a->pos.y < b->pos.y + 1)
+    //    std::cout << "below the plane" << std::endl;
+
+    float J = -(1 + a->elasity) * glm::dot(relativeVel, normal) / denom;
+
+    // Impulse is given by j * n 
+    glm::vec3 impulse = J * normal;
 
     a->applyLinearImpulse(impulse);
     b->applyLinearImpulse(-impulse);

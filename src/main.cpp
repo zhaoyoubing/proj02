@@ -17,6 +17,8 @@
 #include "AppMain.h"
 #include "SphereMesh.h"
 #include "RigidSphere.h"
+#include "PlaneMesh.h"
+#include "RigidPlane.h"
 
 
 App app;
@@ -62,9 +64,24 @@ void setViewPosition(glm::vec3 eyePos)
     glUniform3fv(viewpos_loc, 1, glm::value_ptr(eyePos));
 }
 
+void init_singleStaticBall()
+{
+
+}
+
+void init_singleMovingBall()
+{
+
+}
+
+void init_singleBallGround()
+{
+
+}
+
 int main()
 {
-    app.glWin = GLWin::createWin(width, height, "Hello Mass-Spring");
+    app.glWin = GLWin::createWin(width, height, "Hello Rigid Body");
     
     GLFWwindow *window = app.glWin->getGLFWwin();
 
@@ -89,18 +106,35 @@ int main()
     //std::shared_ptr<PlaneMesh> cloth = MeshFactory::createPlane(PlaneMesh::XZ, 20, 22, 20, 20, 10.0f, "models/carpet.png");
     //cloth->setShaderId(texblinnShader);
 
-    std::shared_ptr<SphereMesh> ball = std::make_shared<SphereMesh>(20, 20, 5.0f);
-    ball->setShaderId(blinnShader);
-
     app.sim = std::make_shared<RigidSim>();
 
-    std::shared_ptr<RigidSphere> ball1 = std::make_shared<RigidSphere>(1.0f);
+
+    float radius = 4.0f;
+    std::shared_ptr<SphereMesh> ball = std::make_shared<SphereMesh>(20, 20, radius);
+    ball->setShaderId(blinnShader);
+
+    std::shared_ptr<RigidSphere> ball1 = std::make_shared<RigidSphere>(radius);
     ball1->setMesh(ball);
     std::shared_ptr<RigidObj> ball1Obj = std::dynamic_pointer_cast<RigidObj>(ball1);
-    ball1Obj->setPosition(glm::vec3(0, 50.0f, 0));
-    ball1Obj->setVelocity(glm::vec3(-5.0, 0.0f, 0.0f));
+    ball1Obj->setPosition(glm::vec3(0.0f, 50.0f, 0.0f));
+    ball1Obj->setVelocity(glm::vec3(-0.5, 0.0f, 0.0f));
     app.sim->add(ball1Obj);
-  
+
+
+    float width = 100.0f;
+    float length = 100.0f;
+
+    std::shared_ptr<PlaneMesh> planeMesh = std::make_shared<PlaneMesh>(PlaneMesh::XZ, width, length, 10, 10, -width / 2.0, -length / 2.0);
+    planeMesh->setShaderId(blinnShader);
+    planeMesh->initBuffer();
+
+    std::shared_ptr<RigidPlane> planeRigid = std::make_shared<RigidPlane>(width, length, -20.0f);
+    planeRigid->setDynamic(false);
+    planeRigid->setMesh(planeMesh);
+    std::shared_ptr<RigidObj> planeObj = std::dynamic_pointer_cast<RigidObj>(planeRigid);
+    app.sim->add(planeObj);
+
+
     // setting the background colour, you can change the value
     glClearColor(0.25f, 0.5f, 0.75f, 1.0f);
     glEnable(GL_DEPTH_TEST);
@@ -123,7 +157,7 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // time step of 0.005 second
-        app.sim->tick(0.001);
+        app.sim->tick(0.005);
 
         app.sim->draw();
 

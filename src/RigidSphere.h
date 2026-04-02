@@ -4,6 +4,7 @@
 #include <memory>
 #include "RigidObj.h"
 #include "SphereMesh.h"
+#include "RigidPlane.h"
 
 class RigidSphere : public RigidObj {
 
@@ -14,7 +15,9 @@ public:
     RigidSphere(float ar) { r = ar; }
 
     CollisionInfo testCollisionWith(std::shared_ptr<RigidObj>  obj2);
+    
     CollisionInfo testCollisionWith(std::shared_ptr<RigidSphere> obj2);
+    CollisionInfo testCollisionWith(std::shared_ptr<RigidPlane> obj2);
 };
 
 #endif

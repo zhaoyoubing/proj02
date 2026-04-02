@@ -1,20 +1,25 @@
 #include "RigidObj.h"
 
-#define LINEAR_DAMPING 0.9995
+#define LINEAR_DAMPING 0.9999
 #define ANGULAR_DAMPING 0.999 
 
 void RigidObj::applyLinearForce(glm::vec3 force)
 {
+    if (! dynamic) return;
+
     linearAcc += force / mass; 
 }
 
 void RigidObj::applyLinearImpulse(glm::vec3 impulse)
 {
+    if (! dynamic) return;
     linearVel += impulse / mass;
 }
 
 void RigidObj::integrateForces(float dt)
 {
+    if (! dynamic) return;
+
     // Integrate linear velocity.
     linearVel += linearAcc * dt;
     //std::cout << rb.linearVel.x << " " << rb.linearVel.y  << std::endl;
@@ -29,10 +34,13 @@ void RigidObj::integrateForces(float dt)
 
 void RigidObj::integrateVelocity(float dt)
 {
+    if (! dynamic) return;
+
     pos += linearVel * dt;
 
-    if (pos.y < -20.0)
-        pos.y = -20.0;
+
+    // if (pos.y < -20.0)
+    //    pos.y = -20.0;
 
     // glm::quat velQuat(0.0f, rb.angularVel.x, rb.angularVel.y, rb.angularVel.z);
     // glm::quat dq = 0.5f * rb.trans.rotation * velQuat * dt;

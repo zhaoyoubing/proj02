@@ -18,7 +18,7 @@ find_package(glfw3 REQUIRED)
 add_executable(run01 src/main.cpp src/glad.c src/shader.cpp src/Mesh.cpp 
                 src/Texture.cpp src/MeshFactory.cpp 
                 src/PlaneMesh.cpp src/ClothSim.cpp src/GLWin.cpp src/Interaction.cpp src/Spatial.cpp
-                src/SphereMesh.cpp src/RigidSim.cpp src/RigidObj.cpp)
+                src/SphereMesh.cpp src/RigidSim.cpp src/RigidObj.cpp src/RigidSphere.cpp)
 
 # specify include directories
 target_include_directories(run01 PRIVATE 

@@ -13,13 +13,16 @@
 
 struct CollisionInfo {
     bool isColliding;
-    glm::vec3 peneAxis;          // Minimum Penetration Axis
+    glm::vec3 normal;          // Minimum Penetration Axis
     float peneDepth; // How deep a rigid body is inside another
 };
 
 class RigidObj
 {
 public:
+    bool dynamic = true;
+    const float elasity = 0.95f;
+
     glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f);
     // glm::quat rot = glm::quat(1.0f, 0.0f, 0.0f, 0.0f); // rotation
     glm::vec3 scale  = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -30,6 +33,7 @@ public:
     glm::vec3 linearVel = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 linearAcc = glm::vec3(0.0f, 0.0f, 0.0f);
 
+    // angular velocity and acceleration
     // To be introduced in 2027
     // glm::vec3 angularVel;
     // glm::vec3 angularAcc;
@@ -41,6 +45,10 @@ public:
     void integrateForces(float dt);
     void integrateVelocity(float dt);
 
+
+    void setDynamic(bool b) {
+        dynamic = b;
+    }
 
     void setPosition(glm::vec3 apos) { 
         pos = apos; 
@@ -64,22 +72,13 @@ public:
         mesh->draw(mvp, matView, matProj);
     }
 
-    CollisionInfo testCollisionWith(std::shared_ptr<RigidObj> obj) {
+    virtual CollisionInfo testCollisionWith(std::shared_ptr<RigidObj> obj) 
+    {
         CollisionInfo info;
         info.isColliding = false;
-        return info; 
+        return info;
     }
-};
 
-/*
-class RigidSphere : public RigidObj 
-{
-public:
-    // using pos as the sphere center
-    float r;
-
-    bool ifIntersect(RigidSphere & sphere);
 };
-*/
 
 #endif

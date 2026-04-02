@@ -10,7 +10,9 @@ class RigidSim
 {
 public:
     const glm::vec3 GRAVITY = glm::vec3(0.0f, -9.80665, 0.0f);
-    const float COEF_ELASITY = 0.78f;
+
+    const float LINEAR_DAMPING = 0.99;
+    const float ANGULAR_DAMPING = 0.999;
 
     std::vector<std::shared_ptr<RigidObj> > objList;
     

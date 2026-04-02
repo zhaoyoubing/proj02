@@ -9,8 +9,10 @@ void RigidSim::tick(float dt)
     // dynamics
     for (auto& obj : objList) {
         // f = ma
-        obj->applyLinearForce(GRAVITY);
-        obj->integrateForces(dt);
+        if (obj->useGravity) {
+            obj->applyLinearForce(GRAVITY);
+            obj->integrateForces(dt);
+        }
     }
 
     // collision detection and collision response
@@ -47,7 +49,7 @@ void RigidSim::collisionResponse(std::shared_ptr<RigidObj> a, std::shared_ptr<Ri
 {
     glm::vec3 normal = collisionInfo.normal;
     float peneDepth = collisionInfo.peneDepth;
-    glm::vec3 offsetPos = normal * peneDepth;
+    glm::vec3 offsetPos = normal * peneDepth * 0.5f;
 
     /*
     // code for rotation

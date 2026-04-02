@@ -21,7 +21,8 @@ class RigidObj
 {
 public:
     bool dynamic = true;
-    const float elasity = 0.95f;
+    bool useGravity = true;
+    const float elasity = 0.98f;
 
     glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f);
     // glm::quat rot = glm::quat(1.0f, 0.0f, 0.0f, 0.0f); // rotation
@@ -58,18 +59,21 @@ public:
         linearVel = vel;
     }
 
+    void setUseGravity(bool b) { useGravity = b;  }
+
 
     void setMesh(std::shared_ptr<Mesh> m) { mesh = m; }
+
     void setMass(float m) { mass = m; }
 
     void draw(glm::mat4 matView, glm::mat4 matProj) {
-        glm::mat4 matTrans = glm::translate(pos);
+        glm::mat4 matTrans = glm::translate(glm::mat4(1.0f), pos);
         //glm::mat4 matRot    = glm::mat4_cast(rot);
         glm::mat4 matScale  = glm::scale(glm::mat4(1.0f), scale);
 
-        glm::mat4 mvp = matTrans * matScale;
+        glm::mat4 modelTrans = matTrans * matScale;
 
-        mesh->draw(mvp, matView, matProj);
+        mesh->draw(modelTrans, matView, matProj);
     }
 
     virtual CollisionInfo testCollisionWith(std::shared_ptr<RigidObj> obj) 

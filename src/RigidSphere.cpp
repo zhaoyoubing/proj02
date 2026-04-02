@@ -30,9 +30,12 @@ CollisionInfo RigidSphere::testCollisionWith(std::shared_ptr<RigidSphere> obj2) 
 
     glm::vec3 vecPos = pos -  obj2->pos;
     float dist = glm::length(vecPos);
+
+    // penetration depth
     float depth = r + obj2->r - dist;
     info.peneDepth = depth;
-    if (depth > 0) {
+
+    if (depth > 0)  {
         // Impulse-based response:
         info.isColliding = true;
     }
@@ -63,7 +66,8 @@ CollisionInfo RigidSphere::testCollisionWith(std::shared_ptr<RigidPlane> obj2)
     info.peneDepth = depth;
 
     
-    if (depth > 0) {
+    // fix the above ceiling bug temporarily
+    if ((depth > 0) && (depth < r)) {
         // Impulse-based response:
         info.isColliding = true;
     }

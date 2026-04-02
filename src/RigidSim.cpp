@@ -106,6 +106,6 @@ void RigidSim::collisionResponse(std::shared_ptr<RigidObj> a, std::shared_ptr<Ri
     b->applyLinearImpulse(-impulse);
 
     // code for rotation
-    // a->applyImpulse(impulse, rA);
-    // b->applyImpulse(-impulse, rB);
+    //a->applyAngularImpulse(impulse, rA);
+    //b->applyAngularImpulse(-impulse, rB);
 }

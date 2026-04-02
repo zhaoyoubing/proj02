@@ -14,6 +14,7 @@ public:
     RigidSphere() { r = 1.0f; }
     RigidSphere(float ar) { r = ar; }
 
+    glm::mat3 calcInertia();
     CollisionInfo testCollisionWith(std::shared_ptr<RigidObj>  obj2);
     
     CollisionInfo testCollisionWith(std::shared_ptr<RigidSphere> obj2);

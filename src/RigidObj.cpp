@@ -16,6 +16,21 @@ void RigidObj::applyLinearImpulse(glm::vec3 impulse)
     linearVel += impulse / mass;
 }
 
+
+void RigidObj::applyAngularForce(glm::vec3 f, glm::vec3 r) {
+    if (! dynamic) return;
+    glm::vec3 t = glm::cross(r, f);
+    angularAcc += glm::inverse(inertiaTensor) * t; 
+}
+
+void RigidObj::applyAngularImpulse(glm::vec3 i, glm::vec3 r) {
+    if (! dynamic) return;
+
+    glm::vec3 t = glm::cross(r, i);
+    angularVel += glm::inverse(inertiaTensor) * t;
+}
+
+
 void RigidObj::integrateForces(float dt)
 {
     if (! dynamic) return;
@@ -31,6 +46,7 @@ void RigidObj::integrateForces(float dt)
     linearAcc = glm::vec3(0.0f, 0.0f, 0.0f);
     //angularAcc = glm::vec3(0.0f, 0.0f, 0.0f);
 }
+
 
 void RigidObj::integrateVelocity(float dt)
 {
@@ -50,4 +66,15 @@ void RigidObj::integrateVelocity(float dt)
 
     linearVel *= LINEAR_DAMPING;
     //angularVel *= ANGULAR_DAMPING;
+}
+
+void RigidObj::integrateAngularVelocity(float dt)
+{
+    glm::quat velQuat(0.0f, angularVel.x, angularVel.y, angularVel.z);
+    glm::quat dq = 0.5f * rotation * velQuat * dt;
+
+    rotation += dq; 
+    rotation = glm::normalize(rotation);
+
+    angularVel *= ANGULAR_DAMPING;
 }

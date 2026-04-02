@@ -8,6 +8,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 #include "Mesh.h"
 
@@ -25,7 +26,7 @@ public:
     const float elasity = 0.98f;
 
     glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f);
-    // glm::quat rot = glm::quat(1.0f, 0.0f, 0.0f, 0.0f); // rotation
+    glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f); // rotation
     glm::vec3 scale  = glm::vec3(1.0f, 1.0f, 1.0f);
 
 
@@ -35,16 +36,20 @@ public:
     glm::vec3 linearAcc = glm::vec3(0.0f, 0.0f, 0.0f);
 
     // angular velocity and acceleration
-    // To be introduced in 2027
-    // glm::vec3 angularVel;
-    // glm::vec3 angularAcc;
+    glm::vec3 angularVel = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 angularAcc = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::mat3 inertiaTensor = glm::mat3(1.0f);
 
     std::shared_ptr<Mesh> mesh;
 
     void applyLinearForce(glm::vec3 force);
     void applyLinearImpulse(glm::vec3 impulse);
+    void applyAngularForce(glm::vec3 f, glm::vec3 r);
+    void applyAngularImpulse(glm::vec3 i, glm::vec3 r);
+
     void integrateForces(float dt);
     void integrateVelocity(float dt);
+    void integrateAngularVelocity(float dt);
 
 
     void setDynamic(bool b) {
@@ -65,6 +70,12 @@ public:
     void setMesh(std::shared_ptr<Mesh> m) { mesh = m; }
 
     void setMass(float m) { mass = m; }
+
+    virtual glm::mat3 calcInertia() { return glm::mat3(1.0f); }
+
+    //void setRotation(RigidBody& rb, glm::quat q);
+    //void setRotation(RigidBody &rb, float angleDegrees, glm::vec3 axis);
+
 
     void draw(glm::mat4 matView, glm::mat4 matProj) {
         glm::mat4 matTrans = glm::translate(glm::mat4(1.0f), pos);

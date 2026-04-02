@@ -1,5 +1,16 @@
 #include "RigidSphere.h"
 
+glm::mat3 RigidSphere::calcInertia()
+{
+    float d = (2.0f / 5.0f) * mass * r * r;
+
+    return glm::mat3(
+        d, 0.0f, 0.0f,
+        0.0f, d, 0.0f,
+        0.0f, 0.0f, d
+    );
+}
+
 CollisionInfo RigidSphere::testCollisionWith(std::shared_ptr<RigidObj> obj2) {
     std::shared_ptr<RigidSphere> sphere =
                std::dynamic_pointer_cast<RigidSphere> (obj2);

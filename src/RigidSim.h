@@ -16,6 +16,7 @@ public:
 
     std::vector<std::shared_ptr<RigidBody> > objList;
 
+    bool bPlay = false;
     bool bUseAngular = true;
     
     RigidSim() {}
@@ -30,6 +31,15 @@ public:
 
     void setUseAngular(bool b) {
         bUseAngular = b;
+    }
+
+    void setPlaySim(bool b) {
+        bPlay = b;
+    }
+
+    void clear() {
+        objList.clear();
+        bPlay = false;
     }
 };
 

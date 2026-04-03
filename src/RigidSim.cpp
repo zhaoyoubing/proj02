@@ -6,6 +6,8 @@ extern App app;
 // simulation update workflow for each time step
 void RigidSim::tick(float dt)
 {
+    if (!bPlay) return;
+
     // dynamics
     for (auto& obj : objList) {
         // f = ma
@@ -89,6 +91,15 @@ void RigidSim::collisionResponse(std::shared_ptr<RigidBody> a, std::shared_ptr<R
 
     float denom = denomA;
 
+    /*
+    float j = -(1 + e) * glm::dot(relativeVel, peneAxis) /
+    (
+        (1.0f / a->mass) +
+        (1.0f / b->mass) +
+        glm::dot(glm::cross(rA, mpa), invInertiaA * glm::cross(rA, normal)) +
+        glm::dot(glm::cross(rB, mpa), invInertiaB * glm::cross(rB, normal))
+    );
+    */
 
     if (b->dynamic) {
         denom += denomB;
@@ -101,16 +112,7 @@ void RigidSim::collisionResponse(std::shared_ptr<RigidBody> a, std::shared_ptr<R
     // simple but not accurate handling 
     a->pos += offsetPos;
 
-    /*
-    float j = -(1 + RESTITUTION_CO) * glm::dot(relativeVel, peneAxis) /
-    (
-        (1.0f / a->mass) +
-        (1.0f / b->mass) +
-        glm::dot(glm::cross(rA, mpa), invInertiaA * glm::cross(rA, normal)) +
-        glm::dot(glm::cross(rB, mpa), invInertiaB * glm::cross(rB, normal))
-    );
 
-    */
 
     // We use relative velocity of both bodies to find the impulse needed
     // to push them apart. It's the reaction of the collision.

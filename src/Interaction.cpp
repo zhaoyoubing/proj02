@@ -17,6 +17,8 @@ extern glm::mat4 matModelRoot;
 
 extern App app;
 
+extern void key_callback_sim(GLFWwindow* window, int key, int scancode, int action, int mods);
+
 glm::vec3 screenPosToRay(int mouseX, int mouseY, int w, int h,
                          const glm::mat4 &proj, const glm::mat4 &view)
 {
@@ -122,12 +124,13 @@ void ScrollCallback(GLFWwindow* window, double xoff, double yoff)
     app.camera->Zoom((float)yoff);
 }
 
+/*
 void key_callback_sim(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     //std::cout << "simulation key callback " << std::endl;
     if (action == GLFW_PRESS)
     {
-        /*
+        
         // Controls
         if (GLFW_KEY_SPACE == key) {
             // there are bugs on disable simulation
@@ -150,9 +153,10 @@ void key_callback_sim(GLFWwindow* window, int key, int scancode, int action, int
 
         if (GLFW_KEY_G == key)
             app.sim->setInverseGravity();
-        */
+        
     }
 }
+*/
 
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {

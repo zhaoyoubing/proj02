@@ -64,18 +64,10 @@ void setViewPosition(glm::vec3 eyePos)
     glUniform3fv(viewpos_loc, 1, glm::value_ptr(eyePos));
 }
 
-void init_singleStaticBall()
+void init_singleBall(glm::vec3 v = glm::vec3(0.0), bool bGround = false)
 {
+    app.sim->clear();
 
-}
-
-void init_singleMovingBall()
-{
-
-}
-
-void init_singleBallGround()
-{
     float radius = 4.0f;
     std::shared_ptr<SphereMesh> ball = std::make_shared<SphereMesh>(20, 20, radius);
     ball->setShaderId(blinnShader);
@@ -84,26 +76,30 @@ void init_singleBallGround()
     ball1->setMesh(ball);
     std::shared_ptr<RigidBody> ball1Obj = std::dynamic_pointer_cast<RigidBody>(ball1);
     ball1Obj->setPosition(glm::vec3(0.0f, 50.0f, 0.0f));
-    ball1Obj->setVelocity(glm::vec3(-0.5, 0.0f, 0.0f));
+    ball1Obj->setVelocity(v);
     app.sim->add(ball1Obj);
 
+    if (bGround) {
+        float width = 100.0f;
+        float length = 100.0f;
 
-    float width = 100.0f;
-    float length = 100.0f;
+        std::shared_ptr<PlaneMesh> planeMesh = std::make_shared<PlaneMesh>(PlaneMesh::XZ, width, length, 10, 10, -width / 2.0, -length / 2.0);
+        planeMesh->setShaderId(blinnShader);
+        planeMesh->initBuffer();
 
-    std::shared_ptr<PlaneMesh> planeMesh = std::make_shared<PlaneMesh>(PlaneMesh::XZ, width, length, 10, 10, -width / 2.0, -length / 2.0);
-    planeMesh->setShaderId(blinnShader);
-    planeMesh->initBuffer();
-
-    std::shared_ptr<RigidPlane> planeRigid = std::make_shared<RigidPlane>(width, length, -20.0f);
-    planeRigid->setDynamic(false);
-    planeRigid->setMesh(planeMesh);
-    std::shared_ptr<RigidBody> planeObj = std::dynamic_pointer_cast<RigidBody>(planeRigid);
-    app.sim->add(planeObj);
+        std::shared_ptr<RigidPlane> planeRigid = std::make_shared<RigidPlane>(width, length, -20.0f);
+        planeRigid->setDynamic(false);
+        planeRigid->setMesh(planeMesh);
+        std::shared_ptr<RigidBody> planeObj = std::dynamic_pointer_cast<RigidBody>(planeRigid);
+        app.sim->add(planeObj);
+    }
 }
 
-void init_twoBall()
+
+void init_twoBall(glm::vec3 v = glm::vec3(0.0f))
 {
+    app.sim->clear();
+
     float radius = 4.0f;
     std::shared_ptr<SphereMesh> ball = std::make_shared<SphereMesh>(20, 20, radius);
     ball->setShaderId(blinnShader);
@@ -112,7 +108,7 @@ void init_twoBall()
     ball1->setMesh(ball);
     std::shared_ptr<RigidBody> ball1Obj = std::dynamic_pointer_cast<RigidBody>(ball1);
     ball1Obj->setPosition(glm::vec3(0.0f, 50.0f, 0.0f));
-    //ball1Obj->setVelocity(glm::vec3(-0.5, 0.0f, 0.0f));
+    ball1Obj->setVelocity(v);
     app.sim->add(ball1Obj);
 
 
@@ -129,6 +125,7 @@ void init_twoBall()
     std::shared_ptr<RigidBody> ball2Obj = std::dynamic_pointer_cast<RigidBody>(ball2);
     ball2Obj->setPosition(glm::vec3(-3.0f, 0.0f, 0.0f));
     //ball2Obj->setVelocity(glm::vec3(-0.5, 0.0f, 0.0f));
+    ball2Obj->setUseGravity(false);
     app.sim->add(ball2Obj);
 
 
@@ -139,14 +136,89 @@ void init_twoBall()
     app.sim->add(planeObj);
 }
 
-void init_billiard() {
+void init_snooker() {
+    app.sim->clear();
 
+    float radius = 4.0f;
+    std::shared_ptr<SphereMesh> ball = std::make_shared<SphereMesh>(20, 20, radius);
+    ball->setShaderId(blinnShader);
+
+    std::shared_ptr<RigidSphere> ball1 = std::make_shared<RigidSphere>(radius);
+    ball1->setMesh(ball);
+    std::shared_ptr<RigidBody> ball1Obj = std::dynamic_pointer_cast<RigidBody>(ball1);
+    ball1Obj->setPosition(glm::vec3(0.0f, 60.0f, 0.0f));
+    ball1Obj->setMass(0.1);
+    ball1Obj->setVelocity(glm::vec3(-0.0, -10.0f, 0.0f));
+    app.sim->add(ball1Obj);
+
+
+    float width = 100.0f;
+    float length = 100.0f;
+
+    std::shared_ptr<PlaneMesh> planeMesh = std::make_shared<PlaneMesh>(PlaneMesh::XZ, width, length, 10, 10, -width / 2.0, -length / 2.0);
+    planeMesh->setShaderId(blinnShader);
+    planeMesh->initBuffer();
+
+    for (int i = 0; i < 5; i++)
+        for (int j = 0; j < i + 1; j++)
+        {
+            std::shared_ptr<RigidSphere> ballx = std::make_shared<RigidSphere>(radius);
+            ballx->setMesh(ball);
+            std::shared_ptr<RigidBody> ballxObj = std::dynamic_pointer_cast<RigidBody>(ballx);
+            ballxObj->setPosition(glm::vec3(0 + (-i / 2.0 + j) * radius * 2, 20.0f - i * 2 * radius, 0.0f));
+            //ball2Obj->setVelocity(glm::vec3(-0.5, 0.0f, 0.0f));
+            ballxObj->setUseGravity(false);
+            app.sim->add(ballxObj);
+        }
+
+    std::shared_ptr<RigidPlane> planeRigid = std::make_shared<RigidPlane>(width, length, -40.0f);
+    planeRigid->setDynamic(false);
+    planeRigid->setMesh(planeMesh);
+    std::shared_ptr<RigidBody> planeObj = std::dynamic_pointer_cast<RigidBody>(planeRigid);
+    app.sim->add(planeObj);
+
+
+
+    std::shared_ptr<RigidPlane> planeRigid_top = std::make_shared<RigidPlane>(width, length, -70.0f, glm::vec3(0.0f, -1.0f, 0.0f));
+    planeRigid_top->setDynamic(false);
+    planeRigid_top->setMesh(planeMesh);
+    std::shared_ptr<RigidBody> planeObj_top = std::dynamic_pointer_cast<RigidBody>(planeRigid_top);
+    app.sim->add(planeObj_top);
 }
 
 void clearScene() 
 {
+    app.sim->clear();
+}
 
-    //app.sim->clear();
+void key_callback_sim(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    //std::cout << "simulation key callback " << std::endl;
+    if (action == GLFW_PRESS)
+    {
+        // Controls
+        if (GLFW_KEY_SPACE == key) {
+           app.sim->setPlaySim(true);
+        } else if (GLFW_KEY_1 == key) {
+            init_singleBall();
+        } else if (GLFW_KEY_2 == key) {
+            init_singleBall(glm::vec3(-2.0f, 0.0f, 0.0f));
+        } else if (GLFW_KEY_3 == key) {
+            init_singleBall(glm::vec3(0.0f), true);
+        } else if (GLFW_KEY_4 == key) {
+            init_singleBall(glm::vec3(-2.0f, 0.0f, 0.0f), true);
+        } else if (GLFW_KEY_5 == key) {
+            init_twoBall(glm::vec3(0.0f));
+        } else if (GLFW_KEY_6 == key) {
+            init_snooker();
+        } if (GLFW_KEY_R == key) {
+           app.sim->clear();
+        }
+
+        //if (GLFW_KEY_G == key)
+        //    app.sim->setInverseGravity();
+        
+    }
 }
 
 int main()
@@ -178,52 +250,9 @@ int main()
 
     app.sim = std::make_shared<RigidSim>();
 
+    // init single ball with ground
+    init_singleBall(glm::vec3(0.0f), true);
 
-    float radius = 4.0f;
-    std::shared_ptr<SphereMesh> ball = std::make_shared<SphereMesh>(20, 20, radius);
-    ball->setShaderId(blinnShader);
-
-    std::shared_ptr<RigidSphere> ball1 = std::make_shared<RigidSphere>(radius);
-    ball1->setMesh(ball);
-    std::shared_ptr<RigidBody> ball1Obj = std::dynamic_pointer_cast<RigidBody>(ball1);
-    ball1Obj->setPosition(glm::vec3(0.0f, 60.0f, 0.0f));
-    ball1Obj->setMass(0.1);
-    ball1Obj->setVelocity(glm::vec3(-0.0, -10.0f, 0.0f));
-    app.sim->add(ball1Obj);
-
-
-    float width = 100.0f;
-    float length = 100.0f;
-
-    std::shared_ptr<PlaneMesh> planeMesh = std::make_shared<PlaneMesh>(PlaneMesh::XZ, width, length, 10, 10, -width / 2.0, -length / 2.0);
-    planeMesh->setShaderId(blinnShader);
-    planeMesh->initBuffer();
-
-    for (int i = 0; i < 5; i++)
-        for (int j = 0; j < i + 1; j++)
-        {
-            std::shared_ptr<RigidSphere> ballx = std::make_shared<RigidSphere>(radius);
-            ballx->setMesh(ball);
-            std::shared_ptr<RigidBody> ballxObj = std::dynamic_pointer_cast<RigidBody>(ballx);
-            ballxObj->setPosition(glm::vec3(0 + (- i / 2.0 + j) * radius * 2 , 20.0f - i * 2 * radius, 0.0f));
-            //ball2Obj->setVelocity(glm::vec3(-0.5, 0.0f, 0.0f));
-            ballxObj->setUseGravity(false);
-            app.sim->add(ballxObj);
-        }
-   
-    std::shared_ptr<RigidPlane> planeRigid = std::make_shared<RigidPlane>(width, length, -40.0f);
-    planeRigid->setDynamic(false);
-    planeRigid->setMesh(planeMesh);
-    std::shared_ptr<RigidBody> planeObj = std::dynamic_pointer_cast<RigidBody>(planeRigid);
-    app.sim->add(planeObj);
-    
-
-    
-    std::shared_ptr<RigidPlane> planeRigid_top = std::make_shared<RigidPlane>(width, length, -70.0f, glm::vec3(0.0f, -1.0f, 0.0f) );
-    planeRigid_top->setDynamic(false);
-    planeRigid_top->setMesh(planeMesh);
-    std::shared_ptr<RigidBody> planeObj_top = std::dynamic_pointer_cast<RigidBody>(planeRigid_top);
-    app.sim->add(planeObj_top);
     
 
     // setting the background colour, you can change the value
@@ -233,11 +262,19 @@ int main()
 
 
     std::cout << "==================================" << std::endl;
-    std::cout << "Space key: Start simulation" << std::endl;
-    std::cout << "v: Enable/Disable wind" << std::endl;
-    std::cout << "g: Inverse gravity" << std::endl;
-    std::cout << "x: Toggle wireframe" << std::endl;
-    std::cout << "r: Reset" << std::endl;
+    std::cout << "SPACE: Start simulation" << std::endl;
+    // std::cout << "v: Enable/Disable wind" << std::endl;
+    // std::cout << "g: Inverse gravity" << std::endl;
+    std::cout << "1: Single ball free falling " << std::endl;
+    std::cout << "2: Single ball falling with initial horizontal velocity" << std::endl;
+    std::cout << "3: Single ball free falling with ground" << std::endl;
+    std::cout << "4: Single ball falling with initial horizontal velocity and ground" << std::endl;
+    std::cout << "5: Two balls with ground, one falling" << std::endl;
+    std::cout << "6: Snooker balls (no gravity)  hit by one ball falling" << std::endl;
+    std::cout << "R: clear" << std::endl;
+
+    //std::cout << "x: Toggle wireframe" << std::endl;
+    //std::cout << "r: Reset" << std::endl;
     std::cout << "==================================" << std::endl;
 
     // setting the event loop

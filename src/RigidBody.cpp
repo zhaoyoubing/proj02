@@ -26,8 +26,8 @@ void RigidBody::applyAngularForce(glm::vec3 f, glm::vec3 r) {
 void RigidBody::applyAngularImpulse(glm::vec3 i, glm::vec3 r) {
     if (! dynamic) return;
 
-    glm::vec3 t = glm::cross(r, i);
-    angularVel += glm::inverse(matInertia) * t;
+    glm::vec3 torque = glm::cross(r, i);
+    angularVel += glm::inverse(matInertia) * torque;
 }
 
 void RigidBody::integrateAcc(float dt)

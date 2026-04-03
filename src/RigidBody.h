@@ -14,16 +14,17 @@
 
 struct CollisionInfo {
     bool isColliding;
-    glm::vec3 normal;          // Minimum Penetration Axis
-    float peneDepth; // How deep a rigid body is inside another
+    glm::vec3 pos;  // contact point
+    glm::vec3 normal; // contact normal
+    float peneDepth;  // penetration depth
 };
 
-class RigidObj
+class RigidBody
 {
 public:
     bool dynamic = true;
     bool useGravity = true;
-    const float elasity = 0.98f;
+    const float elasity = 0.8f;
 
     glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f); // rotation
@@ -38,7 +39,8 @@ public:
     // angular velocity and acceleration
     glm::vec3 angularVel = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 angularAcc = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::mat3 inertiaTensor = glm::mat3(1.0f);
+
+    glm::mat3 matInertia = glm::mat3(1.0f);
 
     std::shared_ptr<Mesh> mesh;
 
@@ -47,10 +49,18 @@ public:
     void applyAngularForce(glm::vec3 f, glm::vec3 r);
     void applyAngularImpulse(glm::vec3 i, glm::vec3 r);
 
-    void integrateForces(float dt);
+    void integrateAcc(float dt);
+    void integrateLinearAcc(float dt);
+    void integrateAngularAcc(float dt);
+
     void integrateVelocity(float dt);
+    void integrateLinearVelocity(float dt);
     void integrateAngularVelocity(float dt);
 
+
+    //RigidBody() {
+    //    matInertia = calcInertia();
+    //}
 
     void setDynamic(bool b) {
         dynamic = b;
@@ -79,15 +89,15 @@ public:
 
     void draw(glm::mat4 matView, glm::mat4 matProj) {
         glm::mat4 matTrans = glm::translate(glm::mat4(1.0f), pos);
-        //glm::mat4 matRot    = glm::mat4_cast(rot);
+        glm::mat4 matRot    = glm::mat4_cast(rotation);
         glm::mat4 matScale  = glm::scale(glm::mat4(1.0f), scale);
 
-        glm::mat4 modelTrans = matTrans * matScale;
+        glm::mat4 modelTrans = matTrans * matRot *  matScale;
 
         mesh->draw(modelTrans, matView, matProj);
     }
 
-    virtual CollisionInfo testCollisionWith(std::shared_ptr<RigidObj> obj) 
+    virtual CollisionInfo testCollisionWith(std::shared_ptr<RigidBody> obj) 
     {
         CollisionInfo info;
         info.isColliding = false;

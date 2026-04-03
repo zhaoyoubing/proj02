@@ -11,16 +11,16 @@ void RigidSim::tick(float dt)
         // f = ma
         if (obj->useGravity) {
             obj->applyLinearForce(GRAVITY);
-            obj->integrateForces(dt);
         }
+        obj->integrateAcc(dt);
     }
 
     // collision detection and collision response
     for (int i = 0; i < objList.size(); i++)
         for (int j = i + 1; j < objList.size(); j++)
     {
-        std::shared_ptr<RigidObj> obj1 = objList[i];
-        std::shared_ptr<RigidObj> obj2 = objList[j];
+        std::shared_ptr<RigidBody> obj1 = objList[i];
+        std::shared_ptr<RigidBody> obj2 = objList[j];
 
         CollisionInfo info = obj1->testCollisionWith(obj2);
 
@@ -45,35 +45,69 @@ void RigidSim::draw()
 }
 
 // calculate impulse and modify object velocity
-void RigidSim::collisionResponse(std::shared_ptr<RigidObj> a, std::shared_ptr<RigidObj> b, CollisionInfo collisionInfo) 
+void RigidSim::collisionResponse(std::shared_ptr<RigidBody> a, std::shared_ptr<RigidBody> b, CollisionInfo info) 
 {
-    glm::vec3 normal = collisionInfo.normal;
-    float peneDepth = collisionInfo.peneDepth;
+    glm::vec3 normal = info.normal;
+    float peneDepth = info.peneDepth;
     glm::vec3 offsetPos = normal * peneDepth * 0.5f;
 
+    float J = 0.0;
+
+    float angularA = 0.0f;
+    float angularB = 0.0f;
+    glm::vec3 rA = glm::vec3(0.0f);
+    glm::vec3 rB = glm::vec3(0.0f);
+
+    if (bUseAngular)
+    {
+        // code for rotation
+        //glm::vec3 contactPointA = findContactPoint(a, peneAxis, penetrationDepth);
+        //glm::vec3 contactPointB = findContactPoint(b, -peneAxis, penetrationDepth);
+
+        glm::vec3 contactPointA = info.pos + peneDepth * normal * 0.5f;
+        glm::vec3 contactPointB = info.pos - peneDepth * normal * 0.5f;
+
+        rA = contactPointA - a->pos;
+        rB = contactPointB - b->pos;
+
+        // Velocity of rigid body A
+        glm::vec3 vA = a->linearVel + (glm::cross(a->angularVel, rA));
+
+        // Velocity of rigid body B
+        glm::vec3 vB = b->linearVel + (glm::cross(b->angularVel, rB));
+
+        glm::mat3 invInertiaA = glm::inverse(a->matInertia);
+        glm::mat3 invInertiaB = glm::inverse(b->matInertia);
+
+        angularA = glm::dot(glm::cross(rA, normal), invInertiaA * glm::cross(rA, normal));
+        angularB = glm::dot(glm::cross(rB, normal), invInertiaA * glm::cross(rA, normal));
+
+    }
+
+    float denomA = (1.0f / a->mass) + angularA;
+    float denomB = (1.0f / b->mass) + angularB;
+
+    float denom = denomA;
+
+
+    if (b->dynamic) {
+        denom += denomB;
+        b->pos -= offsetPos;
+    }
+    else {
+        offsetPos = offsetPos * 2.0f;
+    }
+
+    // simple but not accurate handling 
+    a->pos += offsetPos;
+
     /*
-    // code for rotation
-    glm::vec3 contactPointA = findContactPoint(a, peneAxis, penetrationDepth);
-    glm::vec3 contactPointB = findContactPoint(b, -peneAxis, penetrationDepth);
-
-    glm::vec3 rA = contactPointA - a->pos;
-    glm::vec3 rB = contactPointB - b->pos;
-
-    // Velocity of rigid body A
-    glm::vec3 vA = a->linearVel + (glm::cross(a.angularVel, rA));
-
-    // Velocity of rigid body B
-    glm::vec3 vB = b->linearVel + (glm::cross(b.angularVel, rB));
-
-    glm::mat3 invertedInertiaTensorA = glm::inverse(a.inertiaTensor);
-    glm::mat3 invertedInertiaTensorB = glm::inverse(b.inertiaTensor);
-    
     float j = -(1 + RESTITUTION_CO) * glm::dot(relativeVel, peneAxis) /
     (
         (1.0f / a->mass) +
         (1.0f / b->mass) +
-        glm::dot(glm::cross(rA, mpa), invertedInertiaTensorA * glm::cross(rA, peneAxis)) +
-        glm::dot(glm::cross(rB, mpa), invertedInertiaTensorB * glm::cross(rB, peneAxis))
+        glm::dot(glm::cross(rA, mpa), invInertiaA * glm::cross(rA, normal)) +
+        glm::dot(glm::cross(rB, mpa), invInertiaB * glm::cross(rB, normal))
     );
 
     */
@@ -82,22 +116,7 @@ void RigidSim::collisionResponse(std::shared_ptr<RigidObj> a, std::shared_ptr<Ri
     // to push them apart. It's the reaction of the collision.
     glm::vec3 relativeVel = a->linearVel - b->linearVel;
 
-    float denom = (1.0f / a->mass) + (1.0f / b->mass);
-
-    if (! b->dynamic) {
-        denom = (1.0f / a->mass);
-        offsetPos = offsetPos * 2.0f;
-    }
-    else {
-        b->pos -= offsetPos;
-    }
-
-    a->pos += offsetPos;
-
-    //if (a->pos.y < b->pos.y + 1)
-    //    std::cout << "below the plane" << std::endl;
-
-    float J = -(1 + a->elasity) * glm::dot(relativeVel, normal) / denom;
+    J = -(1 + a->elasity) * glm::dot(relativeVel, normal) / denom;
 
     // Impulse is given by j * n 
     glm::vec3 impulse = J * normal;
@@ -106,6 +125,8 @@ void RigidSim::collisionResponse(std::shared_ptr<RigidObj> a, std::shared_ptr<Ri
     b->applyLinearImpulse(-impulse);
 
     // code for rotation
-    //a->applyAngularImpulse(impulse, rA);
-    //b->applyAngularImpulse(-impulse, rB);
+    if (bUseAngular) {
+        a->applyAngularImpulse(impulse, rA);
+        b->applyAngularImpulse(-impulse, rB);
+    }
 }

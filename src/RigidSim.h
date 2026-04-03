@@ -4,7 +4,7 @@
 #include <vector>
 #include <memory>
 
-#include "RigidObj.h"
+#include "RigidBody.h"
 
 class RigidSim 
 {
@@ -14,17 +14,23 @@ public:
     const float LINEAR_DAMPING = 0.999;
     const float ANGULAR_DAMPING = 0.999;
 
-    std::vector<std::shared_ptr<RigidObj> > objList;
+    std::vector<std::shared_ptr<RigidBody> > objList;
+
+    bool bUseAngular = true;
     
     RigidSim() {}
 
-    void add(std::shared_ptr<RigidObj> obj) { objList.push_back(obj); }
+    void add(std::shared_ptr<RigidBody> obj) { objList.push_back(obj); }
     
     void tick(float dt);
 
     void draw();
 
-    void collisionResponse(std::shared_ptr<RigidObj> a, std::shared_ptr<RigidObj> b, CollisionInfo collisionInfo);
+    void collisionResponse(std::shared_ptr<RigidBody> a, std::shared_ptr<RigidBody> b, CollisionInfo collisionInfo);
+
+    void setUseAngular(bool b) {
+        bUseAngular = b;
+    }
 };
 
 #endif 

@@ -82,7 +82,7 @@ void init_singleBallGround()
 
     std::shared_ptr<RigidSphere> ball1 = std::make_shared<RigidSphere>(radius);
     ball1->setMesh(ball);
-    std::shared_ptr<RigidObj> ball1Obj = std::dynamic_pointer_cast<RigidObj>(ball1);
+    std::shared_ptr<RigidBody> ball1Obj = std::dynamic_pointer_cast<RigidBody>(ball1);
     ball1Obj->setPosition(glm::vec3(0.0f, 50.0f, 0.0f));
     ball1Obj->setVelocity(glm::vec3(-0.5, 0.0f, 0.0f));
     app.sim->add(ball1Obj);
@@ -98,7 +98,7 @@ void init_singleBallGround()
     std::shared_ptr<RigidPlane> planeRigid = std::make_shared<RigidPlane>(width, length, -20.0f);
     planeRigid->setDynamic(false);
     planeRigid->setMesh(planeMesh);
-    std::shared_ptr<RigidObj> planeObj = std::dynamic_pointer_cast<RigidObj>(planeRigid);
+    std::shared_ptr<RigidBody> planeObj = std::dynamic_pointer_cast<RigidBody>(planeRigid);
     app.sim->add(planeObj);
 }
 
@@ -110,7 +110,7 @@ void init_twoBall()
 
     std::shared_ptr<RigidSphere> ball1 = std::make_shared<RigidSphere>(radius);
     ball1->setMesh(ball);
-    std::shared_ptr<RigidObj> ball1Obj = std::dynamic_pointer_cast<RigidObj>(ball1);
+    std::shared_ptr<RigidBody> ball1Obj = std::dynamic_pointer_cast<RigidBody>(ball1);
     ball1Obj->setPosition(glm::vec3(0.0f, 50.0f, 0.0f));
     //ball1Obj->setVelocity(glm::vec3(-0.5, 0.0f, 0.0f));
     app.sim->add(ball1Obj);
@@ -126,7 +126,7 @@ void init_twoBall()
 
     std::shared_ptr<RigidSphere> ball2 = std::make_shared<RigidSphere>(radius);
     ball2->setMesh(ball);
-    std::shared_ptr<RigidObj> ball2Obj = std::dynamic_pointer_cast<RigidObj>(ball2);
+    std::shared_ptr<RigidBody> ball2Obj = std::dynamic_pointer_cast<RigidBody>(ball2);
     ball2Obj->setPosition(glm::vec3(-3.0f, 0.0f, 0.0f));
     //ball2Obj->setVelocity(glm::vec3(-0.5, 0.0f, 0.0f));
     app.sim->add(ball2Obj);
@@ -135,7 +135,7 @@ void init_twoBall()
     std::shared_ptr<RigidPlane> planeRigid = std::make_shared<RigidPlane>(width, length, -20.0f);
     planeRigid->setDynamic(false);
     planeRigid->setMesh(planeMesh);
-    std::shared_ptr<RigidObj> planeObj = std::dynamic_pointer_cast<RigidObj>(planeRigid);
+    std::shared_ptr<RigidBody> planeObj = std::dynamic_pointer_cast<RigidBody>(planeRigid);
     app.sim->add(planeObj);
 }
 
@@ -162,7 +162,7 @@ int main()
         60.0f,            // FOV
         float(width) / float(height),
         0.1f,
-        500.0f
+        1000.0f
     );
 
     blinnShader = initShader("shaders/blinn.vert", "shaders/blinn.frag");
@@ -185,10 +185,10 @@ int main()
 
     std::shared_ptr<RigidSphere> ball1 = std::make_shared<RigidSphere>(radius);
     ball1->setMesh(ball);
-    std::shared_ptr<RigidObj> ball1Obj = std::dynamic_pointer_cast<RigidObj>(ball1);
-    ball1Obj->setPosition(glm::vec3(0.0f, 70.0f, 0.0f));
-    ball1Obj->setMass(10.0);
-    ball1Obj->setVelocity(glm::vec3(-0.5, 0.0f, 0.0f));
+    std::shared_ptr<RigidBody> ball1Obj = std::dynamic_pointer_cast<RigidBody>(ball1);
+    ball1Obj->setPosition(glm::vec3(0.0f, 60.0f, 0.0f));
+    ball1Obj->setMass(0.1);
+    ball1Obj->setVelocity(glm::vec3(-0.0, -10.0f, 0.0f));
     app.sim->add(ball1Obj);
 
 
@@ -204,26 +204,25 @@ int main()
         {
             std::shared_ptr<RigidSphere> ballx = std::make_shared<RigidSphere>(radius);
             ballx->setMesh(ball);
-            std::shared_ptr<RigidObj> ballxObj = std::dynamic_pointer_cast<RigidObj>(ballx);
+            std::shared_ptr<RigidBody> ballxObj = std::dynamic_pointer_cast<RigidBody>(ballx);
             ballxObj->setPosition(glm::vec3(0 + (- i / 2.0 + j) * radius * 2 , 20.0f - i * 2 * radius, 0.0f));
             //ball2Obj->setVelocity(glm::vec3(-0.5, 0.0f, 0.0f));
             ballxObj->setUseGravity(false);
             app.sim->add(ballxObj);
         }
    
-
     std::shared_ptr<RigidPlane> planeRigid = std::make_shared<RigidPlane>(width, length, -40.0f);
     planeRigid->setDynamic(false);
     planeRigid->setMesh(planeMesh);
-    std::shared_ptr<RigidObj> planeObj = std::dynamic_pointer_cast<RigidObj>(planeRigid);
+    std::shared_ptr<RigidBody> planeObj = std::dynamic_pointer_cast<RigidBody>(planeRigid);
     app.sim->add(planeObj);
     
 
     
-    std::shared_ptr<RigidPlane> planeRigid_top = std::make_shared<RigidPlane>(width, length, 80.0f);
+    std::shared_ptr<RigidPlane> planeRigid_top = std::make_shared<RigidPlane>(width, length, -70.0f, glm::vec3(0.0f, -1.0f, 0.0f) );
     planeRigid_top->setDynamic(false);
     planeRigid_top->setMesh(planeMesh);
-    std::shared_ptr<RigidObj> planeObj_top = std::dynamic_pointer_cast<RigidObj>(planeRigid_top);
+    std::shared_ptr<RigidBody> planeObj_top = std::dynamic_pointer_cast<RigidBody>(planeRigid_top);
     app.sim->add(planeObj_top);
     
 

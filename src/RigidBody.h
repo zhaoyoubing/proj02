@@ -13,8 +13,9 @@
 #include "Mesh.h"
 
 struct CollisionInfo {
-    bool isColliding;
-    glm::vec3 pos;  // contact point
+    bool bColliding;
+
+    glm::vec3 pos;    // contact point
     glm::vec3 normal; // contact normal
     float peneDepth;  // penetration depth
 };
@@ -22,15 +23,19 @@ struct CollisionInfo {
 class RigidBody
 {
 public:
-    bool dynamic = true;
-    bool useGravity = true;
+    // for elastic collision response
     const float elasity = 0.8f;
 
+    bool bDynamic = true;
+    bool bUseGravity = true;
+    
+    // transforms
     glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f); // rotation
     glm::vec3 scale  = glm::vec3(1.0f, 1.0f, 1.0f);
 
 
+    // Dynamic properities
     float mass = 1.0;
     glm::vec3 force = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 linearVel = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -46,8 +51,11 @@ public:
 
     void applyLinearForce(glm::vec3 force);
     void applyLinearImpulse(glm::vec3 impulse);
+
+    // for angular effects
     void applyAngularForce(glm::vec3 f, glm::vec3 r);
     void applyAngularImpulse(glm::vec3 i, glm::vec3 r);
+    virtual glm::mat3 calcInertia() { return glm::mat3(1.0f); }
 
     void integrateAcc(float dt);
     void integrateLinearAcc(float dt);
@@ -57,35 +65,20 @@ public:
     void integrateLinearVelocity(float dt);
     void integrateAngularVelocity(float dt);
 
+    void setDynamic(bool b) {  bDynamic = b; }
 
-    //RigidBody() {
-    //    matInertia = calcInertia();
-    //}
-
-    void setDynamic(bool b) {
-        dynamic = b;
-    }
-
-    void setPosition(glm::vec3 apos) { 
-        pos = apos; 
-    }
-
-    void setVelocity(glm::vec3 vel) {
-        linearVel = vel;
-    }
-
-    void setUseGravity(bool b) { useGravity = b;  }
-
+    void setUseGravity(bool b) { bUseGravity = b;  }
 
     void setMesh(std::shared_ptr<Mesh> m) { mesh = m; }
 
     void setMass(float m) { mass = m; }
 
-    virtual glm::mat3 calcInertia() { return glm::mat3(1.0f); }
+    void setPosition(glm::vec3 apos) { pos = apos; }
+
+    void setVelocity(glm::vec3 vel) {  linearVel = vel; }
 
     //void setRotation(RigidBody& rb, glm::quat q);
     //void setRotation(RigidBody &rb, float angleDegrees, glm::vec3 axis);
-
 
     void draw(glm::mat4 matView, glm::mat4 matProj) {
         glm::mat4 matTrans = glm::translate(glm::mat4(1.0f), pos);
@@ -99,8 +92,9 @@ public:
 
     virtual CollisionInfo testCollisionWith(std::shared_ptr<RigidBody> obj) 
     {
+        //std::cout << "RigidBody::testCollisioinWith" << std::endl;
         CollisionInfo info;
-        info.isColliding = false;
+        info.bColliding = false;
         return info;
     }
 

@@ -5,26 +5,27 @@
 
 void RigidBody::applyLinearForce(glm::vec3 force)
 {
-    if (! dynamic) return;
+    if (! bDynamic) return;
 
     linearAcc += force / mass; 
 }
 
 void RigidBody::applyLinearImpulse(glm::vec3 impulse)
 {
-    if (! dynamic) return;
+    if (! bDynamic) return;
     linearVel += impulse / mass;
 }
 
 
 void RigidBody::applyAngularForce(glm::vec3 f, glm::vec3 r) {
-    if (! dynamic) return;
+    if (! bDynamic) return;
+
     glm::vec3 t = glm::cross(r, f);
     angularAcc += glm::inverse(matInertia) * t; 
 }
 
 void RigidBody::applyAngularImpulse(glm::vec3 i, glm::vec3 r) {
-    if (! dynamic) return;
+    if (! bDynamic) return;
 
     glm::vec3 torque = glm::cross(r, i);
     angularVel += glm::inverse(matInertia) * torque;
@@ -38,7 +39,7 @@ void RigidBody::integrateAcc(float dt)
     
 void RigidBody::integrateLinearAcc(float dt)
 {
-    if (! dynamic) return;
+    if (! bDynamic) return;
 
     // Integrate linear velocity.
     linearVel += linearAcc * dt;
@@ -63,7 +64,7 @@ void RigidBody::integrateAngularAcc(float dt)
 
 void RigidBody::integrateVelocity(float dt)
 {
-    if (!dynamic) return;
+    if (!bDynamic) return;
 
     integrateLinearVelocity(dt);
     integrateAngularVelocity(dt);
@@ -71,7 +72,7 @@ void RigidBody::integrateVelocity(float dt)
 
 void RigidBody::integrateLinearVelocity(float dt)
 {
-    if (! dynamic) return;
+    if (! bDynamic) return;
 
     pos += linearVel * dt;
 

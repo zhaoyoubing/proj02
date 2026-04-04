@@ -11,7 +11,7 @@ void RigidSim::tick(float dt)
     // dynamics
     for (auto& obj : objList) {
         // f = ma
-        if (obj->useGravity) {
+        if (obj->bUseGravity) {
             obj->applyLinearForce(GRAVITY);
         }
         obj->integrateAcc(dt);
@@ -26,7 +26,7 @@ void RigidSim::tick(float dt)
 
         CollisionInfo info = obj1->testCollisionWith(obj2);
 
-        if (info.isColliding) {
+        if (info.bColliding) {
             collisionResponse(obj1, obj2, info);
         }
     }
@@ -62,10 +62,7 @@ void RigidSim::collisionResponse(std::shared_ptr<RigidBody> a, std::shared_ptr<R
 
     if (bUseAngular)
     {
-        // code for rotation
-        //glm::vec3 contactPointA = findContactPoint(a, peneAxis, penetrationDepth);
-        //glm::vec3 contactPointB = findContactPoint(b, -peneAxis, penetrationDepth);
-
+        // find the contact point
         glm::vec3 contactPointA = info.pos + peneDepth * normal * 0.5f;
         glm::vec3 contactPointB = info.pos - peneDepth * normal * 0.5f;
 
@@ -91,6 +88,7 @@ void RigidSim::collisionResponse(std::shared_ptr<RigidBody> a, std::shared_ptr<R
 
     float denom = denomA;
 
+    // the full formula with angular rotations
     /*
     float j = -(1 + e) * glm::dot(relativeVel, peneAxis) /
     (
@@ -101,7 +99,7 @@ void RigidSim::collisionResponse(std::shared_ptr<RigidBody> a, std::shared_ptr<R
     );
     */
 
-    if (b->dynamic) {
+    if (b->bDynamic) {
         denom += denomB;
         b->pos -= offsetPos;
     }
@@ -112,15 +110,14 @@ void RigidSim::collisionResponse(std::shared_ptr<RigidBody> a, std::shared_ptr<R
     // simple but not accurate handling 
     a->pos += offsetPos;
 
-
-
     // We use relative velocity of both bodies to find the impulse needed
     // to push them apart. It's the reaction of the collision.
     glm::vec3 relativeVel = a->linearVel - b->linearVel;
 
+    // magnitude of the impulse
     J = -(1 + a->elasity) * glm::dot(relativeVel, normal) / denom;
 
-    // Impulse is given by j * n 
+    // the impulse vector has the direction of the normal 
     glm::vec3 impulse = J * normal;
 
     a->applyLinearImpulse(impulse);

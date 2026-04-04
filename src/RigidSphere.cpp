@@ -24,11 +24,7 @@ CollisionInfo RigidSphere::testCollisionWith(std::shared_ptr<RigidBody> obj2) {
         return testCollisionWith(plane);
     }
     
-    CollisionInfo info;
-    info.isColliding = false;
-    return info;
-
-    //return RigidBody::testCollisionWith(obj2);
+    return RigidBody::testCollisionWith(obj2);
 }
 
 CollisionInfo RigidSphere::testCollisionWith(std::shared_ptr<RigidSphere> obj2) {
@@ -49,11 +45,11 @@ CollisionInfo RigidSphere::testCollisionWith(std::shared_ptr<RigidSphere> obj2) 
 
     if (depth > 0)  {
         // Impulse-based response:
-        info.isColliding = true;
+        info.bColliding = true;
         info.pos = (pos + obj2->pos) * 0.5f;
     }
     else {
-        info.isColliding = false;
+        info.bColliding = false;
     }
     
     return info; 
@@ -77,13 +73,13 @@ CollisionInfo RigidSphere::testCollisionWith(std::shared_ptr<RigidPlane> obj2)
     // fix the above ceiling bug temporarily
     if ((depth > 0) && (depth < r)) {
         // Impulse-based response:
-        info.isColliding = true;
+        info.bColliding = true;
 
         // contact point 
         info.pos = pos - (dist + depth * 0.5f) * obj2->normal;
     }
     else {
-        info.isColliding = false;
+        info.bColliding = false;
     }
     
     return info; 

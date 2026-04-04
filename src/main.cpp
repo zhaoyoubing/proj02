@@ -241,19 +241,11 @@ int main()
     setLightPosition(lightPos);
     setViewPosition(app.camera->eye);
 
-    //texblinnShader = initShader("shaders/texblinn.vert", "shaders/texblinn.frag");
-    //setLightPosition(lightPos);
-    //setViewPosition(app.camera->eye);
-
-    //std::shared_ptr<PlaneMesh> cloth = MeshFactory::createPlane(PlaneMesh::XZ, 20, 22, 20, 20, 10.0f, "models/carpet.png");
-    //cloth->setShaderId(texblinnShader);
-
     app.sim = std::make_shared<RigidSim>();
 
     // init single ball with ground
     init_singleBall(glm::vec3(0.0f), true);
 
-    
 
     // setting the background colour, you can change the value
     glClearColor(0.25f, 0.5f, 0.75f, 1.0f);
@@ -263,35 +255,31 @@ int main()
 
     std::cout << "==================================" << std::endl;
     std::cout << "SPACE: Start simulation" << std::endl;
-    // std::cout << "v: Enable/Disable wind" << std::endl;
-    // std::cout << "g: Inverse gravity" << std::endl;
     std::cout << "1: Single ball free falling " << std::endl;
     std::cout << "2: Single ball falling with initial horizontal velocity" << std::endl;
     std::cout << "3: Single ball free falling with ground" << std::endl;
     std::cout << "4: Single ball falling with initial horizontal velocity and ground" << std::endl;
     std::cout << "5: Two balls with ground, one falling" << std::endl;
     std::cout << "6: Snooker balls (no gravity)  hit by one ball falling" << std::endl;
-    std::cout << "R: clear" << std::endl;
-
-    //std::cout << "x: Toggle wireframe" << std::endl;
-    //std::cout << "r: Reset" << std::endl;
+    std::cout << "x: Toggle wireframe" << std::endl;
+    std::cout << "r: Clear" << std::endl;
     std::cout << "==================================" << std::endl;
 
     // setting the event loop
     while (!glfwWindowShouldClose(window))
     {
-        glfwPollEvents();
-
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        // update physics
         // time step of 0.005 second
         app.sim->tick(0.005);
 
+        // draw the models
         app.sim->draw();
 
-        //ball->draw(matModelRoot, app.camera->matView, app.camera->matProj);
-
         glfwSwapBuffers(window);
+
+        glfwPollEvents();
     }
 
     glfwTerminate();

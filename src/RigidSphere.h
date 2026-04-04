@@ -17,14 +17,14 @@ public:
     // return the inertia matrix for angular effects
     glm::mat3 calcInertia() override;
 
-    CollisionInfo testCollisionWith(std::shared_ptr<RigidBody>  obj2);
+    CollisionInfo testCollisionWith(std::shared_ptr<RigidBody>  rb2);
     
     // collision with sphere, plane
-    CollisionInfo testCollisionWith(std::shared_ptr<RigidSphere> obj2);
-    CollisionInfo testCollisionWith(std::shared_ptr<RigidPlane> obj2);
+    CollisionInfo testCollisionWith(std::shared_ptr<RigidSphere> rb2);
+    CollisionInfo testCollisionWith(std::shared_ptr<RigidPlane> rb2);
     
     // To be implemented : collison with box
-    // CollisionInfo testCollisionWith(std::shared_ptr<Box> obj2);
+    // CollisionInfo testCollisionWith(std::shared_ptr<Box> rb2);
 private:
 
     void init(float ar) {

@@ -90,7 +90,7 @@ public:
         mesh->draw(modelTrans, matView, matProj);
     }
 
-    virtual CollisionInfo testCollisionWith(std::shared_ptr<RigidBody> obj) 
+    virtual CollisionInfo testCollisionWith(std::shared_ptr<RigidBody> rb2) 
     {
         //std::cout << "RigidBody::testCollisioinWith" << std::endl;
         CollisionInfo info;

@@ -11,44 +11,52 @@ glm::mat3 RigidSphere::calcInertia()
     );
 }
 
-CollisionInfo RigidSphere::testCollisionWith(std::shared_ptr<RigidBody> obj2) {
+CollisionInfo RigidSphere::testCollisionWith(std::shared_ptr<RigidBody> rb2) {
     std::shared_ptr<RigidSphere> sphere =
-               std::dynamic_pointer_cast<RigidSphere> (obj2);
+               std::dynamic_pointer_cast<RigidSphere> (rb2);
     if (sphere != std::shared_ptr<RigidSphere>()) {
         return testCollisionWith(sphere);
     }
 
     std::shared_ptr<RigidPlane> plane =
-        std::dynamic_pointer_cast<RigidPlane> (obj2);
+        std::dynamic_pointer_cast<RigidPlane> (rb2);
     if (plane != std::shared_ptr<RigidPlane>()) {
         return testCollisionWith(plane);
     }
     
-    return RigidBody::testCollisionWith(obj2);
+    return RigidBody::testCollisionWith(rb2);
 }
 
-CollisionInfo RigidSphere::testCollisionWith(std::shared_ptr<RigidSphere> obj2) {
+// TODO: implement sphere-sphere collision detection
+// return the CollisionInfo: contact point, contact normal, penetration depth 
+CollisionInfo RigidSphere::testCollisionWith(std::shared_ptr<RigidSphere> rb2) {
     
     CollisionInfo info;
     
-    //glm::vec3 vecVel = linearVel - obj2->linearVel;
-    
-    glm::vec3 vPos = pos -  obj2->pos;
-    float dist = glm::length(vPos);
+    // vector from sphere 2 center to sphere 1    
+    glm::vec3 vPos = pos - rb2->pos;
 
-    // contact surface normal
-    info.normal = vPos / dist; // normalisation
+    // TODO: distance between two sphere centre
+    float dist = 0.0f;
+    dist = glm::length(vPos);
+    //dist = ???;
 
-    // penetration depth
-    float depth = r + obj2->r - dist;
-    info.peneDepth = depth;
+    // TODO: contact surface normal is the normalisation of vPos
+    info.normal = vPos / dist;
+    //info.normal = ???;
 
-    if (depth > 0)  {
-        // Impulse-based response:
+    // TODO: penetration depth
+    info.peneDepth = r + rb2->r - dist;;
+
+    if (info.peneDepth > 0)  {
+        // two spheres are colliding
         info.bColliding = true;
-        info.pos = (pos + obj2->pos) * 0.5f;
+
+        // set the contact point to the middle of the penetration
+        info.pos = (pos + rb2->pos) * 0.5f;
     }
     else {
+        // two spheres are apart
         info.bColliding = false;
     }
     
@@ -58,14 +66,14 @@ CollisionInfo RigidSphere::testCollisionWith(std::shared_ptr<RigidSphere> obj2) 
 
 
 // for a ground, the plane is static
-CollisionInfo RigidSphere::testCollisionWith(std::shared_ptr<RigidPlane> obj2)
+CollisionInfo RigidSphere::testCollisionWith(std::shared_ptr<RigidPlane> rb2)
 {
     CollisionInfo info;
     
-    info.normal = obj2->normal; // normalisation
+    info.normal = rb2->normal; // normalisation
 
     // origin of sphere to plane distance
-    float dist = obj2->pointDist(pos);
+    float dist = rb2->pointDist(pos);
     float depth = r - dist;
     info.peneDepth = depth;
 
@@ -76,7 +84,7 @@ CollisionInfo RigidSphere::testCollisionWith(std::shared_ptr<RigidPlane> obj2)
         info.bColliding = true;
 
         // contact point 
-        info.pos = pos - (dist + depth * 0.5f) * obj2->normal;
+        info.pos = pos - (dist + depth * 0.5f) * rb2->normal;
     }
     else {
         info.bColliding = false;

@@ -3,23 +3,24 @@
 
 extern App app;
 
+// TODO 4: Compleet tick()
 // simulation update workflow for each time step
 void RigidSim::tick(float dt)
 {
     if (!bPlay) return;
 
-    // dynamics
+    // Rigid body dynamics
     for (auto& obj : objList) {
         // f = ma
         if (obj->bUseGravity) {
 
-            // TODO : apply gravity force
-            // using RigidBody::applyLinearForce() and the vector RigidSim::GRAVITY
+            // TODO 4.1 : apply gravity force
+            // call RigidBody::applyLinearForce() and the vector RigidSim::GRAVITY
             obj->applyLinearForce(GRAVITY);
         }
 
-        // TODO: Integrate acceleration 
-        // to update object velocity
+        // TODO 4.2: Integrate acceleration 
+        // call RigidBody::integrateAcc() to update object velocity
         obj->integrateAcc(dt);
     }
 
@@ -30,22 +31,22 @@ void RigidSim::tick(float dt)
         std::shared_ptr<RigidBody> obj1 = objList[i];
         std::shared_ptr<RigidBody> obj2 = objList[j];
 
-        // TODO: call RigidBody::testCollisionWith()
-        // to check if two rigid body objects collides
-        // and returns CollisionInfo
+        // TODO 4.3: call RigidBody::testCollisionWith()
+        // to check if two rigid body objects collides, and return CollisionInfo
         CollisionInfo info = obj1->testCollisionWith(obj2);
+        // CollisionInfo info = ???; 
 
         if (info.bColliding) {
-            // TODO: call collisionResponse(RigidBody, RigidBody, CollisionInfo)
+            // TODO 4.4: call collisionResponse(RigidBody, RigidBody, CollisionInfo)
             // to achieve impulse based collision effects
             collisionResponse(obj1, obj2, info);
         }
     }
 
-    // integrate velocity and draw
+    // integrate velocity
     for (auto& obj : objList) {
-        // call RigidBody::integrateVelocity() to 
-        // update object position
+        // TODO 4.5 
+        // call RigidBody::integrateVelocity() to update object position
         obj->integrateVelocity(dt);
     }
 
@@ -59,6 +60,7 @@ void RigidSim::draw()
 }
 
 // calculate impulse and modify object velocity
+// TODO 3: complete the linear impulse part of RigidSim::collisionResponse()
 void RigidSim::collisionResponse(std::shared_ptr<RigidBody> a, std::shared_ptr<RigidBody> b, CollisionInfo info) 
 {
     glm::vec3 normal = info.normal;
@@ -135,13 +137,14 @@ void RigidSim::collisionResponse(std::shared_ptr<RigidBody> a, std::shared_ptr<R
         );
         */
         if (b->bDynamic) {
-            // TODO: calculate the full dominator as
+            // TODO 3.1: calculate the full dominator as
             // (1.0f / a->mass) + (1.0f / b->mass)
             denom = (1.0f / a->mass) + (1.0f / b->mass);
             // denom = ???;
 
 
-            // push back objects outside, simple but not accurate 
+            // push objects a part from the midpoint of penetration
+            // simple but not accurate 
             a->pos += offsetPos;
             b->pos -= offsetPos;
         }
@@ -156,9 +159,12 @@ void RigidSim::collisionResponse(std::shared_ptr<RigidBody> a, std::shared_ptr<R
 
     // Use relative velocity of both bodies to find the impulse needed
     // to push them apart. It's the reaction of the collision.
+    // TODO 3.2 : calculate the relative velocity of a and b
+    // using a's linear velocity minus b's linear velocity
     glm::vec3 relativeVel = a->linearVel - b->linearVel;
+    // glm::vec3 relativeVel = ???;
 
-    // TODO: calculate magnitude of the impulse J
+    // TODO 3.3 : calculate magnitude of the impulse J
     // using a->elastiy, relativeVel, normal and denom
     J = -(1 + a->elasity) * glm::dot(relativeVel, normal) / denom;
     // J = ???
@@ -170,7 +176,7 @@ void RigidSim::collisionResponse(std::shared_ptr<RigidBody> a, std::shared_ptr<R
     a->applyLinearImpulse(impulse);
     b->applyLinearImpulse(-impulse);
 
-    // code for angular effects
+    // apply angular impulse, not required
     if (bUseAngular) {
         a->applyAngularImpulse(impulse, rA);
         b->applyAngularImpulse(-impulse, rB);

@@ -3,20 +3,74 @@
 #define LINEAR_DAMPING 0.9999
 #define ANGULAR_DAMPING 0.999 
 
+void RigidBody::integrateAcc(float dt)
+{
+    integrateLinearAcc(dt);
+    integrateAngularAcc(dt);
+}
+
+void RigidBody::integrateVelocity(float dt)
+{
+    if (!bDynamic) return;
+
+    integrateLinearVelocity(dt);
+    integrateAngularVelocity(dt);
+}
+
+//=======================================
+// Linear Dynamics
+
+// TODO 1.1 : add acceleration from a force
 void RigidBody::applyLinearForce(glm::vec3 force)
 {
     if (! bDynamic) return;
 
+    // TODO: 
+    // linearAcc += ???;
     linearAcc += force / mass; 
 }
 
+// TODO 1.2 : acceleration integration
+// update veloctiy by adding acceleration contributions
+void RigidBody::integrateLinearAcc(float dt)
+{
+    if (! bDynamic) return;
+
+    // TODO:
+    // linearVel += ???;
+    linearVel += linearAcc * dt;
+
+    // Reset linear and angular acceleration.
+    linearAcc = glm::vec3(0.0f);
+}
+
+// TODO 1.3 : velocity integration
+// update object position by adding velocity contributions
+void RigidBody::integrateLinearVelocity(float dt)
+{
+    if (! bDynamic) return;
+
+    // TODO:
+    // pos += ???;
+    pos += linearVel * dt;
+
+    // reduce velocity a bit
+    linearVel *= LINEAR_DAMPING;
+}
+
+// TODO 1.4 : apply collision response
+// update velocity with impulse dividing by mass 
 void RigidBody::applyLinearImpulse(glm::vec3 impulse)
 {
     if (! bDynamic) return;
+
+    // TODO
+    // linearVel += ???;
     linearVel += impulse / mass;
 }
 
-
+//================================
+// Angular Dynamics (Not required )
 void RigidBody::applyAngularForce(glm::vec3 f, glm::vec3 r) {
     if (! bDynamic) return;
 
@@ -31,27 +85,6 @@ void RigidBody::applyAngularImpulse(glm::vec3 i, glm::vec3 r) {
     angularVel += glm::inverse(matInertia) * torque;
 }
 
-void RigidBody::integrateAcc(float dt)
-{
-    integrateLinearAcc(dt);
-    integrateAngularAcc(dt);
-}
-    
-void RigidBody::integrateLinearAcc(float dt)
-{
-    if (! bDynamic) return;
-
-    // Integrate linear velocity.
-    linearVel += linearAcc * dt;
-    //std::cout << rb.linearVel.x << " " << rb.linearVel.y  << std::endl;
-    
-    // Integrate angular velocity
-    // angularVel += angularAcc * dt;
-
-    // Reset linear and angular acceleration.
-    linearAcc = glm::vec3(0.0f, 0.0f, 0.0f);
-    //angularAcc = glm::vec3(0.0f, 0.0f, 0.0f);
-}
 
 void RigidBody::integrateAngularAcc(float dt)
 {
@@ -60,23 +93,6 @@ void RigidBody::integrateAngularAcc(float dt)
 
     // Reset linear and angular acceleration.
     angularAcc = glm::vec3(0.0f, 0.0f, 0.0f);
-}
-
-void RigidBody::integrateVelocity(float dt)
-{
-    if (!bDynamic) return;
-
-    integrateLinearVelocity(dt);
-    integrateAngularVelocity(dt);
-}
-
-void RigidBody::integrateLinearVelocity(float dt)
-{
-    if (! bDynamic) return;
-
-    pos += linearVel * dt;
-
-    linearVel *= LINEAR_DAMPING;
 }
 
 void RigidBody::integrateAngularVelocity(float dt)

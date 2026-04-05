@@ -17,7 +17,6 @@
 #include "AppMain.h"
 
 
-
 glm::vec3 screenPosToRay(int mouseX, int mouseY, int w, int h,
                          const glm::mat4 &proj, const glm::mat4 &view);
 

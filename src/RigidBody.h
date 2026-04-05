@@ -34,7 +34,6 @@ public:
     glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f); // rotation
     glm::vec3 scale  = glm::vec3(1.0f, 1.0f, 1.0f);
 
-
     // Dynamic properities
     float mass = 1.0;
     glm::vec3 force = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -49,8 +48,8 @@ public:
 
     std::shared_ptr<Mesh> mesh;
 
-    void applyLinearForce(glm::vec3 force);
-    void applyLinearImpulse(glm::vec3 impulse);
+    void applyLinearForce(glm::vec3 force);    // To be completed in RigidBody.cpp
+    void applyLinearImpulse(glm::vec3 impulse); // To be completed in RigidBody.cpp
 
     // for angular effects
     void applyAngularForce(glm::vec3 f, glm::vec3 r);
@@ -58,11 +57,11 @@ public:
     virtual glm::mat3 calcInertia() { return glm::mat3(1.0f); }
 
     void integrateAcc(float dt);
-    void integrateLinearAcc(float dt);
+    void integrateLinearAcc(float dt);  // To be completed in RigidBody.cpp
     void integrateAngularAcc(float dt);
 
     void integrateVelocity(float dt);
-    void integrateLinearVelocity(float dt);
+    void integrateLinearVelocity(float dt);  // To be completed in RigidBody.cpp
     void integrateAngularVelocity(float dt);
 
     void setDynamic(bool b) {  bDynamic = b; }

@@ -27,7 +27,7 @@ void RigidBody::applyLinearForce(glm::vec3 force)
 
     // TODO: 
     // linearAcc += ???;
-    linearAcc += force / mass; 
+   
 }
 
 // TODO 1.2 : acceleration integration
@@ -38,7 +38,7 @@ void RigidBody::integrateLinearAcc(float dt)
 
     // TODO:
     // linearVel += ???;
-    linearVel += linearAcc * dt;
+    
 
     // Reset linear and angular acceleration.
     linearAcc = glm::vec3(0.0f);
@@ -52,7 +52,7 @@ void RigidBody::integrateLinearVelocity(float dt)
 
     // TODO:
     // pos += ???;
-    pos += linearVel * dt;
+    
 
     // reduce velocity a bit
     linearVel *= LINEAR_DAMPING;
@@ -66,7 +66,7 @@ void RigidBody::applyLinearImpulse(glm::vec3 impulse)
 
     // TODO
     // linearVel += ???;
-    linearVel += impulse / mass;
+    
 }
 
 //================================

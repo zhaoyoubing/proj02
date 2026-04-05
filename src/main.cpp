@@ -13,7 +13,7 @@
 
 #include "Interaction.h"
 #include "MeshFactory.h"
-#include "ClothSim.h"
+//#include "ClothSim.h"
 #include "AppMain.h"
 #include "SphereMesh.h"
 #include "RigidSphere.h"

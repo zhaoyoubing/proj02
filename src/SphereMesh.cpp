@@ -150,7 +150,7 @@ void SphereMesh::create_sphere() {
 
 	}
 
-    std::cout << vertices.size() << std::endl;
-    std::cout << indices.size() << std::endl;
+    //std::cout << vertices.size() << std::endl;
+    //std::cout << indices.size() << std::endl;
 
 }

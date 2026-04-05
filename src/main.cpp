@@ -202,17 +202,20 @@ void key_callback_sim(GLFWwindow* window, int key, int scancode, int action, int
         } else if (GLFW_KEY_1 == key) {
             init_singleBall();
         } else if (GLFW_KEY_2 == key) {
-            init_singleBall(glm::vec3(-2.0f, 0.0f, 0.0f));
+            init_singleBall(glm::vec3(-8.0f, 0.0f, 0.0f));
         } else if (GLFW_KEY_3 == key) {
             init_singleBall(glm::vec3(0.0f), true);
         } else if (GLFW_KEY_4 == key) {
-            init_singleBall(glm::vec3(-2.0f, 0.0f, 0.0f), true);
+            init_singleBall(glm::vec3(-4.0f, 0.0f, 0.0f), true);
         } else if (GLFW_KEY_5 == key) {
             init_twoBall(glm::vec3(0.0f));
         } else if (GLFW_KEY_6 == key) {
             init_snooker();
         } if (GLFW_KEY_R == key) {
            app.sim->clear();
+           app.camera->reset(viewPos_default,
+                  glm::vec3(0,0,0)  // target
+              );
         }
 
         //if (GLFW_KEY_G == key)
@@ -229,9 +232,9 @@ int main()
 
     app.camera = std::make_shared<ArcballCamera>(
         viewPos_default,
-        glm::vec3(0,0,0), // target
+        glm::vec3(0,0,0),  // target
         200.0f,            // distance
-        60.0f,            // FOV
+        60.0f,             // FOV
         float(width) / float(height),
         0.1f,
         1000.0f

@@ -3,7 +3,7 @@
 
 extern App app;
 
-// TODO 4: Compleet tick()
+// TODO 2: Compleet tick()
 // simulation update workflow for each time step
 void RigidSim::tick(float dt)
 {
@@ -11,15 +11,14 @@ void RigidSim::tick(float dt)
 
     // Rigid body dynamics
     for (auto& obj : objList) {
-        // f = ma
         if (obj->bUseGravity) {
 
-            // TODO 4.1 : apply gravity force
+            // TODO 2.1 : apply gravity force
             // call RigidBody::applyLinearForce() and the vector RigidSim::GRAVITY
             obj->applyLinearForce(GRAVITY);
         }
 
-        // TODO 4.2: Integrate acceleration 
+        // TODO 2.2: Integrate acceleration 
         // call RigidBody::integrateAcc() to update object velocity
         obj->integrateAcc(dt);
     }
@@ -31,13 +30,13 @@ void RigidSim::tick(float dt)
         std::shared_ptr<RigidBody> obj1 = objList[i];
         std::shared_ptr<RigidBody> obj2 = objList[j];
 
-        // TODO 4.3: call RigidBody::testCollisionWith()
+        // TODO 2.3: call RigidBody::testCollisionWith()
         // to check if two rigid body objects collides, and return CollisionInfo
         CollisionInfo info = obj1->testCollisionWith(obj2);
         // CollisionInfo info = ???; 
 
         if (info.bColliding) {
-            // TODO 4.4: call collisionResponse(RigidBody, RigidBody, CollisionInfo)
+            // TODO 2.4: call collisionResponse(RigidBody, RigidBody, CollisionInfo)
             // to achieve impulse based collision effects
             collisionResponse(obj1, obj2, info);
         }
@@ -45,7 +44,7 @@ void RigidSim::tick(float dt)
 
     // integrate velocity
     for (auto& obj : objList) {
-        // TODO 4.5 
+        // TODO 3.5 
         // call RigidBody::integrateVelocity() to update object position
         obj->integrateVelocity(dt);
     }

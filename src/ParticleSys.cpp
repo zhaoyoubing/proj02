@@ -11,7 +11,7 @@ ParticleSystem::ParticleSystem(std::shared_ptr<Texture> texture)
     std::shared_ptr<ShaderSingle> simShader 
             = std::make_shared<ShaderSingle>("../Assets/compute.glsl", GL_COMPUTE_SHADER);
     simProgram->AttachShader(simShader);
-    m_particleSimulateMat = new Material(simProgram);
+    m_particleSimulateMat = std::make_shared<Material>(simProgram);
 
     // Setup shaders and shader program.
     std::shared_ptr<ShaderProgram> program = std::make_shared<ShaderProgram>();
@@ -22,7 +22,7 @@ ParticleSystem::ParticleSystem(std::shared_ptr<Texture> texture)
         = std::make_shared<ShaderSingle>("../Assets/fragment.glsl", GL_FRAGMENT_SHADER);
     program->AttachShader(fragShader);
 
-    m_particleRenderMat = new Material(program);
+    m_particleRenderMat = std::make_shared<Material>(program);
     m_particleRenderMat->Bind();
     m_particleRenderMat->SetTexture((char*)"tex", texture);
 
@@ -49,16 +49,14 @@ ParticleSystem::ParticleSystem(std::shared_ptr<Texture> texture)
 ParticleSystem::~ParticleSystem()
 {
     glDeleteBuffers(1, &m_vertexBuffer);
-    delete m_particleSimulateMat;
-    delete m_particleRenderMat;
 }
 
-Material * ParticleSystem::GetMaterial()
+std::shared_ptr<Material> ParticleSystem::getMaterial()
 {
     return m_particleRenderMat;
 }
 
-void ParticleSystem::Update(float dt)
+void ParticleSystem::tick(float dt)
 {
     // We are binding the vertex buffer from our square.
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_vertexBuffer);
@@ -79,7 +77,7 @@ void ParticleSystem::Update(float dt)
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, 0);
 }
 
-void ParticleSystem::Draw()
+void ParticleSystem::draw()
 {
     // Enable blending when rendering particles
     glEnable(GL_BLEND);

@@ -22,9 +22,10 @@ public:
     ParticleSystem(std::shared_ptr<Texture> texture);
     ~ParticleSystem();
 
-    Material* GetMaterial();
-    void Update(float dt);
-    void Draw();
+    std::shared_ptr<Material> getMaterial();
+    // update
+    void tick(float dt);
+    void draw();
 
     // Position of the system.
     glm::vec3 m_position;
@@ -46,8 +47,8 @@ private:
     Particle m_particles[MAX_PARTICLES];
     float m_internalTimer = 0;
 
-    Material* m_particleRenderMat;
-    Material* m_particleSimulateMat;
+    std::shared_ptr<Material> m_particleRenderMat;
+    std::shared_ptr<Material> m_particleSimulateMat;
 
     GLuint m_vertexBuffer;
 

@@ -19,6 +19,7 @@
 #include "RigidSphere.h"
 #include "PlaneMesh.h"
 #include "RigidPlane.h"
+#include "ParticleSys.h"
 
 
 App app;
@@ -64,6 +65,7 @@ void setViewPosition(glm::vec3 eyePos)
     glUniform3fv(viewpos_loc, 1, glm::value_ptr(eyePos));
 }
 
+/*
 void init_singleBall(glm::vec3 v = glm::vec3(0.0), bool bGround = false)
 {
     app.sim->clear();
@@ -185,9 +187,11 @@ void init_snooker() {
     std::shared_ptr<RigidBody> planeObj_top = std::dynamic_pointer_cast<RigidBody>(planeRigid_top);
     app.sim->add(planeObj_top);
 }
+*/
 
 void clearScene() 
 {
+    
     app.sim->clear();
 }
 
@@ -198,28 +202,14 @@ void key_callback_sim(GLFWwindow* window, int key, int scancode, int action, int
     {
         // Controls
         if (GLFW_KEY_SPACE == key) {
-           app.sim->setPlaySim(true);
-        } else if (GLFW_KEY_1 == key) {
-            init_singleBall();
-        } else if (GLFW_KEY_2 == key) {
-            init_singleBall(glm::vec3(-2.0f, 0.0f, 0.0f));
-        } else if (GLFW_KEY_3 == key) {
-            init_singleBall(glm::vec3(0.0f), true);
-        } else if (GLFW_KEY_4 == key) {
-            init_singleBall(glm::vec3(-2.0f, 0.0f, 0.0f), true);
-        } else if (GLFW_KEY_5 == key) {
-            init_twoBall(glm::vec3(0.0f));
-        } else if (GLFW_KEY_6 == key) {
-            init_snooker();
+           //app.sim->setPlaySim(true);
         } if (GLFW_KEY_R == key) {
            app.sim->clear();
         }
-
-        //if (GLFW_KEY_G == key)
-        //    app.sim->setInverseGravity();
         
     }
 }
+
 
 int main()
 {
@@ -241,10 +231,23 @@ int main()
     setLightPosition(lightPos);
     setViewPosition(app.camera->eye);
 
-    app.sim = std::make_shared<RigidSim>();
+    //app.sim = std::make_shared<RigidSim>();
+
+    
+    // ================================================
+    // Particle System
+    // Initialize the particle system class with a bunch of parameters:
+    std::shared_ptr<Texture> tex = std::make_shared<Texture>("models/particle.png");
+    std::shared_ptr<ParticleSystem> particleSystem = std::make_shared<ParticleSystem>(tex);
+    particleSystem->m_position = glm::vec3(0, 0, -.5);
+    particleSystem->m_lifeTime = 1.0f;
+    particleSystem->m_acceleration = glm::vec3(0, 0, 0);
+    particleSystem->m_particleSize = glm::vec2(100, 100);
+
+    app.sim = particleSystem;
 
     // init single ball with ground
-    init_singleBall(glm::vec3(0.0f), true);
+    //init_singleBall(glm::vec3(0.0f), true);
 
 
     // setting the background colour, you can change the value
@@ -260,10 +263,16 @@ int main()
     std::cout << "3: Single ball free falling with ground" << std::endl;
     std::cout << "4: Single ball falling with initial horizontal velocity and ground" << std::endl;
     std::cout << "5: Two balls with ground, one falling" << std::endl;
-    std::cout << "6: Snooker balls (no gravity)  hit by one ball falling" << std::endl;
+    std::cout << "6: Snooker balls (no gravity) hit by one ball falling" << std::endl;
     std::cout << "x: Toggle wireframe" << std::endl;
     std::cout << "r: Clear" << std::endl;
     std::cout << "==================================" << std::endl;
+
+    // The view projection matrix will be used in the vertex shader to move the particle.
+    // TODO
+    app.sim->getMaterial()->SetMat4("cameraView", app.camera->matView);
+    // The viewport dimensions are needed in the geometry shader to make a correctly sized quad.
+    //app.sim->getMaterial()->SetVec2((char*)"viewport", viewportDimensions);
 
     // setting the event loop
     while (!glfwWindowShouldClose(window))

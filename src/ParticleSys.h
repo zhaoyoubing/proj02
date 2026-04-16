@@ -1,3 +1,6 @@
+#ifndef __PARTICLE_SYS_H__
+#define __PARTICLE_SYS_H__
+
 #include "glm/gtc/matrix_transform.hpp"
 
 #include "Material.h"
@@ -19,6 +22,8 @@ struct Particle
 class ParticleSystem
 {
 public:
+    //ParticleSystem() { }  // for dealing with std::shared_ptr
+
     ParticleSystem(std::shared_ptr<Texture> texture);
     ~ParticleSystem();
 
@@ -26,6 +31,8 @@ public:
     // update
     void tick(float dt);
     void draw();
+    // TODO
+    void clear() { }
 
     // Position of the system.
     glm::vec3 m_position;
@@ -53,3 +60,5 @@ private:
     GLuint m_vertexBuffer;
 
 };
+
+#endif

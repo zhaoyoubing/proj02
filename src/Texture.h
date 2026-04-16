@@ -16,7 +16,7 @@ public:
 	//std::string type;
 
     Texture();
-	//Texture(std::string path);
+	Texture(std::string path);
 	//Texture(std::string path, int w, int h);
 	~Texture();
 

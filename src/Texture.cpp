@@ -8,6 +8,11 @@ Texture::Texture()
     id = -1;
 }
 
+Texture::Texture(std::string path)
+{
+    loadTexture(path);
+}
+
 
 Texture::~Texture()
 {

@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.26.0)
 project(proj01 VERSION 1.0.0)
 cmake_policy(SET CMP0072 NEW)
 
+set(CMAKE_CXX_STANDARD 17)
+#set(CMAKE_CXX_STANDARD_REQUIRED ON)
+#set(CMAKE_CXX_EXTENSIONS OFF)
+
 # place for finding Findglfw3.cmake
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
@@ -18,7 +22,8 @@ find_package(glfw3 REQUIRED)
 add_executable(run01 src/main.cpp src/glad.c src/shader.cpp src/Mesh.cpp 
                 src/Texture.cpp src/MeshFactory.cpp 
                 src/PlaneMesh.cpp src/GLWin.cpp src/Interaction.cpp src/Spatial.cpp
-                src/SphereMesh.cpp src/RigidSim.cpp "src/RigidBody.cpp" src/RigidSphere.cpp)
+                src/SphereMesh.cpp src/RigidSim.cpp src/RigidBody.cpp src/RigidSphere.cpp
+                src/ParticleSys.cpp src/ShaderSingle.cpp src/ShaderProgram.cpp)
 
 # specify include directories
 target_include_directories(run01 PRIVATE 

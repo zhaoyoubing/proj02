@@ -21,23 +21,36 @@ your shader.
 #ifndef __SHADER_H__
 #define __SHADER_H__
 
+#include <string>
+#include "glad/glad.h"
+
+
 class Shader {
 private:
     GLuint vertexshader;      // intermediate shader object
-    GLuint fragmentshader;    //    before the linker stage
-    GLint compiled_vs = 0;   // compile status
-    GLint compiled_fs = 0;   // compile status
-    GLint linked = 0;        // link status
+    GLuint fragmentshader;    // before the linker stage
+    GLint compiled_vs = 0;    // compile status
+    GLint compiled_fs = 0;    // compile status
+    GLint linked = 0;         // link status
+
 public:
-    GLuint program;  // the shader program
+
+
+    GLuint program;  // the shader program id
+    GLenum type;    // to support compute shaders
+
     std::string vertexshader_source;   // source code
     std::string fragmentshader_source; // source code
 
+    // default constructor
+    Shader() {} 
+    void read_source(const char * vertexshader_filename);
     void read_source(const char * vertexshader_filename, const char * fragmentshader_filename);
     void compile();
     GLint getVertexShaderCompileStatus(){return compiled_vs;}
     GLint getFragmentShaderCompileStatus(){return compiled_fs;}
     GLint getLinkStatus(){return linked;}
+
     
 private:
     // Helper functions

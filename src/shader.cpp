@@ -12,6 +12,7 @@ void Shader::read_source(const char * vertexshader_filename, const char * fragme
     vertexshader_source = textFileRead(vertexshader_filename);
     fragmentshader_source = textFileRead(fragmentshader_filename);
 }
+
 void Shader::compile()  {
     vertexshader = glCreateShader(GL_VERTEX_SHADER);
     fragmentshader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -88,3 +89,7 @@ void Shader::shadererrors (const GLint shader) {
 	cout << "Compile Error, Log Below\n" << log << "\n" ; 
 	delete [] log ; 
 }
+
+
+
+

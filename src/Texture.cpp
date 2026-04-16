@@ -45,3 +45,16 @@ void Texture::loadTexture(std::string path)
 void Texture::bindTexture() {
 	glBindTexture(GL_TEXTURE_2D, id);
 }
+
+
+void Texture::bindTexture(int unit) const
+{
+    glActiveTexture(GL_TEXTURE0 + unit);
+    glBindTexture(GL_TEXTURE_2D, id);
+}
+
+void Texture::UnbindTexture(int unit) const
+{
+    glActiveTexture(GL_TEXTURE0 + unit);
+    glBindTexture(GL_TEXTURE_2D, 0);
+}

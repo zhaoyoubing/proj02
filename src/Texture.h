@@ -23,6 +23,8 @@ public:
 
 	void loadTexture(std::string path);
     void bindTexture();
+	void bindTexture(int unit) const;
+	void UnbindTexture(int unit) const;
 
 	
 };

@@ -7,15 +7,17 @@
 
 struct Particle
 {
-    glm::vec4 m_position;
-    glm::vec4 m_velocity;
+    glm::vec3 m_position;
+    glm::vec3 m_velocity;
     glm::vec4 m_color;
-    float m_rotation;
-    float m_angularVelocity;
+    float size;
+    //float m_rotation;
+    //float m_angularVelocity;
     float m_age;
+    
     // This variable is required, can't input data that isn't a multiple of 4
     // IF you comment this out, undefined weird stuff will happen.
-    float buffer;
+    //float buffer;
 };
 
 
@@ -50,14 +52,29 @@ private:
     // The particle system will work with a predefined pool of particles, this makes things way faster than having a dynamic list.
     // You may be able to increase this number depending on your hardware.
     // I was able to run it smoothly with 65536 particles on an NVIDIA GTX 680
-    static const int MAX_PARTICLES = 16348;
+    // 16348
+    static const int MAX_PARTICLES = 1024;
     Particle m_particles[MAX_PARTICLES];
     float m_internalTimer = 0;
 
     std::shared_ptr<Material> m_particleRenderMat;
     std::shared_ptr<Material> m_particleSimulateMat;
 
-    GLuint m_vertexBuffer;
+    // for drawing particles
+    GLuint vao;
+    GLuint partVertBuf; // vertex buffer for particles
+    GLuint quadVertBuf;
+
+
+    // quad for drawing particles
+    inline static const GLfloat vertQuad[] = {
+        -1.0f, -1.0f, 0.0f,
+        1.0f, -1.0f, 0.0f,
+        -1.0f, 1.0f, 0.0f,
+        1.0f, 1.0f, 0.0f,
+    };
+
+    void initBuffers();
 
 };
 

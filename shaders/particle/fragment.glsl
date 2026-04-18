@@ -23,16 +23,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-#version 400 core
+#version 430
+
+in vec4 vColor;
+in vec2 uv;
+//out vec4 fragColor;
 
 uniform sampler2D tex;
 
-in vec2 uv;
-in vec4 color;
-
-
-void main(void)
-{
-	// Easiest part, just sample from the texture and apply a color like normal.
-	gl_FragColor = texture(tex, uv) * color; 
+void main() {
+    gl_FragColor = texture(tex, uv) * vColor;
 }
+
+
+//void main(void)
+//{
+	// Easiest part, just sample from the texture and apply a color like normal.
+//	gl_FragColor = texture(tex, uv) * color; 
+//}

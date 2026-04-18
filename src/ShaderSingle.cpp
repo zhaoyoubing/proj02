@@ -13,7 +13,7 @@ void ShaderSingle::read_source(const char * filename)  {
 }
 
 void ShaderSingle::compile()  {
-    shader_id = glCreateShader(GL_VERTEX_SHADER);
+    shader_id = glCreateShader(type);
     const GLchar * cstr = source_code.c_str() ; // convert source to const GLchar *
     glShaderSource( shader_id, 1, &cstr, NULL) ;
     glCompileShader( shader_id );

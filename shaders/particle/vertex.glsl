@@ -23,30 +23,72 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-#version 400 core
+#version 430 core
+
+layout(location = 0) in uint vertexID;
+layout(location = 1) in uint instanceID;
+
+struct Particle
+{
+    vec3 position;
+    vec3 velocity;
+    vec4 color;
+    float size;
+    float age;
+};
+
+layout(std430, binding = 0) buffer ParticleBuffer {
+    Particle particles[];
+};
 
 // camera view projection matrix.
-uniform mat4 cameraView;
+uniform mat4 view;
+uniform mat4 proj;
 
 // Vertex attributes for every variable in the particle struct
-layout(location = 0) in vec4 in_position;
-layout(location = 1) in vec4 in_velocity;
-layout(location = 2) in vec4 in_color;
-layout(location = 3) in float in_rotation;
-layout(location = 4) in float in_angular;
-layout(location = 5) in float in_age;
+//layout(location = 0) in vec4 in_position;
+//layout(location = 1) in vec4 in_part_pos;
+//layout(location = 2) in vec4 in_velocity;
+//layout(location = 3) in vec4 in_color;
+//layout(location = 4) in float in_rotation;
+//layout(location = 5) in float in_angular;
+//layout(location = 6) in float in_age;
+
 
 out vec4 vertOutColor;
-out float vertOutRotation;
-out float vertOutAge;
+//out float vertOutRotation;
+//out float vertOutAge;
+
+out vec4 vColor;
+out vec2 uv;
 
 void main(void)
 {
 	// Move the vertex position into clip space.
-	gl_Position = cameraView * in_position;
+	//gl_Position = proj * view * in_position;
 
 	// Pass color, rotation, and age forward to the geometry shader.
-	vertOutColor = in_color;
-	vertOutRotation = in_rotation;
-	vertOutAge = in_age;
+	//vertOutColor = in_color;
+	//vertOutRotation = in_rotation;
+	//vertOutAge = in_age;
+
+	Particle p = particles[instanceID];
+    
+    // Quad vertices (4 per particle)
+    vec2 quadVertices[4] = vec2[](
+        vec2(-1, -1), vec2(1, -1),
+        vec2(-1,  1), vec2(1,  1)
+    );
+    
+    // Billboard quad
+    vec3 right = vec3(1, 0, 0) * p.size;
+    vec3 up = vec3(0, 1, 0) * p.size;
+    vec3 vertexPos = p.position + 
+        (quadVertices[vertexID].x * right) + 
+        (quadVertices[vertexID].y * up);
+    
+    gl_Position = proj * view * vec4(vertexPos, 1.0);
+    vColor = p.color;
+	//vertOutAge = p.age;
+    uv = quadVertices[vertexID] * 0.5 + 0.5;
 }

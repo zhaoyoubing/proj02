@@ -21,6 +21,7 @@ public:
     ShaderSingle() {} 
 
     ShaderSingle(const char * filename, GLenum shader_type) {
+        type = shader_type;
         read_source(filename);
         compile();
     } 

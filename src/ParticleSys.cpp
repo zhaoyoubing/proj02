@@ -9,17 +9,17 @@ ParticleSystem::ParticleSystem(std::shared_ptr<Texture> texture)
 
     std::shared_ptr<ShaderProgram> simProgram = std::make_shared<ShaderProgram>();
     std::shared_ptr<ShaderSingle> simShader 
-            = std::make_shared<ShaderSingle>("../Assets/compute.glsl", GL_COMPUTE_SHADER);
+            = std::make_shared<ShaderSingle>("shaders/particle/compute.glsl", GL_COMPUTE_SHADER);
     simProgram->AttachShader(simShader);
     m_particleSimulateMat = std::make_shared<Material>(simProgram);
 
     // Setup shaders and shader program.
     std::shared_ptr<ShaderProgram> program = std::make_shared<ShaderProgram>();
     std::shared_ptr<ShaderSingle> vertexShader 
-            = std::make_shared<ShaderSingle>("../Assets/vertex.glsl", GL_VERTEX_SHADER);
+            = std::make_shared<ShaderSingle>("shaders/particle/vertex.glsl", GL_VERTEX_SHADER);
     program->AttachShader(vertexShader);
     std::shared_ptr<ShaderSingle> fragShader 
-        = std::make_shared<ShaderSingle>("../Assets/fragment.glsl", GL_FRAGMENT_SHADER);
+        = std::make_shared<ShaderSingle>("shaders/particle/fragment.glsl", GL_FRAGMENT_SHADER);
     program->AttachShader(fragShader);
 
     m_particleRenderMat = std::make_shared<Material>(program);
@@ -32,23 +32,68 @@ ParticleSystem::ParticleSystem(std::shared_ptr<Texture> texture)
         // Get a reference to that particle, not a copy.
         Particle& p = m_particles[i];
         p.m_age = (float)i / MAX_PARTICLES;
-        p.m_position = glm::vec4(0, 0, 0, 0);
-        p.m_velocity = glm::vec4(0, 0, 0, 0);
-        p.m_angularVelocity = 0;
-        p.m_rotation = 0;
+        
+        float x = ((rand() % 100) / 50.0f) - 1.0f;
+        float y = ((rand() % 100) / 50.0f) - 1.0f;
+
+        p.m_position = glm::vec3(x, y, 0);
+        p.m_velocity = glm::vec3(0, 0, 0);
+        //p.m_angularVelocity = 0;
+        //p.m_rotation = 0;
         p.m_color = glm::vec4(1, 0, 1, 1);
+        p.size = 1.0f;
     }
 
-    // Make a buffer for our particle data.
-    glGenBuffers(1, &m_vertexBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, MAX_PARTICLES * sizeof(Particle), m_particles, GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    initBuffers();
 }
 
 ParticleSystem::~ParticleSystem()
 {
-    glDeleteBuffers(1, &m_vertexBuffer);
+    glDeleteBuffers(1, & partVertBuf);
+    glDeleteBuffers(1, & quadVertBuf);
+}
+
+void ParticleSystem::initBuffers()
+{
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+
+    // Quad VBO
+    glGenBuffers(1, &quadVertBuf);
+    glBindBuffer(GL_ARRAY_BUFFER, quadVertBuf);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertQuad), vertQuad, GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+    // Particle/Instance VBO
+    glGenBuffers(1, & partVertBuf);
+    glBindBuffer(GL_ARRAY_BUFFER, partVertBuf);
+    glBufferData(GL_ARRAY_BUFFER, MAX_PARTICLES * sizeof(Particle), m_particles, GL_STATIC_DRAW);
+    //glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    // 2nd attribute buffer : positions of particles' centers
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)0);
+
+
+    // 3rd attribute buffer : particles' colors
+    /*
+    glEnableVertexAttribArray(2);
+    glBindBuffer(GL_ARRAY_BUFFER, particles_color_buffer);
+    glVertexAttribPointer(
+    2, // attribute. No particular reason for 1, but must match the layout in the shader.
+    4, // size : r + g + b + a => 4
+    GL_UNSIGNED_BYTE, // type
+    GL_TRUE, // normalized? *** YES, this means that the unsigned char[4] will be accessible with a vec4 (floats) in the shader ***
+    0, // stride
+    (void*)0 // array buffer offset
+    );
+    */
+
+    glVertexAttribDivisor(1, 1);
+
+    glBindVertexArray(0);
 }
 
 std::shared_ptr<Material> ParticleSystem::getMaterial()
@@ -59,7 +104,7 @@ std::shared_ptr<Material> ParticleSystem::getMaterial()
 void ParticleSystem::tick(float dt)
 {
     // We are binding the vertex buffer from our square.
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_vertexBuffer);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, partVertBuf);
 
     // Same as with drawing, but we bind a compute shader program instead.
     // Set a bunch of values in the compute shader to use.
@@ -83,6 +128,15 @@ void ParticleSystem::draw()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
+    //glUseProgram(program);
+    m_particleRenderMat->Bind();
+    glBindVertexArray(vao);
+
+    // 🔥 One draw call for ALL particles
+    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, MAX_PARTICLES);
+
+
+    /*
     // Bind the vertex buffer. and set up attributes
     glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)(0));
@@ -117,5 +171,6 @@ void ParticleSystem::draw()
     {
         glDisableVertexAttribArray(i);
     }
+    */
     glDisable(GL_BLEND);
 }

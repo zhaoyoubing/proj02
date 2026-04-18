@@ -228,8 +228,8 @@ int main()
     );
 
     blinnShader = initShader("shaders/blinn.vert", "shaders/blinn.frag");
-    setLightPosition(lightPos);
-    setViewPosition(app.camera->eye);
+    //setLightPosition(lightPos);
+    //setViewPosition(app.camera->eye);
 
     //app.sim = std::make_shared<RigidSim>();
 
@@ -258,19 +258,14 @@ int main()
 
     std::cout << "==================================" << std::endl;
     std::cout << "SPACE: Start simulation" << std::endl;
-    std::cout << "1: Single ball free falling " << std::endl;
-    std::cout << "2: Single ball falling with initial horizontal velocity" << std::endl;
-    std::cout << "3: Single ball free falling with ground" << std::endl;
-    std::cout << "4: Single ball falling with initial horizontal velocity and ground" << std::endl;
-    std::cout << "5: Two balls with ground, one falling" << std::endl;
-    std::cout << "6: Snooker balls (no gravity) hit by one ball falling" << std::endl;
+    //std::cout << "1: Single ball free falling " << std::endl;
     std::cout << "x: Toggle wireframe" << std::endl;
     std::cout << "r: Clear" << std::endl;
     std::cout << "==================================" << std::endl;
 
     // The view projection matrix will be used in the vertex shader to move the particle.
-    // TODO
-    app.sim->getMaterial()->SetMat4("cameraView", app.camera->matView);
+    app.sim->getMaterial()->SetMat4("view", app.camera->matView);
+    app.sim->getMaterial()->SetMat4("proj", app.camera->matProj);
     // The viewport dimensions are needed in the geometry shader to make a correctly sized quad.
     //app.sim->getMaterial()->SetVec2((char*)"viewport", viewportDimensions);
 

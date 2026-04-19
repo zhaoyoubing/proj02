@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 // Inputs from the particle system.
-uniform vec3 basePosition;
+uniform vec3 basePos;
 uniform vec3 acceleration;
 uniform float burnRate;
 uniform float dt;
@@ -85,7 +85,7 @@ void main()
 		//outBuffer.data[i].angularVelocity = i % 11;
 
 		// Move the particle back to the center.
-		outBuffer.data[i].pos = basePosition;
+		outBuffer.data[i].pos = basePos;
 
 		// Send the particle in a random direction.
 		outBuffer.data[i].velocity = vec3(cos(i + rand) * (5.0f), 0, sin(i + rand) * (5.0f));

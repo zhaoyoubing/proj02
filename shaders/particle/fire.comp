@@ -6,7 +6,6 @@ struct Particle {
     vec4 position;
     vec4 velocity;
     vec4 color;
-    float size;
     float life;
     float maxLife;
 };
@@ -16,7 +15,7 @@ layout(std430, binding = 0) buffer Particles {
 };
 
 uniform float dt;              // delta time
-uniform vec3 emitterPos;       // fire source
+uniform vec3 basePos;     // fire source
 uniform float time;            // global time
 
 // Simple pseudo-random generator
@@ -37,7 +36,7 @@ void respawn(inout Particle p, uint id) {
 
     vec3 dir = randomDir(seed);
     
-    p.position.xyz = emitterPos + dir * 0.1;
+    p.position.xyz = basePos + dir * 0.1;
     
     // Fire rises upward
     p.velocity.xyz = vec3(
@@ -61,7 +60,7 @@ void main() {
         p.life -= dt;
 
         // Upward acceleration (buoyancy)
-        p.velocity.y += 1.5 * dt;
+        p.velocity.y += 0.5 * dt;
 
         // Add turbulence
         float noise = rand(float(id) + time) - 0.5;

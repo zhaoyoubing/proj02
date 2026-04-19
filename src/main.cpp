@@ -154,7 +154,7 @@ int main()
 
         // update physics
         // time step of 0.005 second
-        //app.sim->tick(0.005);
+        app.sim->tick(0.005);
 
         // draw the models
         app.sim->draw();

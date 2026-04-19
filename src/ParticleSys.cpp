@@ -1,5 +1,6 @@
 #include "ParticleSys.h"
 
+#include <GLFW/glfw3.h>
 #include <memory>
 #include "ShaderProgram.h"
 
@@ -9,7 +10,7 @@ ParticleSystem::ParticleSystem(std::shared_ptr<Texture> texture)
 
     std::shared_ptr<ShaderProgram> simProgram = std::make_shared<ShaderProgram>();
     std::shared_ptr<ShaderSingle> simShader 
-            = std::make_shared<ShaderSingle>("shaders/particle/compute.glsl", GL_COMPUTE_SHADER);
+            = std::make_shared<ShaderSingle>("shaders/particle/fire.comp", GL_COMPUTE_SHADER);
     simProgram->AttachShader(simShader);
     partSimMat = std::make_shared<Material>(simProgram);
 
@@ -39,6 +40,8 @@ ParticleSystem::ParticleSystem(std::shared_ptr<Texture> texture)
         float y = ((rand() % 100) / 5.0f) - 10.0f;
 
         p.pos = glm::vec4(x, y, 0, 1.0);
+
+        p.pos = glm::vec4(0, 0, 0, 1.0);
         p.velocity = glm::vec4(0, 0, 0, 0);
         //p.m_angularVelocity = 0;
         //p.m_rotation = 0;
@@ -117,8 +120,6 @@ void ParticleSystem::initBuffers()
         initBufPoints();
     else
         initBufQuads();
-
-
 }
 
 std::shared_ptr<Material> ParticleSystem::getMaterial()
@@ -134,9 +135,11 @@ void ParticleSystem::tick(float dt)
     // Same as with drawing, but we bind a compute shader program instead.
     // Set a bunch of values in the compute shader to use.
     partSimMat->SetFloat((char*)"dt", dt);
-    partSimMat->SetFloat((char*)"burnRate", 1 / (float) maxLife);
-    partSimMat->SetVec3((char*)"basePosition", pos);
-    partSimMat->SetVec3((char*)"acceleration", acc);
+    float time = (float) glfwGetTime();
+    partSimMat->SetFloat((char*)"time", time);
+    partSimMat->SetVec3((char*)"basePos", pos);
+    //partSimMat->SetFloat((char*)"burnRate", 1 / (float) maxLife);
+    //partSimMat->SetVec3((char*)"acceleration", acc);
     
 	// bind, execute the compute program, and unbind
 	partSimMat->Bind();
@@ -149,29 +152,46 @@ void ParticleSystem::tick(float dt)
 
 void ParticleSystem::drawPoints()
 {
-
-}
-
-void ParticleSystem::draw()
-{
-    // Enable blending when rendering particles
-    //glEnable(GL_BLEND);
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-
-    //glUseProgram(program);
     partDrawMat->Bind();
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, partVertBuf);
 
-    // 🔥 One draw call for ALL particles
-    //glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, MAX_PARTICLES);
     glPointSize(10.0f);
     glDrawArrays(GL_POINTS, 0, NUM_POINTS);
 
     partDrawMat->Unbind();
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-    
+}
+
+void ParticleSystem::drawQuads()
+{
+    // Enable blending when rendering particles
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+    partDrawMat->Bind();
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ARRAY_BUFFER, partVertBuf);
+
+    // 🔥 One draw call for ALL particles
+    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, NUM_POINTS);
+
+    partDrawMat->Unbind();
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
+    glDisable(GL_BLEND);
+}
+
+void ParticleSystem::draw()
+{
+
+    if (bPoints)
+        drawPoints();
+    else
+        drawQuads();
+
 
     /*
     // Bind the vertex buffer. and set up attributes
@@ -209,5 +229,5 @@ void ParticleSystem::draw()
     }
     */
     
-    //glDisable(GL_BLEND);
+    
 }

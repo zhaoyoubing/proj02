@@ -41,7 +41,7 @@ void respawn(inout Particle p, uint id) {
     // Fire rises upward
     p.velocity.xyz = vec3(
         dir.x * 0.5,
-        1.0 + rand(seed) ,
+        1.0 + rand(seed),
         dir.z * 0.5
     );
 
@@ -55,7 +55,7 @@ void main() {
     uint id = gl_GlobalInvocationID.x;
     Particle p = particles[id];
 
-    if (p.life <= 0.0) {
+    if (p.life <= 0.000001) {
         respawn(p, id);
     } else {
         // Decrease life

@@ -39,27 +39,29 @@ ParticleSystem::ParticleSystem(std::shared_ptr<Texture> texture, bool drawPoints
     partDrawMat->Bind();
     
     // sprites 8 x 6
-    glm::vec2 uvScale  = glm::vec2(1 / 8.0f, 1/6.0f);
+    //glm::vec2 uvScale  = glm::vec2(1 / 8.0f, 1/6.0f);
 
     // Create particle data.
     for (int i = 0; i < NUM_POINTS; i++)
     {
         // Get a reference to that particle, not a copy.
         Particle& p = particles[i];
-        p.life = (float)i / NUM_POINTS;
-        
+        // p.life = (float)i / NUM_POINTS;
+
         // random position for point rendering
         //float x = ((rand() % 100) / 5.0f) - 10.0f;
         //float y = ((rand() % 100) / 5.0f) - 10.0f;
         //p.pos = glm::vec4(x, y, 0, 1.0);
 
-        p.pos = glm::vec4(0, 0, 0, 1.0);
+        //p.pos = glm::vec4(0, 0, 0, 1.0);
+        p.pos = glm::vec4(pos, 1.0);
         p.velocity = glm::vec4(0, 0, 0, 0);
         //p.m_angularVelocity = 0;
         //p.m_rotation = 0;
         //p.color = glm::vec4((rand() % 256) / 255.0f, 
         //        (rand() % 256) / 255.0f, (rand() % 256) / 255.0f, 1);
         p.color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+        p.life = maxLife;
         p.maxLife = maxLife;
     }
 
@@ -69,8 +71,10 @@ ParticleSystem::ParticleSystem(std::shared_ptr<Texture> texture, bool drawPoints
 ParticleSystem::~ParticleSystem()
 {
     glDeleteVertexArrays(1, &vao);
-    glDeleteBuffers(1, & partVertBuf);
+    
     glDeleteBuffers(1, & quadVertBuf);
+    glDeleteBuffers(1, & partStorageBuf);
+    glDeleteBuffers(1, & partVertBuf);
 }
 
 void ParticleSystem::initBufPoints()
@@ -111,11 +115,6 @@ void ParticleSystem::initBufQuads()
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
-    // Particle/Instance VBO
-    glGenBuffers(1, & partVertBuf);
-    glBindBuffer(GL_ARRAY_BUFFER, partVertBuf);
-    glBufferData(GL_ARRAY_BUFFER, NUM_POINTS * sizeof(Particle), particles, GL_DYNAMIC_DRAW);
-
     /*
     // 2nd attribute buffer : positions of particles' centers
     glEnableVertexAttribArray(1);
@@ -130,6 +129,15 @@ void ParticleSystem::initBufQuads()
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+
+    glGenBuffers(1, &partStorageBuf);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, partStorageBuf);
+
+    // Particle/Instance VBO
+    //glGenBuffers(1, & partVertBuf);
+    //glBindBuffer(GL_ARRAY_BUFFER, partVertBuf);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, NUM_POINTS * sizeof(Particle), particles, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
 void ParticleSystem::initBuffers()
@@ -148,7 +156,8 @@ std::shared_ptr<Material> ParticleSystem::getMaterial()
 void ParticleSystem::tick(float dt)
 {
     // We are binding the vertex buffer from our square.
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, partVertBuf);
+    // glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, partStorageBuf);
 
     // Same as with drawing, but we bind a compute shader program instead.
     // Set a bunch of values in the compute shader to use.
@@ -191,10 +200,11 @@ void ParticleSystem::drawQuads()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
     partDrawMat->Bind();
-    glBindVertexArray(vao);
 
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, partVertBuf);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, partStorageBuf);
     //glBindBuffer(GL_ARRAY_BUFFER, partVertBuf);
+    
+    glBindVertexArray(vao);
 
     // 🔥 One draw call for ALL particles
     glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, NUM_POINTS);

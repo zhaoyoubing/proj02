@@ -53,7 +53,7 @@ private:
     // You may be able to increase this number depending on your hardware.
     // I was able to run it smoothly with 65536 particles on an NVIDIA Mobile 5070Ti
     // 16348
-    static const int NUM_POINTS = 16348;
+    static const int NUM_POINTS = 8;
     Particle particles[NUM_POINTS];
 
     // particle vertex and fragment shaders
@@ -74,7 +74,9 @@ private:
     // for drawing particles
     GLuint vao;  // vertex array object
     GLuint quadVertBuf; // the quad proxy for particle textures
-    GLuint partVertBuf; // vertex buffer for particles
+
+    GLuint partVertBuf;
+    GLuint partStorageBuf; // vertex buffer for particles
 
     void initBuffers();
     void initBufPoints();

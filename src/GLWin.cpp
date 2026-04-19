@@ -1,6 +1,20 @@
 #include "GLWin.h"
 #include "Interaction.h"
 
+extern App app;
+
+void window_size_callback(GLFWwindow* window, int width, int height)
+{
+    //int width, height;
+    //glfwGetWindowSize(window, &width, &height);
+
+    glViewport(0, 0, width, height);
+
+    //matProj = glm::perspective(glm::radians(60.0f), width/(float)height, 2.0f, 8.0f);
+    app.camera->SetViewportSize(width, height);
+}
+
+    
 
 int GLWin::init(std::string title) 
 {
@@ -23,6 +37,8 @@ int GLWin::init(std::string title)
     glfwSetMouseButtonCallback(window, mouse_button_callback);
     glfwSetCursorPosCallback(window, CursorPosCallback);
     glfwSetScrollCallback(window, ScrollCallback);
+
+    glfwSetWindowSizeCallback(window, window_size_callback);
 
     // loading glad
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))

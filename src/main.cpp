@@ -29,7 +29,7 @@ App app;
 glm::mat4 matModelRoot = glm::mat4(1.0);
 
 //glm::vec3 lightPos = glm::vec3(5.0f, 5.0f, 10.0f);
-glm::vec3 viewPos_default = glm::vec3(0.0f, 0.0f, 300.0f);
+glm::vec3 viewPos_default = glm::vec3(0.0f, 0.0f, 200.0f);
 
 // viewport width and height
 int width = 800;
@@ -63,13 +63,13 @@ int main()
     
     GLFWwindow *window = app.glWin->getGLFWwin();
 
-    glViewport(0, 0, width, height);
+    //glViewport(0, 0, width, height);
 
     app.camera = std::make_shared<ArcballCamera>(
         viewPos_default,
         glm::vec3(0,0,0), // target
         20.0f,            // distance
-        60.0f,            // FOV
+        45.0f,            // FOV
         float(width) / float(height),
         0.1f,
         1000.0f
@@ -81,7 +81,7 @@ int main()
     std::shared_ptr<Texture> tex = std::make_shared<Texture>("models/fire_sprite.png");
     std::shared_ptr<ParticleSystem> particleSystem = std::make_shared<ParticleSystem>(tex, false);
 
-    particleSystem->pos = glm::vec3(0, 0, -0.5f);
+    particleSystem->pos = glm::vec3(0, -5.0f, -0.5f);
     particleSystem->maxLife = 1.0f;
     // particleSystem->acc = glm::vec3(0, 0, 0);
     // particleSystem->partSize = glm::vec2(100, 100);
@@ -119,7 +119,7 @@ int main()
 
         // update physics
         // time step of 0.005 second
-        app.sim->tick(0.005);
+        app.sim->tick(0.001);
 
         // draw the models
         app.sim->draw();

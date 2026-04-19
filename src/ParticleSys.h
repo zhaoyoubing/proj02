@@ -16,7 +16,6 @@ struct Particle
 
     //float rotation;
     //float angularVelocity;
-
 };
 
 
@@ -54,9 +53,10 @@ private:
     // You may be able to increase this number depending on your hardware.
     // I was able to run it smoothly with 65536 particles on an NVIDIA GTX 680
     // 16348
-    static const int NUM_POINTS = 1024;
+    static const int NUM_POINTS = 16348;
     Particle particles[NUM_POINTS];
-    float internalTimer = 0;
+
+    //float internalTimer = 0;
 
     // particle vertex and fragment shaders
     std::shared_ptr<Material> partDrawMat;

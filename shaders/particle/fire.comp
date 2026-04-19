@@ -3,7 +3,7 @@
 layout(local_size_x = 256) in;
 
 struct Particle {
-    vec4 position;
+    vec4 pos;
     vec4 velocity;
     vec4 color;
     float life;
@@ -14,9 +14,9 @@ layout(std430, binding = 0) buffer Particles {
     Particle particles[];
 };
 
-uniform float dt;              // delta time
+uniform float dt;         // delta time
 uniform vec3 basePos;     // fire source
-uniform float time;            // global time
+uniform float time;       // global time
 
 // Simple pseudo-random generator
 float rand(float seed) {
@@ -36,14 +36,16 @@ void respawn(inout Particle p, uint id) {
 
     vec3 dir = randomDir(seed);
     
-    p.position.xyz = basePos + dir * 0.1;
+    p.pos.xyz = basePos + dir * 0.1;
     
     // Fire rises upward
     p.velocity.xyz = vec3(
         dir.x * 0.5,
-        2.0 + rand(seed) * 1.5,
+        1.0 + rand(seed) ,
         dir.z * 0.5
     );
+
+    p.color = vec4(1.0, 1.0, 0.9, 1.0);
 
     p.maxLife = 1.0 + rand(seed) * 1.5;
     p.life = p.maxLife;
@@ -59,6 +61,12 @@ void main() {
         // Decrease life
         p.life -= dt;
 
+        // white -> yellow -> red
+        vec3 color = vec3(1.0 - 0.5 * p.life/ p.maxLife, 
+                exp(4 * (p.life/ p.maxLife - 1.0) ) , exp(10 * (p.life/ p.maxLife - 1.0)));
+
+        p.color = vec4(color, 1.0);
+
         // Upward acceleration (buoyancy)
         p.velocity.y += 0.5 * dt;
 
@@ -68,7 +76,7 @@ void main() {
         p.velocity.z += noise * 0.5 * dt;
 
         // Update position
-        p.position.xyz += p.velocity.xyz * dt;
+        p.pos.xyz += p.velocity.xyz * dt;
     }
 
     particles[id] = p;

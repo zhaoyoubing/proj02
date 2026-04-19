@@ -20,7 +20,7 @@ ParticleSystem::ParticleSystem(std::shared_ptr<Texture> texture, bool drawPoints
     std::string fFrag = "shaders/particle/point.frag";
 
     if (! bDrawPoints) {
-        fVert = "shaders/particle/quad.vert";
+        fVert = "shaders/particle/quad_ssbo.vert";
         fFrag = "shaders/particle/quad.frag";
     }
 
@@ -46,10 +46,9 @@ ParticleSystem::ParticleSystem(std::shared_ptr<Texture> texture, bool drawPoints
         Particle& p = particles[i];
         p.life = (float)i / NUM_POINTS;
         
-        float x = ((rand() % 100) / 5.0f) - 10.0f;
-        float y = ((rand() % 100) / 5.0f) - 10.0f;
-
-        p.pos = glm::vec4(x, y, 0, 1.0);
+        //float x = ((rand() % 100) / 5.0f) - 10.0f;
+        //float y = ((rand() % 100) / 5.0f) - 10.0f;
+        //p.pos = glm::vec4(x, y, 0, 1.0);
 
         p.pos = glm::vec4(0, 0, 0, 1.0);
         p.velocity = glm::vec4(0, 0, 0, 0);
@@ -115,6 +114,7 @@ void ParticleSystem::initBufQuads()
     glBindBuffer(GL_ARRAY_BUFFER, partVertBuf);
     glBufferData(GL_ARRAY_BUFFER, NUM_POINTS * sizeof(Particle), particles, GL_DYNAMIC_DRAW);
 
+    /*
     // 2nd attribute buffer : positions of particles' centers
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)0);
@@ -124,7 +124,8 @@ void ParticleSystem::initBufQuads()
     glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, color));
 
     glVertexAttribDivisor(2, 1);
-    
+    */
+
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }
@@ -188,13 +189,16 @@ void ParticleSystem::drawQuads()
 
     partDrawMat->Bind();
     glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, partVertBuf);
+
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, partVertBuf);
+    //glBindBuffer(GL_ARRAY_BUFFER, partVertBuf);
 
     // 🔥 One draw call for ALL particles
     glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, NUM_POINTS);
 
     partDrawMat->Unbind();
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, 0);
+    // glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
     glDisable(GL_BLEND);

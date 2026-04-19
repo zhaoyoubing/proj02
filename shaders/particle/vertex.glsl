@@ -30,11 +30,11 @@ layout(location = 1) in uint instanceID;
 
 struct Particle
 {
-    vec3 position;
-    vec3 velocity;
+    vec4 position;
+    vec4 velocity;
     vec4 color;
-    float size;
-    float age;
+    float life;
+	float maxLife
 };
 
 layout(std430, binding = 0) buffer ParticleBuffer {
@@ -44,15 +44,6 @@ layout(std430, binding = 0) buffer ParticleBuffer {
 // camera view projection matrix.
 uniform mat4 view;
 uniform mat4 proj;
-
-// Vertex attributes for every variable in the particle struct
-//layout(location = 0) in vec4 in_position;
-//layout(location = 1) in vec4 in_part_pos;
-//layout(location = 2) in vec4 in_velocity;
-//layout(location = 3) in vec4 in_color;
-//layout(location = 4) in float in_rotation;
-//layout(location = 5) in float in_angular;
-//layout(location = 6) in float in_age;
 
 
 out vec4 vertOutColor;

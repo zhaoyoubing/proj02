@@ -4,8 +4,10 @@
 #include <memory>
 #include "ShaderProgram.h"
 
-ParticleSystem::ParticleSystem(std::shared_ptr<Texture> texture)
+ParticleSystem::ParticleSystem(std::shared_ptr<Texture> texture, bool drawPoints)
 {
+    bDrawPoints = drawPoints;
+
     // Setup the compute shader material for the particlue simulation
 
     std::shared_ptr<ShaderProgram> simProgram = std::make_shared<ShaderProgram>();
@@ -14,13 +16,21 @@ ParticleSystem::ParticleSystem(std::shared_ptr<Texture> texture)
     simProgram->AttachShader(simShader);
     partSimMat = std::make_shared<Material>(simProgram);
 
+    std::string fVert = "shaders/particle/point.vert";
+    std::string fFrag = "shaders/particle/point.frag";
+
+    if (! bDrawPoints) {
+        fVert = "shaders/particle/quad.vert";
+        fFrag = "shaders/particle/quad.frag";
+    }
+
     // Setup shaders and shader program.
     std::shared_ptr<ShaderProgram> program = std::make_shared<ShaderProgram>();
     std::shared_ptr<ShaderSingle> vertexShader 
-            = std::make_shared<ShaderSingle>("shaders/particle/point.vert", GL_VERTEX_SHADER);
+            = std::make_shared<ShaderSingle>(fVert.c_str(), GL_VERTEX_SHADER);
     program->AttachShader(vertexShader);
     std::shared_ptr<ShaderSingle> fragShader 
-        = std::make_shared<ShaderSingle>("shaders/particle/point.frag", GL_FRAGMENT_SHADER);
+        = std::make_shared<ShaderSingle>(fFrag.c_str(), GL_FRAGMENT_SHADER);
     program->AttachShader(fragShader);
 
     partDrawMat = std::make_shared<Material>(program);
@@ -45,8 +55,9 @@ ParticleSystem::ParticleSystem(std::shared_ptr<Texture> texture)
         p.velocity = glm::vec4(0, 0, 0, 0);
         //p.m_angularVelocity = 0;
         //p.m_rotation = 0;
-        p.color = glm::vec4((rand() % 256) / 255.0f, 
-                (rand() % 256) / 255.0f, (rand() % 256) / 255.0f, 1);
+        //p.color = glm::vec4((rand() % 256) / 255.0f, 
+        //        (rand() % 256) / 255.0f, (rand() % 256) / 255.0f, 1);
+        p.color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
         p.maxLife = maxLife;
     }
 
@@ -70,15 +81,18 @@ void ParticleSystem::initBufPoints()
     glGenBuffers(1, & partVertBuf);
     glBindBuffer(GL_ARRAY_BUFFER, partVertBuf);
     glBufferData(GL_ARRAY_BUFFER, NUM_POINTS * sizeof(Particle), particles, GL_DYNAMIC_DRAW);
-    //glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 
     // positions of particles' centers
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)0);
 
-    // color
+    // colour
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, color));
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(vao);
 }
 
 
@@ -89,34 +103,35 @@ void ParticleSystem::initBufQuads()
     glBindVertexArray(vao);
 
     // Quad VBO for instancing
-    /*
     glGenBuffers(1, &quadVertBuf);
     glBindBuffer(GL_ARRAY_BUFFER, quadVertBuf);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertQuad), vertQuad, GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    */
 
     // Particle/Instance VBO
     glGenBuffers(1, & partVertBuf);
     glBindBuffer(GL_ARRAY_BUFFER, partVertBuf);
     glBufferData(GL_ARRAY_BUFFER, NUM_POINTS * sizeof(Particle), particles, GL_DYNAMIC_DRAW);
-    //glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     // 2nd attribute buffer : positions of particles' centers
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)0);
+    glVertexAttribDivisor(1, 1);
 
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, color));
 
-    //glVertexAttribDivisor(1, 1);
+    glVertexAttribDivisor(2, 1);
+    
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }
 
 void ParticleSystem::initBuffers()
 {
-    if (bPoints) 
+    if (bDrawPoints) 
         initBufPoints();
     else
         initBufQuads();
@@ -169,6 +184,7 @@ void ParticleSystem::drawQuads()
     // Enable blending when rendering particles
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     partDrawMat->Bind();
     glBindVertexArray(vao);
@@ -187,7 +203,7 @@ void ParticleSystem::drawQuads()
 void ParticleSystem::draw()
 {
 
-    if (bPoints)
+    if (bDrawPoints)
         drawPoints();
     else
         drawQuads();

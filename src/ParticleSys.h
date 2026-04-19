@@ -25,12 +25,14 @@ class ParticleSystem
 public:
     //ParticleSystem() { }  // for dealing with std::shared_ptr
 
-    ParticleSystem(std::shared_ptr<Texture> texture);
+    ParticleSystem(std::shared_ptr<Texture> texture, bool drawPoints);
     ~ParticleSystem();
 
     std::shared_ptr<Material> getMaterial();
+    
     // update
     void tick(float dt);
+
     void draw();
     // TODO
     void clear() { }
@@ -52,7 +54,7 @@ private:
     // You may be able to increase this number depending on your hardware.
     // I was able to run it smoothly with 65536 particles on an NVIDIA GTX 680
     // 16348
-    static const int NUM_POINTS = 64;
+    static const int NUM_POINTS = 1024;
     Particle particles[NUM_POINTS];
     float internalTimer = 0;
 
@@ -69,7 +71,7 @@ private:
         1.0f, 1.0f, 0.0f,
     };
 
-    bool bPoints = true;
+    bool bDrawPoints = true;
 
     // for drawing particles
     GLuint vao;  // vertex array object

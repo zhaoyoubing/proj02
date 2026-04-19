@@ -24,15 +24,12 @@
 
 App app;
 
-static Shader shader;
+//static Shader shader;
 
 glm::mat4 matModelRoot = glm::mat4(1.0);
 
-glm::vec3 lightPos = glm::vec3(5.0f, 5.0f, 10.0f);
+//glm::vec3 lightPos = glm::vec3(5.0f, 5.0f, 10.0f);
 glm::vec3 viewPos_default = glm::vec3(0.0f, 0.0f, 300.0f);
-
-GLuint blinnShader;
-GLuint texblinnShader;
 
 // viewport width and height
 int width = 800;
@@ -41,34 +38,8 @@ int height = 800;
 bool bWireframe = false;
 
 
-
-// Initialize shader
-GLuint initShader(std::string pathVert, std::string pathFrag) 
-{
-    shader.read_source( pathVert.c_str(), pathFrag.c_str());
-
-    shader.compile();
-    glUseProgram(shader.program);
-
-    return shader.program;
-}
-
-void setLightPosition(glm::vec3 lightPos)
-{
-    GLuint lightpos_loc = glGetUniformLocation(shader.program, "lightPos" );
-    glUniform3fv(lightpos_loc, 1, glm::value_ptr(lightPos));
-}
-
-void setViewPosition(glm::vec3 eyePos)
-{
-    GLuint viewpos_loc = glGetUniformLocation(shader.program, "viewPos" );
-    glUniform3fv(viewpos_loc, 1, glm::value_ptr(eyePos));
-}
-
-
 void clearScene() 
 {
-    
     app.sim->clear();
 }
 
@@ -106,15 +77,11 @@ int main()
         1000.0f
     );
 
-    blinnShader = initShader("shaders/blinn.vert", "shaders/blinn.frag");
-    //setLightPosition(lightPos);
-    //setViewPosition(app.camera->eye);
-
     // ================================================
     // Particle System
     // Initialize the particle system class with a bunch of parameters:
     std::shared_ptr<Texture> tex = std::make_shared<Texture>("models/particle.png");
-    std::shared_ptr<ParticleSystem> particleSystem = std::make_shared<ParticleSystem>(tex);
+    std::shared_ptr<ParticleSystem> particleSystem = std::make_shared<ParticleSystem>(tex, false);
 
     particleSystem->pos = glm::vec3(0, 0, -0.5f);
     particleSystem->maxLife = 1.0f;
@@ -124,7 +91,7 @@ int main()
     app.sim = particleSystem;
 
     // setting the background colour, you can change the value
-    glClearColor(0.25f, 0.5f, 0.75f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glDisable(GL_DEPTH_TEST);
     //glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 

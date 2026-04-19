@@ -43,20 +43,18 @@ public:
     float maxLife = 1.f;
     
     // global acceleration applied to all particles, defaults to 0
-    glm::vec3 acc = glm::vec3(0, 0, 0);
+    // glm::vec3 acc = glm::vec3(0, 0, 0);
 
     // size of particles
-    glm::vec2 partSize = glm::vec2(100, 100);
+    //glm::vec2 partSize = glm::vec2(100, 100);
 
 private:
     // The particle system will work with a predefined pool of particles, this makes things way faster than having a dynamic list.
     // You may be able to increase this number depending on your hardware.
-    // I was able to run it smoothly with 65536 particles on an NVIDIA GTX 680
+    // I was able to run it smoothly with 65536 particles on an NVIDIA Mobile 5070Ti
     // 16348
     static const int NUM_POINTS = 16348;
     Particle particles[NUM_POINTS];
-
-    //float internalTimer = 0;
 
     // particle vertex and fragment shaders
     std::shared_ptr<Material> partDrawMat;
@@ -81,7 +79,6 @@ private:
     void initBuffers();
     void initBufPoints();
     void initBufQuads();
-
 
     void drawPoints();
     void drawQuads();

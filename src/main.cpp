@@ -37,7 +37,6 @@ int height = 800;
 
 bool bWireframe = false;
 
-
 void clearScene() 
 {
     app.sim->clear();
@@ -54,7 +53,6 @@ void key_callback_sim(GLFWwindow* window, int key, int scancode, int action, int
         } if (GLFW_KEY_R == key) {
            app.sim->clear();
         }
-        
     }
 }
 
@@ -80,13 +78,13 @@ int main()
     // ================================================
     // Particle System
     // Initialize the particle system class with a bunch of parameters:
-    std::shared_ptr<Texture> tex = std::make_shared<Texture>("models/particle.png");
+    std::shared_ptr<Texture> tex = std::make_shared<Texture>("models/fire_sprite.png");
     std::shared_ptr<ParticleSystem> particleSystem = std::make_shared<ParticleSystem>(tex, false);
 
     particleSystem->pos = glm::vec3(0, 0, -0.5f);
     particleSystem->maxLife = 1.0f;
-    particleSystem->acc = glm::vec3(0, 0, 0);
-    particleSystem->partSize = glm::vec2(100, 100);
+    // particleSystem->acc = glm::vec3(0, 0, 0);
+    // particleSystem->partSize = glm::vec2(100, 100);
 
     app.sim = particleSystem;
 

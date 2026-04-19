@@ -38,4 +38,17 @@ void main() {
     if (gl_VertexID % 6 == 3) uv = vec2(0,0);
     if (gl_VertexID % 6 == 4) uv = vec2(1,1);
     if (gl_VertexID % 6 == 5) uv = vec2(0,1);
+
+
+    // get sprite index
+    uint nx = 8;
+    uint ny = 6;
+    vec2 uvScale  = vec2(1.0/nx, 1.0/ ny);
+
+    uint n = int(p.life / p.maxLife * nx * ny);
+    uint sx = n % nx;
+    uint sy = n / nx;
+    vec2 uvOffset = vec2(sx, sy) * uvScale;
+
+    uv = uv * uvScale + uvOffset;
 }

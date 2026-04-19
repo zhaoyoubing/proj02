@@ -38,6 +38,8 @@ ParticleSystem::ParticleSystem(std::shared_ptr<Texture> texture, bool drawPoints
 
     partDrawMat->Bind();
     
+    // sprites 8 x 6
+    glm::vec2 uvScale  = glm::vec2(1 / 8.0f, 1/6.0f);
 
     // Create particle data.
     for (int i = 0; i < NUM_POINTS; i++)
@@ -46,6 +48,7 @@ ParticleSystem::ParticleSystem(std::shared_ptr<Texture> texture, bool drawPoints
         Particle& p = particles[i];
         p.life = (float)i / NUM_POINTS;
         
+        // random position for point rendering
         //float x = ((rand() % 100) / 5.0f) - 10.0f;
         //float y = ((rand() % 100) / 5.0f) - 10.0f;
         //p.pos = glm::vec4(x, y, 0, 1.0);
@@ -80,7 +83,6 @@ void ParticleSystem::initBufPoints()
     glGenBuffers(1, & partVertBuf);
     glBindBuffer(GL_ARRAY_BUFFER, partVertBuf);
     glBufferData(GL_ARRAY_BUFFER, NUM_POINTS * sizeof(Particle), particles, GL_DYNAMIC_DRAW);
-
 
     // positions of particles' centers
     glEnableVertexAttribArray(0);
@@ -160,6 +162,8 @@ void ParticleSystem::tick(float dt)
 	// bind, execute the compute program, and unbind
 	partSimMat->Bind();
     glDispatchCompute(NUM_POINTS, 1, 1);
+    glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+
     partSimMat->Unbind();
 	
 	// unbind vertex buffer
@@ -185,7 +189,6 @@ void ParticleSystem::drawQuads()
     // Enable blending when rendering particles
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     partDrawMat->Bind();
     glBindVertexArray(vao);
@@ -211,43 +214,5 @@ void ParticleSystem::draw()
         drawPoints();
     else
         drawQuads();
-
-
-    /*
-    // Bind the vertex buffer. and set up attributes
-    glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)(0));
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)(sizeof(float) * 4));
-    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)(sizeof(float) * 8));
-    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)(sizeof(float) * 12));
-    glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)(sizeof(float) * 13));
-    glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)(sizeof(float) * 14));
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    // use the vertex attributes we just declared
-    for (int i = 0; i < 6; i++)
-    {
-        glEnableVertexAttribArray(i);
-    }
-
-
-    // The particle size is used in the geometry shader to create quads.
-    m_particleRenderMat->SetVec2((char*)"particleSize", m_particleSize);
-
-    // Bind material and draw
-    m_particleRenderMat->Bind();
-
-    // The geometry shader is expecting points, so we call draw with points, once for each particle.
-    glDrawArrays(GL_POINTS, 0, MAX_PARTICLES);
-
-
-    // reset everything:
-    m_particleRenderMat->Unbind();
-    for (int i = 0; i < 6; i++)
-    {
-        glDisableVertexAttribArray(i);
-    }
-    */
-    
     
 }

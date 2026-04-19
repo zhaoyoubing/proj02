@@ -61,9 +61,14 @@ void main() {
         // Decrease life
         p.life -= dt;
 
+        float t = p.life / p.maxLife;
+
+        // Fire gradient
+        //vec3 color = mix(vec3(1.0, 0.1, 0.0), vec3(1.0, 1.0, 0.0), t);
+
         // white -> yellow -> red
-        vec3 color = vec3(1.0 - 0.5 * p.life/ p.maxLife, 
-                exp(4 * (p.life/ p.maxLife - 1.0) ) , exp(10 * (p.life/ p.maxLife - 1.0)));
+        vec3 color = vec3(1.0 - 0.5 * t, 
+                exp(4 * (t - 1.0) ) , exp(10 * (t - 1.0)));
 
         p.color = vec4(color, 1.0);
 

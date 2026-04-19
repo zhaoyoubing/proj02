@@ -132,6 +132,8 @@ private:
         eye = target - forward * distance;
 
         matView = glm::lookAt(eye, target, rotation * glm::vec3(0,1,0));
+        
+        //matView = glm::lookAt(eye, target, glm::vec3(0,1,0));
     }
 };
 

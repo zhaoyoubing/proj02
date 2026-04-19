@@ -37,7 +37,7 @@ public:
 
 
     GLuint program;  // the shader program id
-    GLenum type;    // to support compute shaders
+    //GLenum type;    // to support compute shaders
 
     std::string vertexshader_source;   // source code
     std::string fragmentshader_source; // source code

@@ -36,7 +36,7 @@ uniform float dt;
 // A basic definition of what our vertex data looks like.
 struct VertexData
 {
-    vec3 pos;
+    vec3 position;
     vec3 velocity;
     vec4 color;
 	float size;
@@ -85,14 +85,14 @@ void main()
 		//outBuffer.data[i].angularVelocity = i % 11;
 
 		// Move the particle back to the center.
-		outBuffer.data[i].pos = basePosition;
+		outBuffer.data[i].position = basePosition;
 
 		// Send the particle in a random direction.
 		outBuffer.data[i].velocity = vec3(cos(i + rand) * (5.0f), 0, sin(i + rand) * (5.0f));
 	}
 
 	// Update the particle position
-    outBuffer.data[i].pos += outBuffer.data[i].velocity * dt;
+    outBuffer.data[i].position += outBuffer.data[i].velocity * dt;
 
 	// Dampen Velocity over time.
 	outBuffer.data[i].velocity -= outBuffer.data[i].velocity * dt * 5.0f;

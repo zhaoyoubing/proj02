@@ -25,7 +25,7 @@ public:
     float Shininess;
 
 private:
-    std::shared_ptr<ShaderProgram> m_shader;
+    std::shared_ptr<ShaderProgram> m_shaderProgram;
 
     std::unordered_map<std::string, float> m_floatParams;
     std::unordered_map<std::string, glm::vec2 > m_vec2Params;
@@ -40,18 +40,23 @@ public:
     Material()  {}
 
     // future style material
-    Material(std::shared_ptr<ShaderProgram> shader) : m_shader(shader) 
-    { }
+    Material(std::shared_ptr<ShaderProgram> shader) 
+    { 
+        // set the shader program
+        SetShaderProgram(shader);
+    }
 
     // --- Shader ---
-    void SetShader(std::shared_ptr<ShaderProgram> shader)
+    void SetShaderProgram(std::shared_ptr<ShaderProgram> shader)
     {
-        m_shader = shader;
+        m_shaderProgram = shader;
+        // Bind shader program
+        m_shaderProgram->Link();
     }
 
     std::shared_ptr<ShaderProgram> GetShader() const
     {
-        return m_shader;
+        return m_shaderProgram;
     }
 
     // --- Uniform Parameters ---
@@ -75,9 +80,9 @@ public:
         m_vec4Params[name] = v;
     }
 
-    void SetMat4(const std::string& name, glm::mat4 value) // assume 16 floats
+    void SetMat4(const std::string& name, glm::mat4 v) // assume 16 floats
     {
-        //m_mat4Params[name] = std::vector<float>(value, value + 16);
+        m_mat4Params[name] = v;
     }
 
     // --- Textures ---
@@ -89,29 +94,35 @@ public:
     // --- Bind material before drawing ---
     void Bind()
     {
-        if (!m_shader) return;
+        if ( nullptr == m_shaderProgram) {
+            std::cout << "shader empty" << std::endl;
+            return;
+        }
 
+        // Bind shader program
+        m_shaderProgram->Link();
+        
         // bind the shader
-        m_shader->Use();
+        m_shaderProgram->Use();
 
         // Upload floats
         for (auto& [name, value] : m_floatParams)
-            m_shader->SetFloat(name, value);
+            m_shaderProgram->SetFloat(name, value);
 
         // Upload vec3s
         for (auto& [name, vec] : m_vec3Params)
-            m_shader->SetVec3(name, vec);
+           m_shaderProgram->SetVec3(name, vec);
 
         // Upload matrices
         for (auto& [name, mat] : m_mat4Params)
-            m_shader->SetMat4(name, mat);
+            m_shaderProgram->SetMat4(name, mat);
 
         // Bind textures
         int textureUnit = 0;
         for (auto& [name, tex] : m_textures)
         {
             tex->bindTexture(textureUnit);
-            m_shader->SetInt(name, textureUnit);
+            m_shaderProgram->SetInt(name, textureUnit);
             textureUnit++;
         }
     }
@@ -136,7 +147,7 @@ public:
         }
         */
 
-        m_shader->UnUse();
+        m_shaderProgram->UnUse();
     }
 };
 

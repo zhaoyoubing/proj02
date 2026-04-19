@@ -7,17 +7,16 @@
 
 struct Particle
 {
-    glm::vec3 m_position;
-    glm::vec3 m_velocity;
-    glm::vec4 m_color;
-    float size;
-    //float m_rotation;
-    //float m_angularVelocity;
-    float m_age;
-    
-    // This variable is required, can't input data that isn't a multiple of 4
-    // IF you comment this out, undefined weird stuff will happen.
-    //float buffer;
+    glm::vec4 pos;
+    glm::vec4 velocity;
+    glm::vec4 color;
+
+    float life;
+    float maxLife;
+
+    //float rotation;
+    //float angularVelocity;
+
 };
 
 
@@ -37,34 +36,30 @@ public:
     void clear() { }
 
     // Position of the system.
-    glm::vec3 m_position;
+    glm::vec3 pos;
 
     // Time in seconds until particles are recycled.
-    float m_lifeTime = 1.f;
+    float maxLife = 1.f;
     
     // global acceleration applied to all particles, defaults to 0
-    glm::vec3 m_acceleration = glm::vec3(0, 0, 0);
+    glm::vec3 acc = glm::vec3(0, 0, 0);
 
     // size of particles
-    glm::vec2 m_particleSize = glm::vec2(100, 100);
+    glm::vec2 partSize = glm::vec2(100, 100);
 
 private:
     // The particle system will work with a predefined pool of particles, this makes things way faster than having a dynamic list.
     // You may be able to increase this number depending on your hardware.
     // I was able to run it smoothly with 65536 particles on an NVIDIA GTX 680
     // 16348
-    static const int MAX_PARTICLES = 1024;
-    Particle m_particles[MAX_PARTICLES];
-    float m_internalTimer = 0;
+    static const int NUM_POINTS = 64;
+    Particle particles[NUM_POINTS];
+    float internalTimer = 0;
 
-    std::shared_ptr<Material> m_particleRenderMat;
-    std::shared_ptr<Material> m_particleSimulateMat;
-
-    // for drawing particles
-    GLuint vao;
-    GLuint partVertBuf; // vertex buffer for particles
-    GLuint quadVertBuf;
-
+    // particle vertex and fragment shaders
+    std::shared_ptr<Material> partDrawMat;
+    // simulation shaders
+    std::shared_ptr<Material> partSimMat;
 
     // quad for drawing particles
     inline static const GLfloat vertQuad[] = {
@@ -74,7 +69,20 @@ private:
         1.0f, 1.0f, 0.0f,
     };
 
+    bool bPoints = true;
+
+    // for drawing particles
+    GLuint vao;  // vertex array object
+    GLuint quadVertBuf; // the quad proxy for particle textures
+    GLuint partVertBuf; // vertex buffer for particles
+
     void initBuffers();
+    void initBufPoints();
+    void initBufQuads();
+
+
+    void drawPoints();
+    void drawQuads();
 
 };
 

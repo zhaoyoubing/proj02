@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\glad.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\MeshFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\PlaneMesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\GLWin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\Interaction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\Spatial.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\SphereMesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\RigidSim.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\RigidBody.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\RigidSphere.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\ParticleSys.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\ShaderSingle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\ShaderProgram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{3D9B20D3-D897-3CB6-A844-9C1CDDB652C8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

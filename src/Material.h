@@ -25,8 +25,9 @@ public:
     float Shininess;
 
 private:
-    std::shared_ptr<ShaderProgram> shaderProgram;
+    std::shared_ptr<ShaderProgram> shaderProgram = nullptr;
 
+    std::unordered_map<std::string, GLint> intParams;
     std::unordered_map<std::string, float> floatParams;
     std::unordered_map<std::string, glm::vec2 > vec2Params;
     std::unordered_map<std::string, glm::vec3 > vec3Params;
@@ -62,6 +63,11 @@ public:
     */
 
     // --- Uniform Parameters ---
+    void setInt(const std::string& name, GLuint value)
+    {
+        intParams[name] = value;
+    }
+
     void setFloat(const std::string& name, float value)
     {
         floatParams[name] = value;
@@ -96,16 +102,17 @@ public:
     // --- Bind material before drawing ---
     void bind()
     {
-        if ( nullptr == shaderProgram) {
-            std::cout << "shader empty" << std::endl;
-            return;
-        }
+        if ( nullptr == shaderProgram)  return;
 
         // Bind shader program
         shaderProgram->link();
         
         // bind the shader
         shaderProgram->use();
+
+        // Upload ints
+        for (auto& [name, value] : intParams)
+            shaderProgram->setInt(name, value);
 
         // Upload floats
         for (auto& [name, value] : floatParams)
@@ -129,9 +136,11 @@ public:
         }
     }
 
-
     void unbind()
     {
+        // nothing to unbind
+        if ( nullptr == shaderProgram) return;
+
         // Unbind textures
         // Unbind all owned objects.
         int textureUnit = 0;
@@ -140,14 +149,6 @@ public:
             tex->UnbindTexture(textureUnit);
             textureUnit++;
         }
-
-        /*
-        for (int i = 0; i < m_textureUniforms.size(); i++)
-        {
-            glActiveTexture(GL_TEXTURE0 + i);
-            glBindTexture(GL_TEXTURE_2D, 0);
-        }
-        */
 
         shaderProgram->unUse();
     }

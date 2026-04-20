@@ -10,6 +10,8 @@ struct Particle {
     vec4 color;
     float life;
     float maxLife;
+    int padding1;
+    int padding2;
 };
 
 layout(std430, binding = 0) buffer Particles {
@@ -19,15 +21,22 @@ layout(std430, binding = 0) buffer Particles {
 uniform mat4 view;
 uniform mat4 proj;
 
+// for texture sprites
+uniform int nxTex;
+uniform int nyTex;
+
+uniform float size;
+
 out vec4 pColor;
 out vec2 uv;
+
 
 void main() {
 
     // 🔑 Get particle using instance ID
     Particle p = particles[gl_InstanceID];
 
-    vec3 worldPos = p.pos.xyz + aPos * 0.2;
+    vec3 worldPos = p.pos.xyz + aPos * size;
     gl_Position = proj * view * vec4(worldPos, 1.0);
 
     pColor = p.color;
@@ -37,15 +46,17 @@ void main() {
     if (gl_VertexID % 4 == 2) uv = vec2(0,1);
     if (gl_VertexID % 4 == 3) uv = vec2(1,1);
 
+    // dealing with sprites texCoord
     // get sprite index
-    uint nx = 8;
-    uint ny = 6;
-    vec2 uvScale  = vec2(1.0/nx, 1.0/ ny);
+    //uint nx = 8;
+    //uint ny = 6;
+    vec2 uvScale  = vec2(1.0/nxTex, 1.0/ nyTex);
 
-    uint n = int( (1 - p.life / p.maxLife) * nx * ny);
-    uint sx = n % nx;
-    uint sy = n / nx;
+    uint n = int( (1 - p.life / p.maxLife) * nxTex * nyTex);
+    uint sx = n % nxTex;
+    uint sy = n / nxTex;
     vec2 uvOffset = vec2(sx, sy) * uvScale;
 
     uv = uv * uvScale + uvOffset;
+
 }

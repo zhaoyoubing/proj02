@@ -20,7 +20,7 @@
 App app;
 
 //glm::mat4 matModelRoot = glm::mat4(1.0);
-glm::vec3 viewPos_default = glm::vec3(0.0f, 0.0f, 200.0f);
+glm::vec3 viewPos_default = glm::vec3(0.0f, 0.0f, 100.0f);
 
 // viewport width and height
 int width = 800;
@@ -28,24 +28,17 @@ int height = 800;
 
 bool bWireframe = false;
 
-/*
-void clearScene() 
-{
-    app.sim->clear();
-}
-*/
-
 int main()
 {
-    app.glWin = GLWin::createWin(width, height, "Hello Rigid Body");
+    app.glWin = GLWin::createWin(width, height, "Hello Particle Systems");
     
     GLFWwindow *window = app.glWin->getGLFWwin();
 
     app.camera = std::make_shared<ArcballCamera>(
         viewPos_default,
         glm::vec3(0,0,0), // target
-        20.0f,            // distance
-        45.0f,            // FOV
+        10.0f,            // distance
+        40.0f,            // FOV
         float(width) / float(height),
         0.1f,
         1000.0f
@@ -54,13 +47,18 @@ int main()
     // ================================================
     // Particle System
     // Initialize the particle system class with a bunch of parameters:
-    std::shared_ptr<Texture> tex = std::make_shared<Texture>("models/fire_sprite.png");
-    std::shared_ptr<ParticleSystem> particleSystem = std::make_shared<ParticleSystem>(tex, true);
+    std::shared_ptr<Texture> tex = std::make_shared<Texture>("models/particle.png");
+    std::shared_ptr<Texture> tex_sprite = std::make_shared<Texture>("models/fire_sprite.png");
 
-    particleSystem->pos = glm::vec3(0, -5.0f, -0.5f);
+    std::shared_ptr<ParticleSystem> particleSystem = std::make_shared<ParticleSystem>();
+
+    particleSystem->basePos = glm::vec3(0, -3.0f, -0.0f);
     particleSystem->maxLife = 1.0f;
-    // particleSystem->acc = glm::vec3(0, 0, 0);
-    // particleSystem->partSize = glm::vec2(100, 100);
+    particleSystem->size = 0.4f;
+
+    particleSystem->setCamera(app.camera);
+    particleSystem->setTexture(tex);
+    particleSystem->setSpriteTexture(tex_sprite, 8, 6);
 
     app.sim = particleSystem;
 
@@ -71,17 +69,11 @@ int main()
 
 
     std::cout << "==================================" << std::endl;
-    std::cout << "SPACE: Start simulation" << std::endl;
-    std::cout << "1: Particles as Points " << std::endl;
-    std::cout << "2: Particles as Texures " << std::endl;
-    std::cout << "3: Particles as Texure Sprites " << std::endl;
-    //std::cout << "x: Toggle wireframe" << std::endl;
-    std::cout << "r: Clear" << std::endl;
+    std::cout << "SPACE: Pause/continue simulation" << std::endl;
+    std::cout << "1: Draw Particles as Points " << std::endl;
+    std::cout << "2: Draw Particles Using One Single Texure " << std::endl;
+    std::cout << "3: Draw Particles Using Texure Sprites " << std::endl;
     std::cout << "==================================" << std::endl;
-
-    // The view projection matrix will be used in the vertex shader to move the particle.
-    //app.sim->getMaterial()->setMat4("view", app.camera->matView);
-    //app.sim->getMaterial()->setMat4("proj", app.camera->matProj);
 
 
     // setting the event loop
@@ -91,12 +83,9 @@ int main()
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-        app.sim->getMaterial()->setMat4("view", app.camera->matView);
-        app.sim->getMaterial()->setMat4("proj", app.camera->matProj);
-
-        // update physics
-        // time step of 0.005 second
-        app.sim->tick(0.001);
+        // update simulation using 
+        // a fixed time step
+        app.sim->tick(0.005);
 
         // draw the models
         app.sim->draw();

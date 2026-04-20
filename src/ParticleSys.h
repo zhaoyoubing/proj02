@@ -4,6 +4,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 
 #include "Material.h"
+#include "ArcballCamera.h"
 
 struct Particle
 {
@@ -14,34 +15,50 @@ struct Particle
     float life;
     float maxLife;
 
+    // padding for alignment of 16 bytes
+    int padding1;
+    int padding2;
+
     //float rotation;
     //float angularVelocity;
 };
 
 
+enum class DrawMode {POINT, TEXTURE, SPRITE};
+
 class ParticleSystem
 {
 public:
 
-    ParticleSystem(std::shared_ptr<Texture> texture, bool drawPoints);
+    ParticleSystem();
     ~ParticleSystem();
-
-    // get the render material/shader
-    std::shared_ptr<Material> getMaterial();
     
     bool getPlaySim() { return bPlaySim; }
     void setPlaySim(bool bPlay) { bPlaySim = bPlay; }
+
+    void setCamera( std::shared_ptr<ArcballCamera> cam) { camera = cam; }
+
+    void setTexture(std::shared_ptr<Texture> tex) {  
+        drawTexMat->setTexture((char*)"tex", tex);
+    }
+
+    void setSpriteTexture(std::shared_ptr<Texture> tex, int nx, int ny) {  
+        drawSpriteMat->setTexture((char*)"tex", tex);
+        drawSpriteMat->setInt("nxTex", nx);
+        drawSpriteMat->setInt("nyTex", ny);
+    }
+
+    void setDrawPoint() { drawMode = DrawMode::POINT; }
+    void setDrawTexture() { drawMode = DrawMode::TEXTURE; }
+    void setDrawSprite() { drawMode = DrawMode::SPRITE; }
 
     // update
     void tick(float dt);
 
     void draw();
 
-    // TODO
-    //void clear() { }
-
     // Base position of the system.
-    glm::vec3 pos;
+    glm::vec3 basePos;
 
     // Time in seconds until particles are recycled.
     float maxLife = 1.0f;
@@ -52,20 +69,32 @@ public:
     // size of particles
     //glm::vec2 partSize = glm::vec2(100, 100);
 
+    float size = 0.2f;
+
 private:
     // The particle system will work with a predefined pool of particles, this makes things way faster than having a dynamic list.
     // You may be able to increase this number depending on your hardware.
     // I was able to run it smoothly with 65536 particles on an NVIDIA Mobile 5070Ti
     // 16348
 
-    bool bPlaySim = false;
-    static const int NUM_POINTS = 8;
+    bool bPlaySim = true;
+    static const int NUM_POINTS = 1024;
     Particle particles[NUM_POINTS];
 
+    std::shared_ptr<ShaderProgram> progPoint;
+    std::shared_ptr<ShaderProgram> progQuadTex;
+    std::shared_ptr<ShaderProgram> progQuadSprite;
+
+    // rendering
+    std::shared_ptr<ArcballCamera> camera;
+
     // particle vertex and fragment shaders
-    std::shared_ptr<Material> partDrawMat;
+    std::shared_ptr<Material> drawPointMat;
+    std::shared_ptr<Material> drawTexMat;
+    std::shared_ptr<Material> drawSpriteMat;
+
     // simulation compute shaders
-    std::shared_ptr<Material> partSimMat;
+    std::shared_ptr<Material> simMat;
 
     // quad for drawing particles with GL_TRIANGLE_STRIP
     inline static const GLfloat vertQuad[] = {
@@ -75,10 +104,12 @@ private:
         1.0f, 1.0f, 0.0f,
     };
 
-    bool bDrawPoints = true;
+    DrawMode drawMode = DrawMode::POINT;
 
     // for drawing particles
-    GLuint vao;  // vertex array object for quad or point list
+    GLuint vaoPoint;  // vertex array object for quad or point list
+
+    GLuint vaoQuad;
     GLuint quadVertBuf; // the quad proxy for particle textures
 
     // buffer for particles
@@ -90,7 +121,8 @@ private:
     void initBufQuads();
 
     void drawPoints();
-    void drawQuads();
+    void drawQuadTex();
+    void drawQuadSprite();
 
 };
 

@@ -15,8 +15,8 @@ void main()
     //gl_Position = vec4(0.0, 0.0, 0.0, 1.0);
 
     // Set the size of the point (in pixels)
-    gl_PointSize = 5.0;
+    gl_PointSize = 50.0;
 
-    //vColor = vec3(1.0, 0.0, 0.0);
+    //vColor = vec4(1.0, 0.0, 0.0, 1.0);
     vColor = aColor;
 }

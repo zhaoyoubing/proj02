@@ -4,63 +4,76 @@
 #include <memory>
 #include "ShaderProgram.h"
 
-ParticleSystem::ParticleSystem(std::shared_ptr<Texture> texture, bool drawPoints)
+ParticleSystem::ParticleSystem()
 {
-    bDrawPoints = drawPoints;
-
-    // Setup the compute shader material for the particlue simulation
-
+    // set up the compute shader material for the particlue simulation
     std::shared_ptr<ShaderProgram> simProgram = std::make_shared<ShaderProgram>();
     std::shared_ptr<ShaderSingle> simShader 
             = std::make_shared<ShaderSingle>("shaders/particle/fire.comp", GL_COMPUTE_SHADER);
     simProgram->attachShader(simShader);
-    partSimMat = std::make_shared<Material>(simProgram);
-
-    std::string fVert = "shaders/particle/point.vert";
-    std::string fFrag = "shaders/particle/point.frag";
-
-    if (! bDrawPoints) {
-        fVert = "shaders/particle/quad_ssbo.vert";
-        fFrag = "shaders/particle/quad.frag";
-    }
+    simMat = std::make_shared<Material>(simProgram);
 
     // Setup shaders and shader program.
-    std::shared_ptr<ShaderProgram> program = std::make_shared<ShaderProgram>();
+    progPoint = std::make_shared<ShaderProgram>();
     std::shared_ptr<ShaderSingle> vertexShader 
-            = std::make_shared<ShaderSingle>(fVert.c_str(), GL_VERTEX_SHADER);
-    program->attachShader(vertexShader);
+            = std::make_shared<ShaderSingle>("shaders/particle/point.vert", GL_VERTEX_SHADER);
+    progPoint->attachShader(vertexShader);
     std::shared_ptr<ShaderSingle> fragShader 
-        = std::make_shared<ShaderSingle>(fFrag.c_str(), GL_FRAGMENT_SHADER);
-    program->attachShader(fragShader);
+        = std::make_shared<ShaderSingle>("shaders/particle/point.frag", GL_FRAGMENT_SHADER);
+    progPoint->attachShader(fragShader);
 
-    partDrawMat = std::make_shared<Material>(program);
-    partDrawMat->setTexture((char*)"tex", texture);
+    drawPointMat = std::make_shared<Material>();
+    drawPointMat->setShaderProgram(progPoint);
 
-    partDrawMat->bind();
+
+    progQuadTex = std::make_shared<ShaderProgram>();
+    vertexShader = std::make_shared<ShaderSingle>("shaders/particle/quad.vert", 
+                                                    GL_VERTEX_SHADER);
+    progQuadTex->attachShader(vertexShader);
+    fragShader = std::make_shared<ShaderSingle>("shaders/particle/quad.frag", 
+                                                    GL_FRAGMENT_SHADER);
+    progQuadTex->attachShader(fragShader);
+
+    drawTexMat = std::make_shared<Material>();
+    drawTexMat->setShaderProgram(progQuadTex);
+
+    progQuadSprite = std::make_shared<ShaderProgram>();
+    vertexShader = std::make_shared<ShaderSingle>("shaders/particle/quad_sprite.vert", 
+                                                    GL_VERTEX_SHADER);
+    progQuadSprite->attachShader(vertexShader);
+    fragShader = std::make_shared<ShaderSingle>("shaders/particle/quad_sprite.frag", 
+                                                    GL_FRAGMENT_SHADER);
+    progQuadSprite->attachShader(fragShader);
+
+    drawSpriteMat = std::make_shared<Material>();
+    drawSpriteMat->setShaderProgram(progQuadSprite);
     
-    // sprites 8 x 6
-    //glm::vec2 uvScale  = glm::vec2(1 / 8.0f, 1/6.0f);
-
     // Create particle data.
+    // [TODO] set particle positions
     for (int i = 0; i < NUM_POINTS; i++)
     {
         // Get a reference to that particle, not a copy.
-        Particle& p = particles[i];
-        // p.life = (float)i / NUM_POINTS;
+        Particle & p = particles[i];
 
         // random position for point rendering
-        //float x = ((rand() % 100) / 5.0f) - 10.0f;
-        //float y = ((rand() % 100) / 5.0f) - 10.0f;
-        //p.pos = glm::vec4(x, y, 0, 1.0);
+        float x = ((rand() % 100) / 5.0f) - 10.0f;
+        float y = ((rand() % 100) / 5.0f) - 10.0f;
 
-        //p.pos = glm::vec4(0, 0, 0, 1.0);
-        p.pos = glm::vec4(pos, 1.0);
+        // [TODO 1.1]
+        // set the initial particle position 
+        // to a random position (x, y, z = 0.0, w = 1.0)
+        // p.pos = glm::vec4(x, y, 0, 1.0);
+
+        p.pos = glm::vec4(basePos, 1.0);
         p.velocity = glm::vec4(0, 0, 0, 0);
+
         //p.m_angularVelocity = 0;
         //p.m_rotation = 0;
         //p.color = glm::vec4((rand() % 256) / 255.0f, 
         //        (rand() % 256) / 255.0f, (rand() % 256) / 255.0f, 1);
+
         p.color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+        
         p.life = maxLife;
         p.maxLife = maxLife;
     }
@@ -70,8 +83,8 @@ ParticleSystem::ParticleSystem(std::shared_ptr<Texture> texture, bool drawPoints
 
 ParticleSystem::~ParticleSystem()
 {
-    glDeleteVertexArrays(1, &vao);
-    
+    glDeleteVertexArrays(1, &vaoPoint);
+    glDeleteVertexArrays(1, &vaoQuad);
     glDeleteBuffers(1, & quadVertBuf);
     glDeleteBuffers(1, & partBuf);
 }
@@ -79,14 +92,15 @@ ParticleSystem::~ParticleSystem()
 void ParticleSystem::initBufPoints()
 {
     // vertex array object for the quad and all particle instances
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
+    glGenVertexArrays(1, & vaoPoint);
+    glBindVertexArray(vaoPoint);
 
     // Particle/Instance VBO
-    glGenBuffers(1, & partBuf);
+    // glGenBuffers(1, & partBuf);
     glBindBuffer(GL_ARRAY_BUFFER, partBuf);
-    glBufferData(GL_ARRAY_BUFFER, NUM_POINTS * sizeof(Particle), particles, GL_DYNAMIC_DRAW);
+    //glBufferData(GL_ARRAY_BUFFER, NUM_POINTS * sizeof(Particle), particles, GL_DYNAMIC_DRAW);
 
+    // [TODO] set the vertex attribute pointer for particle positions
     // positions of particles' centers
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)0);
@@ -95,16 +109,16 @@ void ParticleSystem::initBufPoints()
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, color));
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(vao);
+    //glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 }
 
 
 void ParticleSystem::initBufQuads()
 {
     // vertex array object for the quad and all particle instances
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
+    glGenVertexArrays(1, & vaoQuad);
+    glBindVertexArray(vaoQuad);
 
     // Quad VBO for instancing
     glGenBuffers(1, &quadVertBuf);
@@ -114,114 +128,133 @@ void ParticleSystem::initBufQuads()
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
-    /*
-    // 2nd attribute buffer : positions of particles' centers
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)0);
-    glVertexAttribDivisor(1, 1);
-
-    glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, color));
-
-    glVertexAttribDivisor(2, 1);
-    */
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    //glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    glGenBuffers(1, &partBuf);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, partBuf);
-
     // Particle/Instance VBO
-    //glGenBuffers(1, & partVertBuf);
-    //glBindBuffer(GL_ARRAY_BUFFER, partVertBuf);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, NUM_POINTS * sizeof(Particle), particles, GL_DYNAMIC_DRAW);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+    //glGenBuffers(1, &partBuf);
+    //glBindBuffer(GL_SHADER_STORAGE_BUFFER, partBuf);
+
+    // glBufferData(GL_SHADER_STORAGE_BUFFER, NUM_POINTS * sizeof(Particle), particles, GL_DYNAMIC_DRAW);
+    // glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
 void ParticleSystem::initBuffers()
 {
-    if (bDrawPoints) 
-        initBufPoints();
-    else
-        initBufQuads();
+    // create the particle buffer
+    glGenBuffers(1, & partBuf);
+    glBindBuffer(GL_ARRAY_BUFFER, partBuf);
+    glBufferData(GL_ARRAY_BUFFER, NUM_POINTS * sizeof(Particle), particles, GL_DYNAMIC_DRAW);
+
+    initBufPoints();
+    initBufQuads();
 }
 
-std::shared_ptr<Material> ParticleSystem::getMaterial()
-{
-    return partDrawMat;
-}
 
+// use the compute shader
 void ParticleSystem::tick(float dt)
 {
     if (! bPlaySim ) return;
 
-    // We are binding the vertex buffer from our square.
-    // glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, partBuf);
-
     // Same as with drawing, but we bind a compute shader program instead.
     // Set a bunch of values in the compute shader to use.
-    partSimMat->setFloat((char*)"dt", dt);
+    simMat->setFloat((char*)"dt", dt);
     float time = (float) glfwGetTime();
-    partSimMat->setFloat((char*)"time", time);
-    partSimMat->setVec3((char*)"basePos", pos);
+    simMat->setFloat((char*)"time", time);
+    simMat->setVec3((char*)"basePos", basePos);
     
-	// bind, execute the compute program, and unbind
-	partSimMat->bind();
+	// use the compute shader
+	simMat->bind();
+
+    // We are binding the particle buffer from our square.
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, partBuf);
     glDispatchCompute(NUM_POINTS, 1, 1);
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
-    partSimMat->unbind();
+    simMat->unbind();
 	
-	// unbind vertex buffer
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, 0);
 }
 
 void ParticleSystem::drawPoints()
 {
-    partDrawMat->bind();
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, partBuf);
+    glBindVertexArray(vaoPoint);
 
-    glPointSize(10.0f);
+    glPointSize(50.0f * size);
     glDrawArrays(GL_POINTS, 0, NUM_POINTS);
 
-    partDrawMat->unbind();
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }
 
-void ParticleSystem::drawQuads()
+void ParticleSystem::drawQuadTex()
 {
-    // Enable blending when rendering particles
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
-    partDrawMat->bind();
+    glBindVertexArray(vaoQuad);
 
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, partBuf);
-    //glBindBuffer(GL_ARRAY_BUFFER, partVertBuf);
     
-    glBindVertexArray(vao);
+    // draw instanced quads for all particles
+    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, NUM_POINTS);
+
+    glBindVertexArray(0);
+
+}
+
+void ParticleSystem::drawQuadSprite()
+{
+    glBindVertexArray(vaoQuad);
+
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, partBuf);
 
     // 🔥 One draw call for ALL particles
     glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, NUM_POINTS);
 
-    partDrawMat->unbind();
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, 0);
-    // glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    glDisable(GL_BLEND);
 }
+
 
 void ParticleSystem::draw()
 {
+    std::shared_ptr<Material> currentMat;
 
-    if (bDrawPoints)
-        drawPoints();
-    else
-        drawQuads();
-    
+    switch (drawMode)
+    {
+        case DrawMode::POINT:
+            currentMat = drawPointMat;
+            break;
+        case DrawMode::TEXTURE:
+            currentMat = drawTexMat;
+            break;
+        case DrawMode::SPRITE: 
+            currentMat = drawSpriteMat;
+            break;  
+    }
+
+    currentMat->setMat4("view", camera->matView);
+    currentMat->setMat4("proj", camera->matProj);
+    currentMat->setFloat("size", size);
+
+    currentMat->bind();
+
+    // Enable blending when rendering particles
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+    switch (drawMode)
+    {
+        case DrawMode::POINT:
+            drawPoints();
+            break;
+        case DrawMode::TEXTURE:
+            drawQuadTex();
+            break;
+        case DrawMode::SPRITE: 
+            drawQuadSprite();
+            break;  
+    }
+
+    // unuse the shader programs
+    currentMat->unbind();
+
+    glDisable(GL_BLEND);
 }

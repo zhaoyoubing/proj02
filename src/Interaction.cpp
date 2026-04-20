@@ -137,10 +137,15 @@ void key_callback_sim(GLFWwindow* window, int key, int scancode, int action, int
                 app.sim->setPlaySim(false);
             else
                 app.sim->setPlaySim(true);
-        }
-
-        if (GLFW_KEY_R == key) {
-            //app.sim->reInit();
+        } else if (GLFW_KEY_1 == key) {
+            std::cout << "Draw Particles as Points" << std::endl;
+            app.sim->setDrawPoint();
+        } else if (GLFW_KEY_2 == key) {
+            std::cout << "Draw Particles as Texture" << std::endl;
+            app.sim->setDrawTexture();
+        } else if (GLFW_KEY_3 == key) {
+            std::cout << "Draw Particles as Texture Sprites" << std::endl;
+            app.sim->setDrawSprite();
         }
         
     }

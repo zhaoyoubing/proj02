@@ -5,16 +5,11 @@ extern App app;
 
 void window_size_callback(GLFWwindow* window, int width, int height)
 {
-    //int width, height;
-    //glfwGetWindowSize(window, &width, &height);
-
     glViewport(0, 0, width, height);
 
-    //matProj = glm::perspective(glm::radians(60.0f), width/(float)height, 2.0f, 8.0f);
     app.camera->SetViewportSize(width, height);
 }
 
-    
 
 int GLWin::init(std::string title) 
 {
@@ -31,7 +26,6 @@ int GLWin::init(std::string title)
 
     // register the key event callback function
     glfwSetKeyCallback(window, key_callback);
-    //glfwSetKeyCallback(window, key_callback_sim);
     
     // register the mouse button event callback function
     glfwSetMouseButtonCallback(window, mouse_button_callback);

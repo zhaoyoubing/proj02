@@ -20,8 +20,6 @@
 App app;
 
 //glm::mat4 matModelRoot = glm::mat4(1.0);
-
-//glm::vec3 lightPos = glm::vec3(5.0f, 5.0f, 10.0f);
 glm::vec3 viewPos_default = glm::vec3(0.0f, 0.0f, 200.0f);
 
 // viewport width and height
@@ -30,24 +28,10 @@ int height = 800;
 
 bool bWireframe = false;
 
+/*
 void clearScene() 
 {
     app.sim->clear();
-}
-
-/*
-void key_callback_sim(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-    //std::cout << "simulation key callback " << std::endl;
-    if (action == GLFW_PRESS)
-    {
-        // Controls
-        if (GLFW_KEY_SPACE == key) {
-           //app.sim->setPlaySim(true);
-        } if (GLFW_KEY_R == key) {
-           app.sim->clear();
-        }
-    }
 }
 */
 
@@ -56,8 +40,6 @@ int main()
     app.glWin = GLWin::createWin(width, height, "Hello Rigid Body");
     
     GLFWwindow *window = app.glWin->getGLFWwin();
-
-    //glViewport(0, 0, width, height);
 
     app.camera = std::make_shared<ArcballCamera>(
         viewPos_default,
@@ -73,7 +55,7 @@ int main()
     // Particle System
     // Initialize the particle system class with a bunch of parameters:
     std::shared_ptr<Texture> tex = std::make_shared<Texture>("models/fire_sprite.png");
-    std::shared_ptr<ParticleSystem> particleSystem = std::make_shared<ParticleSystem>(tex, false);
+    std::shared_ptr<ParticleSystem> particleSystem = std::make_shared<ParticleSystem>(tex, true);
 
     particleSystem->pos = glm::vec3(0, -5.0f, -0.5f);
     particleSystem->maxLife = 1.0f;
@@ -100,15 +82,14 @@ int main()
     // The view projection matrix will be used in the vertex shader to move the particle.
     app.sim->getMaterial()->SetMat4("view", app.camera->matView);
     app.sim->getMaterial()->SetMat4("proj", app.camera->matProj);
-    // The viewport dimensions are needed in the geometry shader to make a correctly sized quad.
-    // app.sim->getMaterial()->SetVec2((char*)"viewport", viewportDimensions);
-    // app.sim->getMaterial()->Bind();
+
 
     // setting the event loop
     while (!glfwWindowShouldClose(window))
     {
-        glClear(GL_COLOR_BUFFER_BIT);
+        if (nullptr == app.sim)  continue;
 
+        glClear(GL_COLOR_BUFFER_BIT);
 
         app.sim->getMaterial()->SetMat4("view", app.camera->matView);
         app.sim->getMaterial()->SetMat4("proj", app.camera->matProj);
@@ -123,6 +104,7 @@ int main()
         glfwSwapBuffers(window);
 
         glfwPollEvents();
+
     }
 
     glfwTerminate();

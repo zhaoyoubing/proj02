@@ -26,7 +26,7 @@ public:
     ParticleSystem(std::shared_ptr<Texture> texture, bool drawPoints);
     ~ParticleSystem();
 
-    // material with shader binded
+    // get the render material/shader
     std::shared_ptr<Material> getMaterial();
     
     bool getPlaySim() { return bPlaySim; }
@@ -38,13 +38,13 @@ public:
     void draw();
 
     // TODO
-    void clear() { }
+    //void clear() { }
 
-    // Position of the system.
+    // Base position of the system.
     glm::vec3 pos;
 
     // Time in seconds until particles are recycled.
-    float maxLife = 1.f;
+    float maxLife = 1.0f;
     
     // global acceleration applied to all particles, defaults to 0
     // glm::vec3 acc = glm::vec3(0, 0, 0);
@@ -64,7 +64,7 @@ private:
 
     // particle vertex and fragment shaders
     std::shared_ptr<Material> partDrawMat;
-    // simulation shaders
+    // simulation compute shaders
     std::shared_ptr<Material> partSimMat;
 
     // quad for drawing particles with GL_TRIANGLE_STRIP
@@ -78,11 +78,13 @@ private:
     bool bDrawPoints = true;
 
     // for drawing particles
-    GLuint vao;  // vertex array object
+    GLuint vao;  // vertex array object for quad or point list
     GLuint quadVertBuf; // the quad proxy for particle textures
 
-    GLuint partVertBuf;
-    GLuint partStorageBuf; // vertex buffer for particles
+    // buffer for particles
+    // use as Vertex Buffers (VBO) 
+    // or Shader Storage Buffers (SSBO)
+    GLuint partBuf;  
 
     void initBuffers();
     void initBufPoints();

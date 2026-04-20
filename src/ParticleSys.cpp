@@ -73,8 +73,7 @@ ParticleSystem::~ParticleSystem()
     glDeleteVertexArrays(1, &vao);
     
     glDeleteBuffers(1, & quadVertBuf);
-    glDeleteBuffers(1, & partStorageBuf);
-    glDeleteBuffers(1, & partVertBuf);
+    glDeleteBuffers(1, & partBuf);
 }
 
 void ParticleSystem::initBufPoints()
@@ -84,8 +83,8 @@ void ParticleSystem::initBufPoints()
     glBindVertexArray(vao);
 
     // Particle/Instance VBO
-    glGenBuffers(1, & partVertBuf);
-    glBindBuffer(GL_ARRAY_BUFFER, partVertBuf);
+    glGenBuffers(1, & partBuf);
+    glBindBuffer(GL_ARRAY_BUFFER, partBuf);
     glBufferData(GL_ARRAY_BUFFER, NUM_POINTS * sizeof(Particle), particles, GL_DYNAMIC_DRAW);
 
     // positions of particles' centers
@@ -130,8 +129,8 @@ void ParticleSystem::initBufQuads()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    glGenBuffers(1, &partStorageBuf);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, partStorageBuf);
+    glGenBuffers(1, &partBuf);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, partBuf);
 
     // Particle/Instance VBO
     //glGenBuffers(1, & partVertBuf);
@@ -156,10 +155,10 @@ std::shared_ptr<Material> ParticleSystem::getMaterial()
 void ParticleSystem::tick(float dt)
 {
     if (! bPlaySim ) return;
-    
+
     // We are binding the vertex buffer from our square.
     // glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, partStorageBuf);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, partBuf);
 
     // Same as with drawing, but we bind a compute shader program instead.
     // Set a bunch of values in the compute shader to use.
@@ -167,8 +166,6 @@ void ParticleSystem::tick(float dt)
     float time = (float) glfwGetTime();
     partSimMat->SetFloat((char*)"time", time);
     partSimMat->SetVec3((char*)"basePos", pos);
-    //partSimMat->SetFloat((char*)"burnRate", 1 / (float) maxLife);
-    //partSimMat->SetVec3((char*)"acceleration", acc);
     
 	// bind, execute the compute program, and unbind
 	partSimMat->Bind();
@@ -185,7 +182,7 @@ void ParticleSystem::drawPoints()
 {
     partDrawMat->Bind();
     glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, partVertBuf);
+    glBindBuffer(GL_ARRAY_BUFFER, partBuf);
 
     glPointSize(10.0f);
     glDrawArrays(GL_POINTS, 0, NUM_POINTS);
@@ -203,7 +200,7 @@ void ParticleSystem::drawQuads()
 
     partDrawMat->Bind();
 
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, partStorageBuf);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, partBuf);
     //glBindBuffer(GL_ARRAY_BUFFER, partVertBuf);
     
     glBindVertexArray(vao);

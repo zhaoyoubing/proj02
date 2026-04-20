@@ -109,7 +109,6 @@ void ParticleSystem::initBufPoints()
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, color));
 
-    //glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }
 
@@ -128,15 +127,8 @@ void ParticleSystem::initBufQuads()
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
-    //glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    // Particle/Instance VBO
-    //glGenBuffers(1, &partBuf);
-    //glBindBuffer(GL_SHADER_STORAGE_BUFFER, partBuf);
-
-    // glBufferData(GL_SHADER_STORAGE_BUFFER, NUM_POINTS * sizeof(Particle), particles, GL_DYNAMIC_DRAW);
-    // glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
 void ParticleSystem::initBuffers()
@@ -180,14 +172,14 @@ void ParticleSystem::drawPoints()
     glBindVertexArray(vaoPoint);
 
     glPointSize(50.0f * size);
+
     glDrawArrays(GL_POINTS, 0, NUM_POINTS);
 
     glBindVertexArray(0);
 }
 
-void ParticleSystem::drawQuadTex()
+void ParticleSystem::drawQuad()
 {
-
     glBindVertexArray(vaoQuad);
 
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, partBuf);
@@ -199,18 +191,6 @@ void ParticleSystem::drawQuadTex()
 
 }
 
-void ParticleSystem::drawQuadSprite()
-{
-    glBindVertexArray(vaoQuad);
-
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, partBuf);
-
-    // 🔥 One draw call for ALL particles
-    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, NUM_POINTS);
-
-    glBindVertexArray(0);
-
-}
 
 
 void ParticleSystem::draw()
@@ -246,11 +226,9 @@ void ParticleSystem::draw()
             drawPoints();
             break;
         case DrawMode::TEXTURE:
-            drawQuadTex();
-            break;
         case DrawMode::SPRITE: 
-            drawQuadSprite();
-            break;  
+            drawQuad();
+            break;
     }
 
     // unuse the shader programs

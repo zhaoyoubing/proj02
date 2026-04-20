@@ -121,8 +121,7 @@ private:
     void initBufQuads();
 
     void drawPoints();
-    void drawQuadTex();
-    void drawQuadSprite();
+    void drawQuad();
 
 };
 

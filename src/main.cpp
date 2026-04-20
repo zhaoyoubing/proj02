@@ -37,7 +37,7 @@ int main()
     app.camera = std::make_shared<ArcballCamera>(
         viewPos_default,
         glm::vec3(0,0,0), // target
-        10.0f,            // distance
+        12.0f,            // distance
         40.0f,            // FOV
         float(width) / float(height),
         0.1f,
@@ -52,7 +52,7 @@ int main()
 
     std::shared_ptr<ParticleSystem> particleSystem = std::make_shared<ParticleSystem>();
 
-    particleSystem->basePos = glm::vec3(0, -3.0f, -0.0f);
+    particleSystem->basePos = glm::vec3(0, -4.0f, -0.0f);
     particleSystem->maxLife = 1.0f;
     particleSystem->size = 0.4f;
 

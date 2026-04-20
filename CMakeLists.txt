@@ -21,8 +21,8 @@ find_package(glfw3 REQUIRED)
 # to avoid unnecessary compiling
 add_executable(run01 src/main.cpp src/glad.c src/shader.cpp src/Mesh.cpp 
                 src/Texture.cpp src/MeshFactory.cpp 
-                src/PlaneMesh.cpp src/GLWin.cpp src/Interaction.cpp src/Spatial.cpp
-                src/SphereMesh.cpp src/RigidSim.cpp src/RigidBody.cpp src/RigidSphere.cpp
+                src/GLWin.cpp src/Interaction.cpp 
+                src/Spatial.cpp  src/SphereMesh.cpp src/PlaneMesh.cpp
                 src/ParticleSys.cpp src/ShaderSingle.cpp src/ShaderProgram.cpp)
 
 # specify include directories

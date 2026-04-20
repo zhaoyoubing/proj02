@@ -3,7 +3,6 @@
 
 #include <memory>
 #include "GLWin.h"
-#include "RigidSim.h"
 #include "ArcballCamera.h"
 #include "ParticleSys.h"
 

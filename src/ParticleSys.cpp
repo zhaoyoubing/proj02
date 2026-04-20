@@ -155,6 +155,8 @@ std::shared_ptr<Material> ParticleSystem::getMaterial()
 
 void ParticleSystem::tick(float dt)
 {
+    if (! bPlaySim ) return;
+    
     // We are binding the vertex buffer from our square.
     // glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, partStorageBuf);

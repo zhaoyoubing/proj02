@@ -124,39 +124,28 @@ void ScrollCallback(GLFWwindow* window, double xoff, double yoff)
     app.camera->Zoom((float)yoff);
 }
 
-/*
+
 void key_callback_sim(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     //std::cout << "simulation key callback " << std::endl;
     if (action == GLFW_PRESS)
     {
-        
         // Controls
         if (GLFW_KEY_SPACE == key) {
             // there are bugs on disable simulation
-            //if (app.sim->getPlaySim() )
-            //    app.sim->setPlaySim(false);
-            //else
+            if (app.sim->getPlaySim() )
+                app.sim->setPlaySim(false);
+            else
                 app.sim->setPlaySim(true);
         }
 
-        if (GLFW_KEY_V == key) {
-            if (!app.sim->isWindEnabled() )
-               app.sim->setWindDir(glm::vec3(20, 0, 10));
-            else
-               app.sim->setWindDir(glm::vec3(0, 0, 0));
-        }
-
         if (GLFW_KEY_R == key) {
-            app.sim->reInit();
+            //app.sim->reInit();
         }
-
-        if (GLFW_KEY_G == key)
-            app.sim->setInverseGravity();
         
     }
 }
-*/
+
 
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {

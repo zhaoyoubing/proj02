@@ -22,17 +22,21 @@ struct Particle
 class ParticleSystem
 {
 public:
-    //ParticleSystem() { }  // for dealing with std::shared_ptr
 
     ParticleSystem(std::shared_ptr<Texture> texture, bool drawPoints);
     ~ParticleSystem();
 
+    // material with shader binded
     std::shared_ptr<Material> getMaterial();
     
+    bool getPlaySim() { return bPlaySim; }
+    void setPlaySim(bool bPlay) { bPlaySim = bPlay; }
+
     // update
     void tick(float dt);
 
     void draw();
+
     // TODO
     void clear() { }
 
@@ -56,12 +60,14 @@ private:
     static const int NUM_POINTS = 8;
     Particle particles[NUM_POINTS];
 
+    bool bPlaySim = false;
+
     // particle vertex and fragment shaders
     std::shared_ptr<Material> partDrawMat;
     // simulation shaders
     std::shared_ptr<Material> partSimMat;
 
-    // quad for drawing particles
+    // quad for drawing particles with GL_TRIANGLE_STRIP
     inline static const GLfloat vertQuad[] = {
         -1.0f, -1.0f, 0.0f,
         1.0f, -1.0f, 0.0f,

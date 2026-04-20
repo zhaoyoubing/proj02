@@ -19,9 +19,7 @@
 
 App app;
 
-//static Shader shader;
-
-glm::mat4 matModelRoot = glm::mat4(1.0);
+//glm::mat4 matModelRoot = glm::mat4(1.0);
 
 //glm::vec3 lightPos = glm::vec3(5.0f, 5.0f, 10.0f);
 glm::vec3 viewPos_default = glm::vec3(0.0f, 0.0f, 200.0f);
@@ -37,6 +35,7 @@ void clearScene()
     app.sim->clear();
 }
 
+/*
 void key_callback_sim(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     //std::cout << "simulation key callback " << std::endl;
@@ -50,7 +49,7 @@ void key_callback_sim(GLFWwindow* window, int key, int scancode, int action, int
         }
     }
 }
-
+*/
 
 int main()
 {
@@ -91,8 +90,10 @@ int main()
 
     std::cout << "==================================" << std::endl;
     std::cout << "SPACE: Start simulation" << std::endl;
-    //std::cout << "1: Single ball free falling " << std::endl;
-    std::cout << "x: Toggle wireframe" << std::endl;
+    std::cout << "1: Particles as Points " << std::endl;
+    std::cout << "2: Particles as Texures " << std::endl;
+    std::cout << "3: Particles as Texure Sprites " << std::endl;
+    //std::cout << "x: Toggle wireframe" << std::endl;
     std::cout << "r: Clear" << std::endl;
     std::cout << "==================================" << std::endl;
 

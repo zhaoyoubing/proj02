@@ -57,10 +57,10 @@ private:
     // You may be able to increase this number depending on your hardware.
     // I was able to run it smoothly with 65536 particles on an NVIDIA Mobile 5070Ti
     // 16348
-    static const int NUM_POINTS = 8;
-    Particle particles[NUM_POINTS];
 
     bool bPlaySim = false;
+    static const int NUM_POINTS = 8;
+    Particle particles[NUM_POINTS];
 
     // particle vertex and fragment shaders
     std::shared_ptr<Material> partDrawMat;
@@ -82,8 +82,7 @@ private:
     GLuint quadVertBuf; // the quad proxy for particle textures
 
     // buffer for particles
-    // use as Vertex Buffers (VBO) 
-    // or Shader Storage Buffers (SSBO)
+    // use as Vertex Buffers (VBO) or Shader Storage Buffers (SSBO)
     GLuint partBuf;  
 
     void initBuffers();

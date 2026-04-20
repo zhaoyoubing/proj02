@@ -80,8 +80,8 @@ int main()
     std::cout << "==================================" << std::endl;
 
     // The view projection matrix will be used in the vertex shader to move the particle.
-    app.sim->getMaterial()->SetMat4("view", app.camera->matView);
-    app.sim->getMaterial()->SetMat4("proj", app.camera->matProj);
+    //app.sim->getMaterial()->setMat4("view", app.camera->matView);
+    //app.sim->getMaterial()->setMat4("proj", app.camera->matProj);
 
 
     // setting the event loop
@@ -91,8 +91,8 @@ int main()
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-        app.sim->getMaterial()->SetMat4("view", app.camera->matView);
-        app.sim->getMaterial()->SetMat4("proj", app.camera->matProj);
+        app.sim->getMaterial()->setMat4("view", app.camera->matView);
+        app.sim->getMaterial()->setMat4("proj", app.camera->matProj);
 
         // update physics
         // time step of 0.005 second

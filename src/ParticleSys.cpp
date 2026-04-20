@@ -13,7 +13,7 @@ ParticleSystem::ParticleSystem(std::shared_ptr<Texture> texture, bool drawPoints
     std::shared_ptr<ShaderProgram> simProgram = std::make_shared<ShaderProgram>();
     std::shared_ptr<ShaderSingle> simShader 
             = std::make_shared<ShaderSingle>("shaders/particle/fire.comp", GL_COMPUTE_SHADER);
-    simProgram->AttachShader(simShader);
+    simProgram->attachShader(simShader);
     partSimMat = std::make_shared<Material>(simProgram);
 
     std::string fVert = "shaders/particle/point.vert";
@@ -28,15 +28,15 @@ ParticleSystem::ParticleSystem(std::shared_ptr<Texture> texture, bool drawPoints
     std::shared_ptr<ShaderProgram> program = std::make_shared<ShaderProgram>();
     std::shared_ptr<ShaderSingle> vertexShader 
             = std::make_shared<ShaderSingle>(fVert.c_str(), GL_VERTEX_SHADER);
-    program->AttachShader(vertexShader);
+    program->attachShader(vertexShader);
     std::shared_ptr<ShaderSingle> fragShader 
         = std::make_shared<ShaderSingle>(fFrag.c_str(), GL_FRAGMENT_SHADER);
-    program->AttachShader(fragShader);
+    program->attachShader(fragShader);
 
     partDrawMat = std::make_shared<Material>(program);
-    partDrawMat->SetTexture((char*)"tex", texture);
+    partDrawMat->setTexture((char*)"tex", texture);
 
-    partDrawMat->Bind();
+    partDrawMat->bind();
     
     // sprites 8 x 6
     //glm::vec2 uvScale  = glm::vec2(1 / 8.0f, 1/6.0f);
@@ -162,17 +162,17 @@ void ParticleSystem::tick(float dt)
 
     // Same as with drawing, but we bind a compute shader program instead.
     // Set a bunch of values in the compute shader to use.
-    partSimMat->SetFloat((char*)"dt", dt);
+    partSimMat->setFloat((char*)"dt", dt);
     float time = (float) glfwGetTime();
-    partSimMat->SetFloat((char*)"time", time);
-    partSimMat->SetVec3((char*)"basePos", pos);
+    partSimMat->setFloat((char*)"time", time);
+    partSimMat->setVec3((char*)"basePos", pos);
     
 	// bind, execute the compute program, and unbind
-	partSimMat->Bind();
+	partSimMat->bind();
     glDispatchCompute(NUM_POINTS, 1, 1);
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
-    partSimMat->Unbind();
+    partSimMat->unbind();
 	
 	// unbind vertex buffer
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, 0);
@@ -180,14 +180,14 @@ void ParticleSystem::tick(float dt)
 
 void ParticleSystem::drawPoints()
 {
-    partDrawMat->Bind();
+    partDrawMat->bind();
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, partBuf);
 
     glPointSize(10.0f);
     glDrawArrays(GL_POINTS, 0, NUM_POINTS);
 
-    partDrawMat->Unbind();
+    partDrawMat->unbind();
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }
@@ -198,7 +198,7 @@ void ParticleSystem::drawQuads()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
-    partDrawMat->Bind();
+    partDrawMat->bind();
 
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, partBuf);
     //glBindBuffer(GL_ARRAY_BUFFER, partVertBuf);
@@ -208,7 +208,7 @@ void ParticleSystem::drawQuads()
     // 🔥 One draw call for ALL particles
     glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, NUM_POINTS);
 
-    partDrawMat->Unbind();
+    partDrawMat->unbind();
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, 0);
     // glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);

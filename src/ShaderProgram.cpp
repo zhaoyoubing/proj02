@@ -4,20 +4,15 @@
 
 ShaderProgram::ShaderProgram()
 {
-    m_shaderProgram = glCreateProgram();
+    shaderProgram = glCreateProgram();
 }
 
 ShaderProgram::~ShaderProgram()
 {
-    glDeleteProgram(m_shaderProgram);
+    glDeleteProgram(shaderProgram);
 }
 
-GLuint ShaderProgram::GetGLShaderProgram()
-{
-    return m_shaderProgram;
-}
-
-void ShaderProgram::AttachShader(std::shared_ptr<ShaderSingle> shader)
+void ShaderProgram::attachShader(std::shared_ptr<ShaderSingle> shader)
 {
     // This will point to the pointer in this shaderprogram that is the type of our passed in shader.
     
@@ -45,7 +40,7 @@ void ShaderProgram::AttachShader(std::shared_ptr<ShaderSingle> shader)
     // Attach the gl shader to the shader program.
     if (shader->getShaderId() != 0)
     {
-       glAttachShader(m_shaderProgram, shader->getShaderId());
+       glAttachShader(shaderProgram, shader->getShaderId());
 
        // ShaderProgram must be rebuilt
        bLinked = false;
@@ -57,29 +52,29 @@ void ShaderProgram::AttachShader(std::shared_ptr<ShaderSingle> shader)
     }
 }
 
-void ShaderProgram::Link()
+void ShaderProgram::link()
 {
     if (!bLinked)
     {
         // if the program hasn't been built, build it and get uniform data
-        glLinkProgram(m_shaderProgram);
+        glLinkProgram(shaderProgram);
 
         GLint linked;
-        glGetProgramiv(m_shaderProgram, GL_LINK_STATUS, &linked);
+        glGetProgramiv(shaderProgram, GL_LINK_STATUS, &linked);
 
         if (linked) {
             if (nullptr != vertexShader) {
-                glDetachShader(m_shaderProgram, vertexShader->getShaderId());
+                glDetachShader(shaderProgram, vertexShader->getShaderId());
                 glDeleteShader(vertexShader->getShaderId());
             }
 
             if (nullptr != fragShader) {
-                glDetachShader(m_shaderProgram, fragShader->getShaderId());
+                glDetachShader(shaderProgram, fragShader->getShaderId());
                 glDeleteShader(fragShader->getShaderId());
             }
 
             if (nullptr != computeShader) {
-                glDetachShader(m_shaderProgram, computeShader->getShaderId());
+                glDetachShader(shaderProgram, computeShader->getShaderId());
                 glDeleteShader(computeShader->getShaderId());
             }
 
@@ -96,33 +91,33 @@ void ShaderProgram::Link()
 
 
 // --- Uniform setters ---
-void ShaderProgram::SetFloat(const std::string& name, float value) const
+void ShaderProgram::setFloat(const std::string& name, float value) const
 {
-    glUniform1f(glGetUniformLocation(m_shaderProgram, name.c_str()), value);
+    glUniform1f(glGetUniformLocation(shaderProgram, name.c_str()), value);
 }
 
-void ShaderProgram::SetInt(const std::string& name, int value) const
+void ShaderProgram::setInt(const std::string& name, int value) const
 {
-    glUniform1i(glGetUniformLocation(m_shaderProgram, name.c_str()), value);
+    glUniform1i(glGetUniformLocation(shaderProgram, name.c_str()), value);
 }
 
-void ShaderProgram::SetVec2(const std::string& name, glm::vec2 value) const
+void ShaderProgram::setVec2(const std::string& name, glm::vec2 value) const
 {
-    glUniform3fv(glGetUniformLocation(m_shaderProgram, name.c_str()), 1, glm::value_ptr(value));
+    glUniform3fv(glGetUniformLocation(shaderProgram, name.c_str()), 1, glm::value_ptr(value));
 }
 
-void ShaderProgram::SetVec3(const std::string& name, glm::vec3 value) const
+void ShaderProgram::setVec3(const std::string& name, glm::vec3 value) const
 {
-    glUniform3fv(glGetUniformLocation(m_shaderProgram, name.c_str()), 1, glm::value_ptr(value) );
+    glUniform3fv(glGetUniformLocation(shaderProgram, name.c_str()), 1, glm::value_ptr(value) );
 }
 
-void ShaderProgram::SetVec4(const std::string& name, glm::vec4 value) const
+void ShaderProgram::setVec4(const std::string& name, glm::vec4 value) const
 {
-    glUniform3fv(glGetUniformLocation(m_shaderProgram, name.c_str()), 1, glm::value_ptr(value) );
+    glUniform3fv(glGetUniformLocation(shaderProgram, name.c_str()), 1, glm::value_ptr(value) );
 }
 
-void ShaderProgram::SetMat4(const std::string& name, glm::mat4 value) const
+void ShaderProgram::setMat4(const std::string& name, glm::mat4 value) const
 {
-    glUniformMatrix4fv(glGetUniformLocation(m_shaderProgram, name.c_str()),
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, name.c_str()),
                        1, GL_FALSE,  glm::value_ptr(value));
 }

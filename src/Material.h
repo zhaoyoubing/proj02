@@ -25,115 +25,117 @@ public:
     float Shininess;
 
 private:
-    std::shared_ptr<ShaderProgram> m_shaderProgram;
+    std::shared_ptr<ShaderProgram> shaderProgram;
 
-    std::unordered_map<std::string, float> m_floatParams;
-    std::unordered_map<std::string, glm::vec2 > m_vec2Params;
-    std::unordered_map<std::string, glm::vec3 > m_vec3Params;
-    std::unordered_map<std::string, glm::vec4 > m_vec4Params;
-    std::unordered_map<std::string, glm::mat4 > m_mat4Params;
+    std::unordered_map<std::string, float> floatParams;
+    std::unordered_map<std::string, glm::vec2 > vec2Params;
+    std::unordered_map<std::string, glm::vec3 > vec3Params;
+    std::unordered_map<std::string, glm::vec4 > vec4Params;
+    std::unordered_map<std::string, glm::mat4 > mat4Params;
 
-    std::unordered_map<std::string, std::shared_ptr<Texture> > m_textures;
+    std::unordered_map<std::string, std::shared_ptr<Texture> > textures;
 
 public:
     // old style material for compatibility
     Material()  {}
 
-    // future style material
+    // material binded with shaders
     Material(std::shared_ptr<ShaderProgram> shader) 
     { 
         // set the shader program
-        SetShaderProgram(shader);
+        setShaderProgram(shader);
     }
 
     // --- Shader ---
-    void SetShaderProgram(std::shared_ptr<ShaderProgram> shader)
+    void setShaderProgram(std::shared_ptr<ShaderProgram> shader)
     {
-        m_shaderProgram = shader;
+        shaderProgram = shader;
         // Bind shader program
-        m_shaderProgram->Link();
+        shaderProgram->link();
     }
 
-    std::shared_ptr<ShaderProgram> GetShader() const
+    /*
+    std::shared_ptr<ShaderProgram> getShader() const
     {
-        return m_shaderProgram;
+        return shaderProgram;
     }
+    */
 
     // --- Uniform Parameters ---
-    void SetFloat(const std::string& name, float value)
+    void setFloat(const std::string& name, float value)
     {
-        m_floatParams[name] = value;
+        floatParams[name] = value;
     }
 
-    void SetVec2(const std::string& name, glm::vec2 v) // assume vec3[3]
+    void setVec2(const std::string& name, glm::vec2 v) // assume vec3[3]
     {
-        m_vec2Params[name] = v;
+        vec2Params[name] = v;
     }
 
-    void SetVec3(const std::string& name, glm::vec3 v) // assume vec3[3]
+    void setVec3(const std::string& name, glm::vec3 v) // assume vec3[3]
     {
-        m_vec3Params[name] = v;
+        vec3Params[name] = v;
     }
 
-    void SetVec4(const std::string& name, glm::vec4 v) // assume vec3[3]
+    void setVec4(const std::string& name, glm::vec4 v) // assume vec3[3]
     {
-        m_vec4Params[name] = v;
+        vec4Params[name] = v;
     }
 
-    void SetMat4(const std::string& name, glm::mat4 v) // assume 16 floats
+    void setMat4(const std::string& name, glm::mat4 v) // assume 16 floats
     {
-        m_mat4Params[name] = v;
+        mat4Params[name] = v;
     }
 
     // --- Textures ---
-    void SetTexture(const std::string& name, std::shared_ptr<Texture> texture)
+    void setTexture(const std::string& name, std::shared_ptr<Texture> texture)
     {
-        m_textures[name] = texture;
+        textures[name] = texture;
     }
 
     // --- Bind material before drawing ---
-    void Bind()
+    void bind()
     {
-        if ( nullptr == m_shaderProgram) {
+        if ( nullptr == shaderProgram) {
             std::cout << "shader empty" << std::endl;
             return;
         }
 
         // Bind shader program
-        m_shaderProgram->Link();
+        shaderProgram->link();
         
         // bind the shader
-        m_shaderProgram->Use();
+        shaderProgram->use();
 
         // Upload floats
-        for (auto& [name, value] : m_floatParams)
-            m_shaderProgram->SetFloat(name, value);
+        for (auto& [name, value] : floatParams)
+            shaderProgram->setFloat(name, value);
 
         // Upload vec3s
-        for (auto& [name, vec] : m_vec3Params)
-           m_shaderProgram->SetVec3(name, vec);
+        for (auto& [name, vec] : vec3Params)
+           shaderProgram->setVec3(name, vec);
 
         // Upload matrices
-        for (auto& [name, mat] : m_mat4Params)
-            m_shaderProgram->SetMat4(name, mat);
+        for (auto& [name, mat] : mat4Params)
+            shaderProgram->setMat4(name, mat);
 
         // Bind textures
         int textureUnit = 0;
-        for (auto& [name, tex] : m_textures)
+        for (auto& [name, tex] : textures)
         {
             tex->bindTexture(textureUnit);
-            m_shaderProgram->SetInt(name, textureUnit);
+            shaderProgram->setInt(name, textureUnit);
             textureUnit++;
         }
     }
 
 
-    void Unbind()
+    void unbind()
     {
         // Unbind textures
         // Unbind all owned objects.
         int textureUnit = 0;
-        for (auto& [name, tex] : m_textures) 
+        for (auto& [name, tex] : textures) 
         {
             tex->UnbindTexture(textureUnit);
             textureUnit++;
@@ -147,7 +149,7 @@ public:
         }
         */
 
-        m_shaderProgram->UnUse();
+        shaderProgram->unUse();
     }
 };
 

@@ -22,7 +22,7 @@ private:
     std::shared_ptr<ShaderSingle> fragShader = nullptr;
 
     // GL index for shader program
-    GLuint m_shaderProgram;
+    GLuint shaderProgram;
 
     // Keep track of if the program has been built and only build when needed
     // bool m_programBuilt = false;
@@ -33,20 +33,20 @@ private:
 public:
     ShaderProgram();
     ~ShaderProgram();
-    GLuint GetGLShaderProgram();
-    void AttachShader(std::shared_ptr<ShaderSingle> shader);
+    GLuint getGLShaderProgram()  { return shaderProgram; }
+    void attachShader(std::shared_ptr<ShaderSingle> shader);
     
-    void Link();
+    void link();
 
-    void Use() const {   glUseProgram(m_shaderProgram); }
-    void UnUse() { glUseProgram(0); }
+    void use() const {   glUseProgram(shaderProgram); }
+    void unUse() { glUseProgram(0); }
 
-    void SetFloat(const std::string& name, float value) const;
-    void SetInt(const std::string& name, int value) const;
-    void SetVec2(const std::string& name, glm::vec2 value) const;
-    void SetVec3(const std::string& name, glm::vec3 value) const;
-    void SetVec4(const std::string& name, glm::vec4 value) const;
-    void SetMat4(const std::string& name, glm::mat4 value) const;
+    void setFloat(const std::string& name, float value) const;
+    void setInt(const std::string& name, int value) const;
+    void setVec2(const std::string& name, glm::vec2 value) const;
+    void setVec3(const std::string& name, glm::vec3 value) const;
+    void setVec4(const std::string& name, glm::vec4 value) const;
+    void setMat4(const std::string& name, glm::mat4 value) const;
 };
 
 #endif

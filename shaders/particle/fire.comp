@@ -67,8 +67,11 @@ void main() {
         // Decrease life
         p.life -= dt;
 
+        // life parameter t in [1, 0]
         float t = p.life / p.maxLife;
-        // Fire colour mix between red and yellow
+
+        // Fire colour : mix between red and yellow
+        // Hint: red (1.0, 0.0, 0.0), yellow (1.0, 1.0, 0.0)
         vec3 color = mix(vec3(1.0, 0.1, 0.0), vec3(1.0, 1.0, 0.0), t);
         
         // colour for smoke

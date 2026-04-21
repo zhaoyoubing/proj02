@@ -62,13 +62,16 @@ ParticleSystem::ParticleSystem()
         // [TODO 1.1]
         // set the initial particle position 
         // to a random position (x, y, z = 0.0, w = 1.0)
+        // replace the following with your code
+        // p.pos = glm::vec4(0.0, 0.0, 0.0, 1.0);
         // p.pos = glm::vec4(x, y, 0, 1.0);
-
         p.pos = glm::vec4(basePos, 1.0);
+
         p.velocity = glm::vec4(0, 0, 0, 0);
 
         //p.m_angularVelocity = 0;
         //p.m_rotation = 0;
+
         //p.color = glm::vec4((rand() % 256) / 255.0f, 
         //        (rand() % 256) / 255.0f, (rand() % 256) / 255.0f, 1);
 

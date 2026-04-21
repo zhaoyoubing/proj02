@@ -394,14 +394,11 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\Mesh.cpp" />
     <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\Texture.cpp" />
     <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\MeshFactory.cpp" />
-    <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\PlaneMesh.cpp" />
     <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\GLWin.cpp" />
     <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\Interaction.cpp" />
     <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\Spatial.cpp" />
     <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\SphereMesh.cpp" />
-    <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\RigidSim.cpp" />
-    <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\RigidBody.cpp" />
-    <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\RigidSphere.cpp" />
+    <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\PlaneMesh.cpp" />
     <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\ParticleSys.cpp" />
     <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\ShaderSingle.cpp" />
     <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\ShaderProgram.cpp" />

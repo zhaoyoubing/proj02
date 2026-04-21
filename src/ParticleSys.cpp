@@ -154,6 +154,7 @@ void ParticleSystem::tick(float dt)
     float time = (float) glfwGetTime();
     simMat->setFloat((char*)"time", time);
     simMat->setVec3((char*)"basePos", basePos);
+    simMat->setVec3((char*)"acc", acc);
     
 	// use the compute shader
 	simMat->bind();
@@ -215,10 +216,14 @@ void ParticleSystem::draw()
     currentMat->setFloat("size", size);
 
     currentMat->bind();
-
+ 
     // Enable blending when rendering particles
     glEnable(GL_BLEND);
+    // [TODO] specifiy the blend function 
+    // for fire with black background
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    // for smoke with white background
+    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     switch (drawMode)
     {

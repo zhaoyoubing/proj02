@@ -19,9 +19,6 @@
     <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\MeshFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\PlaneMesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\GLWin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -34,13 +31,7 @@
     <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\SphereMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\RigidSim.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\RigidBody.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\RigidSphere.cpp">
+    <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\PlaneMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="D:\_course\_graphics\_labs\LB09_Particle\proj02\src\ParticleSys.cpp">

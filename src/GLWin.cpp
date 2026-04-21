@@ -5,6 +5,10 @@ extern App app;
 
 void window_size_callback(GLFWwindow* window, int width, int height)
 {
+    // ignore window minimisation
+    if (width <= 1 || height <= 1)
+        return;
+
     glViewport(0, 0, width, height);
 
     app.camera->SetViewportSize(width, height);

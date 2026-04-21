@@ -16,9 +16,10 @@ layout(std430, binding = 0) buffer Particles {
     Particle particles[];
 };
 
-uniform float dt;         // delta time
-uniform vec3 basePos;     // fire source
-uniform float time;       // global time
+uniform float dt;        // delta time
+uniform vec3 basePos;    // fire source
+uniform float time;      // global time
+uniform vec3 acc;        // particle acceleration
 
 // Simple pseudo-random generator
 float rand(float seed) {
@@ -38,8 +39,10 @@ void respawn(inout Particle p, uint id) {
 
     vec3 dir = randomDir(seed);
     
-    p.pos.xyz = basePos + dir * 0.1;
-    //p.pos.xyz = dir * 0.1;
+    p.pos.xyz = basePos + dir * 0.1 ;
+    
+    // make the fire span over the X axis
+    p.pos.x += dir.x;
     
     // Fire rises upward
     p.velocity.xyz = vec3(
@@ -65,24 +68,27 @@ void main() {
         p.life -= dt;
 
         float t = p.life / p.maxLife;
-        // Fire gradient
+        // Fire colour mix between red and yellow
         vec3 color = mix(vec3(1.0, 0.1, 0.0), vec3(1.0, 1.0, 0.0), t);
-
-        // white -> yellow -> red
         
+        // colour for smoke
+        //vec3 color = mix(vec3(0.98), vec3(0.8), 1 - t);
+
         //vec3 color = vec3(1.0 - 0.5 * t, 
         //        exp(4 * (t - 1.0) ) , exp(10 * (t - 1.0)));
 
         p.color = vec4(color, 1.0);
 
+        // [TODO]
         // Upward acceleration (buoyancy)
-        p.velocity.y += 0.5 * dt;
+        p.velocity.y += acc.y * dt;
 
         // Add turbulence
         float noise = rand(float(id) + time) - 0.5;
-        p.velocity.x += noise * 0.5 * dt;
-        p.velocity.z += noise * 0.5 * dt;
+        p.velocity.x += noise * acc.x * dt;
+        p.velocity.z += noise * acc.z * dt;
 
+        // [TODO]
         // Update position
         p.pos.xyz += p.velocity.xyz * dt;
     }

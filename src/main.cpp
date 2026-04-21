@@ -64,6 +64,7 @@ int main()
 
     // setting the background colour, you can change the value
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    // glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glDisable(GL_DEPTH_TEST);
     //glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 

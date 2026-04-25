@@ -8,16 +8,16 @@
 
 struct Particle
 {
-    glm::vec4 pos;
-    glm::vec4 velocity;
-    glm::vec4 color;
+    glm::vec4 pos;       // 16 bytes
+    glm::vec4 velocity;  // 16 bytes
+    glm::vec4 color;     // 16 bytes
 
-    float life;
-    float maxLife;
+    float life;          // 4 bytes
+    float maxLife;       // 4 bytes
 
     // padding for alignment of 16 bytes
-    int padding1;
-    int padding2;
+    int padding1;        // 4 bytes
+    int padding2;        // 4 bytes
 
     //float rotation;
     //float angularVelocity;
@@ -58,7 +58,7 @@ public:
     void draw();
 
     // Base position of the system.
-    glm::vec3 basePos;
+    glm::vec3 basePos = glm::vec3(0.0);
 
     // Time in seconds until particles are recycled.
     float maxLife = 1.0f;
@@ -78,7 +78,7 @@ private:
     // 16348
 
     bool bPlaySim = true;
-    static const int NUM_POINTS = 1024;
+    static const int NUM_POINTS = 8;
     Particle particles[NUM_POINTS];
 
     std::shared_ptr<ShaderProgram> progPoint;

@@ -39,16 +39,20 @@ void respawn(inout Particle p, uint id) {
 
     vec3 dir = randomDir(seed);
     
-    p.pos.xyz = basePos + dir * 0.1 ;
+    // [TODO]
+    // set particle position
+    // p.pos.xyz = basePos;
     
     // make the fire span over the X axis
-    p.pos.x += dir.x;
+    //p.pos.x += dir.x;
     
     // Fire rises upward
+    // [TODO]
     p.velocity.xyz = vec3(
-        dir.x * 0.5,
-        1.0 + rand(seed),
-        dir.z * 0.5
+        0.0f
+        // dir.x,
+        // 1.0 + dir.y,
+        // dir.z 
     );
 
     p.color = vec4(1.0, 1.0, 1.0, 1.0);
@@ -72,7 +76,8 @@ void main() {
 
         // Fire colour : mix between red and yellow
         // Hint: red (1.0, 0.0, 0.0), yellow (1.0, 1.0, 0.0)
-        vec3 color = mix(vec3(1.0, 0.1, 0.0), vec3(1.0, 1.0, 0.0), t);
+        vec3 color = vec3(1.0, 0.0, 0.0);
+        // vec3 color = mix(vec3(1.0, 0.1, 0.0), vec3(1.0, 1.0, 0.0), t);
         
         // colour for smoke
         //vec3 color = mix(vec3(0.98), vec3(0.8), 1 - t);
@@ -82,12 +87,14 @@ void main() {
 
         p.color = vec4(color, 1.0);
 
+        float noise = rand(float(id) + time) - 0.5;
+
         // [TODO]
         // Upward acceleration (buoyancy)
-        p.velocity.y += acc.y * dt;
+        //p.velocity.y = 0;
+        //p.velocity.y += noise * acc.y * dt;
 
         // Add turbulence
-        float noise = rand(float(id) + time) - 0.5;
         p.velocity.x += noise * acc.x * dt;
         p.velocity.z += noise * acc.z * dt;
 

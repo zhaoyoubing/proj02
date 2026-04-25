@@ -12,5 +12,8 @@ out vec4 vColor;
 void main()
 {
     gl_Position = proj * view * aPos;
+    
+    // [TODO] T1.2 set vColor to aColor
     vColor = aColor;
+    //vColor = vec4(1.0, 0.0, 0.0, 1.0);
 }

@@ -56,26 +56,26 @@ ParticleSystem::ParticleSystem()
         Particle & p = particles[i];
 
         // random position for point rendering
-        float x = ((rand() % 100) / 5.0f) - 10.0f;
-        float y = ((rand() % 100) / 5.0f) - 10.0f;
+        float x = ((rand() % 100) / 10.0f) - 5.0f;
+        float y = ((rand() % 100) / 10.0f) - 5.0f;
 
         // [TODO 1.1]
         // set the initial particle position 
         // to a random position (x, y, z = 0.0, w = 1.0)
         // replace the following with your code
         // p.pos = glm::vec4(0.0, 0.0, 0.0, 1.0);
-        // p.pos = glm::vec4(x, y, 0, 1.0);
-        p.pos = glm::vec4(basePos, 1.0);
+        // this random position is only for debugging
+        // it will be overrided in the compute shader later
+        p.pos = glm::vec4(x, y, 0, 1.0);
 
         p.velocity = glm::vec4(0, 0, 0, 0);
 
-        //p.m_angularVelocity = 0;
-        //p.m_rotation = 0;
+        // assigning random colours for points
+        // the colors will be overrided in the compute shader later
+        p.color = glm::vec4((rand() % 256) / 255.0f, 
+                (rand() % 256) / 255.0f, (rand() % 256) / 255.0f, 1);
 
-        //p.color = glm::vec4((rand() % 256) / 255.0f, 
-        //        (rand() % 256) / 255.0f, (rand() % 256) / 255.0f, 1);
-
-        p.color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+        //p.color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
         
         p.life = maxLife;
         p.maxLife = maxLife;
@@ -98,17 +98,23 @@ void ParticleSystem::initBufPoints()
     glGenVertexArrays(1, & vaoPoint);
     glBindVertexArray(vaoPoint);
 
-    // Particle/Instance VBO
-    // glGenBuffers(1, & partBuf);
+    // use the particle buffer to specify vertex array attributes
     glBindBuffer(GL_ARRAY_BUFFER, partBuf);
     //glBufferData(GL_ARRAY_BUFFER, NUM_POINTS * sizeof(Particle), particles, GL_DYNAMIC_DRAW);
 
-    // [TODO] set the vertex attribute pointer for particle positions
+    // set the vertex attribute pointer for particle positions as attribute 0
     // positions of particles' centers
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)0);
 
-    // colour
+    // set the vertex attribute pointer for particle colours as attribute 1
+    glEnableVertexAttribArray(1);
+    // [TODO] T1.1 
+    // set the colour attribute using
+    // glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, ?? size_of_struct_Particle, ?? (void *) offset_of_color_in_Particle); 
+    // Hint: the last argument, i.e., offset of a field within Particle
+    // can be obtained using (void*)offsetof(Particle, field_name)
+
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, color));
 
@@ -162,13 +168,21 @@ void ParticleSystem::tick(float dt)
 	// use the compute shader
 	simMat->bind();
 
-    // We are binding the particle buffer from our square.
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, partBuf);
-    glDispatchCompute(NUM_POINTS, 1, 1);
+    // [TODO] 2.2 Complete 
+    // Binding the particle buffer from our square.
+    // [TODO] 2.2.1 use glBindBufferBase to bind partBuf to location 0
+     // glBindBuffer(GL_SHADER_STORAGE_BUFFER, ?? location, ?? our_particle_array);
+    // glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, partBuf);
+
+    // [TODO] 2.2.2 run the compute shader
+    // by calling void glDispatchCompute(num_grp_x,num_grp_y, num_grp_z)
+    // here we set num_grp_x to the number of particles,
+    // and num_grp_y and num_grp_z to 1
+    // glDispatchCompute(NUM_POINTS, 1, 1);
+    
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
     simMat->unbind();
-	
 }
 
 void ParticleSystem::drawPoints()
@@ -177,6 +191,9 @@ void ParticleSystem::drawPoints()
 
     glPointSize(50.0f * size);
 
+    // [TODO] call glDrawArrays to draw points
+    // The missing argument should be number of points
+    // glDrawArrays(GL_POINTS, 0, ??);
     glDrawArrays(GL_POINTS, 0, NUM_POINTS);
 
     glBindVertexArray(0);
@@ -189,7 +206,11 @@ void ParticleSystem::drawQuad()
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, partBuf);
     
     // draw instanced quads for all particles
-    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, NUM_POINTS);
+    // [TODO] call glDrawArraysInstanced 
+    // draw instanced quad as triangle strips 
+    // the missing argument should be the number of quad vertices 
+    // glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, ??, NUM_POINTS);
+    // glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, NUM_POINTS);
 
     glBindVertexArray(0);
 

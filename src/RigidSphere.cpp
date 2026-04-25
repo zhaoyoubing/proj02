@@ -27,7 +27,7 @@ CollisionInfo RigidSphere::testCollisionWith(std::shared_ptr<RigidBody> rb2) {
     return RigidBody::testCollisionWith(rb2);
 }
 
-// TODO 2: implement sphere-sphere collision detection
+// TODO 4: implement sphere-sphere collision detection
 // return the CollisionInfo: contact point, contact normal, penetration depth 
 CollisionInfo RigidSphere::testCollisionWith(std::shared_ptr<RigidSphere> rb2) {
     
@@ -36,16 +36,16 @@ CollisionInfo RigidSphere::testCollisionWith(std::shared_ptr<RigidSphere> rb2) {
     // vector from sphere 2 center to sphere 1    
     glm::vec3 vPos = pos - rb2->pos;
 
-    // TODO 2.1: distance between two sphere centre
+    // TODO 4.1: distance between two sphere centre
     float dist = 0.0f;
     dist = glm::length(vPos);
     //dist = ???;
 
-    // TODO 2.2: contact surface normal is the normalisation of vPos
+    // TODO 4.2: contact surface normal is the normalisation of vPos
     info.normal = vPos / dist;
     //info.normal = ???;
 
-    // TODO 2.3: penetration depth
+    // TODO 4.3: penetration depth
     info.peneDepth = r + rb2->r - dist;
     // info.peneDepth = ???;
 

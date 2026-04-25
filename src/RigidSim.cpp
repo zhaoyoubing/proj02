@@ -3,7 +3,7 @@
 
 extern App app;
 
-// TODO 4: Complete tick()
+// TODO 2: Complete tick()
 // simulation update workflow for each time step
 void RigidSim::tick(float dt)
 {
@@ -14,14 +14,14 @@ void RigidSim::tick(float dt)
         
         if (obj->bUseGravity) {
 
-            // TODO 4.1 : apply gravity force
+            // TODO 2.1 : apply gravity force
             // call RigidBody::applyLinearForce() 
             // use obj.mass and and the vector RigidSim::GRAVITY    
             // to calculate the gravity force
             
         }
 
-        // TODO 4.2: Integrate acceleration 
+        // TODO 2.2: Integrate acceleration 
         // call RigidBody::integrateAcc() to update object velocity
        
     }
@@ -33,7 +33,7 @@ void RigidSim::tick(float dt)
         std::shared_ptr<RigidBody> obj1 = objList[i];
         std::shared_ptr<RigidBody> obj2 = objList[j];
 
-        // TODO 4.3: call RigidBody::testCollisionWith()
+        // TODO 2.3: call RigidBody::testCollisionWith()
         // to check if two rigid body objects collides, and return CollisionInfo
         // replace the following line with your code.
         CollisionInfo info = {false, glm::vec3(0.0), glm::vec3(1.0), 0.0f};

@@ -15,7 +15,9 @@ void RigidSim::tick(float dt)
         if (obj->bUseGravity) {
 
             // TODO 4.1 : apply gravity force
-            // call RigidBody::applyLinearForce() and the vector RigidSim::GRAVITY
+            // call RigidBody::applyLinearForce() 
+            // use obj.mass and and the vector RigidSim::GRAVITY    
+            // to calculate the gravity force
             
         }
 

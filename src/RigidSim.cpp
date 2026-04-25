@@ -15,7 +15,7 @@ void RigidSim::tick(float dt)
 
             // TODO : apply gravity force
             // using RigidBody::applyLinearForce() and the vector RigidSim::GRAVITY
-            obj->applyLinearForce(GRAVITY);
+            obj->applyLinearForce(obj->mass * GRAVITY);
         }
 
         // TODO: Integrate acceleration 

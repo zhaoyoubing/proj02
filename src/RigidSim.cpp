@@ -3,7 +3,7 @@
 
 extern App app;
 
-// TODO 4: Compleet tick()
+// TODO 4: Complete tick()
 // simulation update workflow for each time step
 void RigidSim::tick(float dt)
 {

@@ -36,7 +36,7 @@ void RigidSim::tick(float dt)
         // TODO 4.3: call RigidBody::testCollisionWith()
         // to check if two rigid body objects collides, and return CollisionInfo
         // replace the following line with your code.
-        CollisionInfo info;
+        CollisionInfo info = {false, glm::vec3(0.0), glm::vec3(1.0), 0.0f};
         // CollisionInfo info = ???; 
 
         if (info.bColliding) {

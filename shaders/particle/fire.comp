@@ -43,13 +43,12 @@ void respawn(inout Particle p, uint id) {
     // [TODO] 2.1.1
     // set the initial position of the Particle
     // to basePos
-    p.pos.xyz = basePos;
+    // p.pos.xyz = ??;
     
     // [TODO] 2.4.2 
     // make the fire spred over the X axis
     // by adding mulitples of dir.x to p.pos.x
     // p.pos.x += ??;
-    p.pos.x += dir.x;
     
     // [TODO] 2.1.2 
     // set the initial velocity of the particle
@@ -57,12 +56,7 @@ void respawn(inout Particle p, uint id) {
     // using 1.0 + dir.y for the velocity.y is to 
     // give the particle an initial upward speed
     // to achieve fire rising upward
-    p.velocity.xyz = vec3(
-        //0.0f
-         dir.x,
-         1.0 + dir.y,
-         dir.z 
-    );
+    p.velocity.xyz = vec3(0.0f);
 
     // set the initial particle colour to white
     p.color = vec4(1.0, 1.0, 1.0, 1.0);
@@ -88,10 +82,8 @@ void main() {
 
         // [TODO] 2.2.1 
         // Upward acceleration (buoyancy)
-        // add the product of acc.y and dt to 
-        // p.velocity.y
+        // add the product of acc.y and dt to p.velocity.y
         //p.velocity.y += ??;
-        p.velocity.y += acc.y * dt;
 
         // a random value between (-0.5, 0.5)
         float noise = rand(float(id) + time) - 0.5 ;
@@ -104,7 +96,6 @@ void main() {
         // Update position based on the product of
         // velocity and dt
         // p.pos.xyz += ??;
-        p.pos.xyz += p.velocity.xyz * dt;
 
         // life parameter t in [1, 0]
         float t = p.life / p.maxLife;
@@ -113,9 +104,8 @@ void main() {
         // Fire colour : use mix(colour_red, colour_yellow, t) 
         // to achieve colour mixing between red and yellow
         // Hint: red (1.0, 0.0, 0.0), yellow (1.0, 1.0, 0.0)
-        //vec3 color = vec3(1.0, 0.0, 0.0);
-        vec3 color = mix(vec3(1.0, 0.1, 0.0), vec3(1.0, 1.0, 0.0), t);
-        
+        vec3 color = vec3(1.0, 0.0, 0.0);
+
         p.color = vec4(color, 1.0);
     }
 

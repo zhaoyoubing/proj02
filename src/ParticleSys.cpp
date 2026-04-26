@@ -59,11 +59,8 @@ ParticleSystem::ParticleSystem()
         float x = ((rand() % 100) / 10.0f) - 5.0f;
         float y = ((rand() % 100) / 10.0f) - 5.0f;
 
-        // [TODO 1.1]
         // set the initial particle position 
-        // to a random position (x, y, z = 0.0, w = 1.0)
-        // replace the following with your code
-        // p.pos = glm::vec4(0.0, 0.0, 0.0, 1.0);
+        // to a random position (x, y, 0.0, w = 1.0)
         // this random position is only for debugging
         // it will be overrided in the compute shader later
         p.pos = glm::vec4(x, y, 0, 1.0);
@@ -74,8 +71,6 @@ ParticleSystem::ParticleSystem()
         // the colors will be overrided in the compute shader later
         p.color = glm::vec4((rand() % 256) / 255.0f, 
                 (rand() % 256) / 255.0f, (rand() % 256) / 255.0f, 1);
-
-        //p.color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
         
         p.life = maxLife;
         p.maxLife = maxLife;
@@ -100,7 +95,7 @@ void ParticleSystem::initBufPoints()
 
     // use the particle buffer to specify vertex array attributes
     glBindBuffer(GL_ARRAY_BUFFER, partBuf);
-    //glBufferData(GL_ARRAY_BUFFER, NUM_POINTS * sizeof(Particle), particles, GL_DYNAMIC_DRAW);
+    // glBufferData(GL_ARRAY_BUFFER, NUM_POINTS * sizeof(Particle), particles, GL_DYNAMIC_DRAW);
 
     // set the vertex attribute pointer for particle positions as attribute 0
     // positions of particles' centers
@@ -115,8 +110,6 @@ void ParticleSystem::initBufPoints()
     // Hint: the last argument, i.e., offset of a field within Particle
     // can be obtained using (void*)offsetof(Particle, field_name)
 
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, color));
 
     glBindVertexArray(0);
 }
@@ -168,17 +161,16 @@ void ParticleSystem::tick(float dt)
 	// use the compute shader
 	simMat->bind();
 
-    // [TODO] 2.2 Complete 
+    // [TODO] 2.3 Complete 
     // Binding the particle buffer from our square.
-    // [TODO] 2.2.1 use glBindBufferBase to bind partBuf to location 0
-    // glBindBuffer(GL_SHADER_STORAGE_BUFFER, ?? location, ?? our_particle_array);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, partBuf);
+    // [TODO] 2.3.1 use glBindBufferBase to bind partBuf to location 0
+    // glBindBufferBase(GL_SHADER_STORAGE_BUFFER, ?? location, ?? our_particle_array);
 
-    // [TODO] 2.2.2 run the compute shader
+
+    // [TODO] 2.3.2 run the compute shader
     // by calling void glDispatchCompute(num_grp_x,num_grp_y, num_grp_z)
     // here we set num_grp_x to the number of particles,
     // and num_grp_y and num_grp_z to 1
-    glDispatchCompute(NUM_POINTS, 1, 1);
     
     // ask rendering wait for completion of the compute shader
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
@@ -192,9 +184,7 @@ void ParticleSystem::drawPoints()
 
     glPointSize(50.0f * size);
 
-    // [TODO] call glDrawArrays to draw points
-    // The missing argument should be number of points
-    // glDrawArrays(GL_POINTS, 0, ??);
+    // call glDrawArrays to draw points
     glDrawArrays(GL_POINTS, 0, NUM_POINTS);
 
     glBindVertexArray(0);
@@ -207,7 +197,6 @@ void ParticleSystem::drawQuad()
     // [TODO] 3.1
     // call glBindBufferBase(GL_SHADER_STORAGE_BUFFER, ?? index, ?? buf);
     // bind buffer partBuf to location index 0
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, partBuf);
     
     // [TODO] 3.2 
     // draw instanced quads as triangle strips  for all particles
@@ -216,7 +205,7 @@ void ParticleSystem::drawQuad()
     // in this example, we are drawing the quad as a triangle strip, only 4 vertices are needed.
     // if you are representing the quad as two triangles with 6 vertices, you may need to use 6.
     // glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, ?? count, NUM_POINTS);
-    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, NUM_POINTS);
+
 
     glBindVertexArray(0);
 
@@ -249,11 +238,10 @@ void ParticleSystem::draw()
  
     // [TODO] 3.3 Enable Blending
     // T3.3.1 Enable blending by calling glEnable(GL_BLEND);
-    glEnable(GL_BLEND);
+
     // T3.3.2 specifiy the blend function using glBendFunc(src_factor, dst_factor)
     // the src_factor is normally GL_SRC_ALPHA
     // for rendeing fires with a black background, a dst_factor of GL_ONE is recommended
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
     // if you are going render smoke with a white background
     // you might need to use a dst_factor of GL_ONE_MINUS_SRC_ALPHA
     // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

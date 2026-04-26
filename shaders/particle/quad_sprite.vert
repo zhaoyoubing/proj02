@@ -31,7 +31,7 @@ out vec2 uv;
 
 void main() {
 
-    // 🔑 Get particle using instance ID
+    // Get particle using instance ID
     Particle p = particles[gl_InstanceID];
 
     vec3 worldPos = p.pos.xyz + aPos * size;

@@ -45,7 +45,7 @@ void main() {
     if (gl_VertexID % 4 == 3) uv = vec2(1,1);
 
     
-    // [TODO] 4 dealing with sprites texCoord
+    // [TODO] 4 using texure sprites
     // T4.1 calcuate the scaling based on nxTex, nyTex
     // replace the following line with yours
     // vec2 uvScale = vec2(1.0, 1.0);

@@ -171,15 +171,16 @@ void ParticleSystem::tick(float dt)
     // [TODO] 2.2 Complete 
     // Binding the particle buffer from our square.
     // [TODO] 2.2.1 use glBindBufferBase to bind partBuf to location 0
-     // glBindBuffer(GL_SHADER_STORAGE_BUFFER, ?? location, ?? our_particle_array);
-    // glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, partBuf);
+    // glBindBuffer(GL_SHADER_STORAGE_BUFFER, ?? location, ?? our_particle_array);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, partBuf);
 
     // [TODO] 2.2.2 run the compute shader
     // by calling void glDispatchCompute(num_grp_x,num_grp_y, num_grp_z)
     // here we set num_grp_x to the number of particles,
     // and num_grp_y and num_grp_z to 1
-    // glDispatchCompute(NUM_POINTS, 1, 1);
+    glDispatchCompute(NUM_POINTS, 1, 1);
     
+    // ask rendering wait for completion of the compute shader
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
     simMat->unbind();

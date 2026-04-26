@@ -63,7 +63,7 @@ public:
     // Time in seconds until particles are recycled.
     float maxLife = 1.0f;
     
-    // particle acceleration, defaults to 0
+    // particle acceleration
     glm::vec3 acc = glm::vec3(0.5, 0.5, 0.5);
 
     // size of particles

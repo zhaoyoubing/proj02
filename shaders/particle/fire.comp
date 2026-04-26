@@ -37,27 +37,37 @@ vec3 randomDir(float seed) {
 void respawn(inout Particle p, uint id) {
     float seed = float(id) + time;
 
+    // a random direction
     vec3 dir = randomDir(seed);
     
-    // [TODO]
-    // set particle position
-    // p.pos.xyz = basePos;
+    // [TODO] 2.1.1
+    // set the initial position of the Particle
+    // to basePos
+    p.pos.xyz = basePos;
     
+    // [TODO] 2.4
     // make the fire span over the X axis
-    //p.pos.x += dir.x;
+    // p.pos.x += dir.x;
     
-    // Fire rises upward
-    // [TODO]
+    // [TODO] 2.1.2 
+    // set the initial speed of the particle
+    // to (dir.x, 1.0 + dir.y, dir.z)
+    // using 1.0 + dir.y for the velocity.y is to 
+    // give the particle an initial upward speed
+    // to achieve fire rising upward
     p.velocity.xyz = vec3(
-        0.0f
-        // dir.x,
-        // 1.0 + dir.y,
-        // dir.z 
+        //0.0f
+         dir.x,
+         1.0 + dir.y,
+         dir.z 
     );
 
+    // set the initial particle colour to white
     p.color = vec4(1.0, 1.0, 1.0, 1.0);
 
+    // set the life span of a particle to a random value
     p.maxLife = 1.0 + rand(seed) * 2.0;
+    // set the remaining life time of a particle
     p.life = p.maxLife;
 }
 
@@ -66,41 +76,44 @@ void main() {
     Particle p = particles[id];
 
     if (p.life <= 0.000001) {
+        // the branch for particle init 
         respawn(p, id);
     } else {
+        // the branch for particle update
+
         // Decrease life
         p.life -= dt;
+
+        // a random value between (0, 1.0)
+        float noise = rand(float(id) + time) ;
+
+        // [TODO] 2.2.1 
+        // Upward acceleration (buoyancy)
+        // add 
+        //p.velocity.y += ??;
+        p.velocity.y += noise * acc.y * dt;
+
+        // Add turbulence to velocity.x and .z
+        p.velocity.x += (noise - 0.5) * acc.x * dt;
+        p.velocity.z += (noise - 0.5) * acc.z * dt;
+
+        // [TODO] 2.2.2
+        // Update position based on the product of
+        // velocity and dt
+        // p.pos.xyz += ??;
+        p.pos.xyz += p.velocity.xyz * dt;
 
         // life parameter t in [1, 0]
         float t = p.life / p.maxLife;
 
-        // Fire colour : mix between red and yellow
+        // [TODO] 2.3
+        // Fire colour : use mix(colour_red, colour_yellow, t) 
+        // to achieve colour mixing between red and yellow
         // Hint: red (1.0, 0.0, 0.0), yellow (1.0, 1.0, 0.0)
         vec3 color = vec3(1.0, 0.0, 0.0);
         // vec3 color = mix(vec3(1.0, 0.1, 0.0), vec3(1.0, 1.0, 0.0), t);
         
-        // colour for smoke
-        //vec3 color = mix(vec3(0.98), vec3(0.8), 1 - t);
-
-        //vec3 color = vec3(1.0 - 0.5 * t, 
-        //        exp(4 * (t - 1.0) ) , exp(10 * (t - 1.0)));
-
         p.color = vec4(color, 1.0);
-
-        float noise = rand(float(id) + time) - 0.5;
-
-        // [TODO]
-        // Upward acceleration (buoyancy)
-        //p.velocity.y = 0;
-        //p.velocity.y += noise * acc.y * dt;
-
-        // Add turbulence
-        p.velocity.x += noise * acc.x * dt;
-        p.velocity.z += noise * acc.z * dt;
-
-        // [TODO]
-        // Update position
-        p.pos.xyz += p.velocity.xyz * dt;
     }
 
     particles[id] = p;

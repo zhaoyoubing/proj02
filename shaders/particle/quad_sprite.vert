@@ -1,8 +1,6 @@
 #version 430 core
 
 layout(location = 0) in vec3 aPos;      // quad vertex
-//layout(location = 1) in vec4 partPos;   // per-particle position
-//layout(location = 2) in vec4 color;   // per-particle position
 
 struct Particle {
     vec4 pos;
@@ -46,17 +44,28 @@ void main() {
     if (gl_VertexID % 4 == 2) uv = vec2(0,1);
     if (gl_VertexID % 4 == 3) uv = vec2(1,1);
 
-    // dealing with sprites texCoord
-    // get sprite index
-    //uint nx = 8;
-    //uint ny = 6;
+    
+    // [TODO] 4 dealing with sprites texCoord
+    // T4.1 calcuate the scaling based on nxTex, nyTex
+    // replace the following line with yours
+    // vec2 uvScale = vec2(1.0, 1.0);
     vec2 uvScale  = vec2(1.0/nxTex, 1.0/ nyTex);
 
+    // calcuate the sprite index
+    // the upper left corner represents the beginning of a particle
+    // at (p.life == p.maxLife)
     uint n = int( (1 - p.life / p.maxLife) * nxTex * nyTex);
-    uint sx = n % nxTex;
-    uint sy = n / nxTex;
-    vec2 uvOffset = vec2(sx, sy) * uvScale;
+    
+    // T4.2 calcuate offset_x and offset_y of the sprite based on n
+    // replace the next two lines with yours.
+    // uint offset_x = 0;
+    // uint offset_y = 0;
+    uint offset_x = n % nxTex;
+    uint offset_y = n / nxTex;
+    // the sprite offset in the texture
+    vec2 uvOffset = vec2(offset_x, offset_y) * uvScale;
 
+    // the final texture uv coordinates corresponding to that sprite
     uv = uv * uvScale + uvOffset;
 
 }

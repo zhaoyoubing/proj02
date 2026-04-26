@@ -32,8 +32,10 @@ void main() {
     vec3 worldPos = p.pos.xyz + aPos * size;
     gl_Position = proj * view * vec4(worldPos, 1.0);
 
+    // use the particle colour as quad vertex colour
     pColor = p.color;
 
+    // specify the texture coordinates for the four corners of the quad
     if (gl_VertexID % 4 == 0) uv = vec2(0,0);
     if (gl_VertexID % 4 == 1) uv = vec2(1,0);
     if (gl_VertexID % 4 == 2) uv = vec2(0,1);

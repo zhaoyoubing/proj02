@@ -45,12 +45,14 @@ void respawn(inout Particle p, uint id) {
     // to basePos
     p.pos.xyz = basePos;
     
-    // [TODO] 2.4
-    // make the fire span over the X axis
-    // p.pos.x += dir.x;
+    // [TODO] 2.4.2 
+    // make the fire spred over the X axis
+    // by adding mulitples of dir.x to p.pos.x
+    // p.pos.x += ??;
+    p.pos.x += dir.x;
     
     // [TODO] 2.1.2 
-    // set the initial speed of the particle
+    // set the initial velocity of the particle
     // to (dir.x, 1.0 + dir.y, dir.z)
     // using 1.0 + dir.y for the velocity.y is to 
     // give the particle an initial upward speed
@@ -84,18 +86,19 @@ void main() {
         // Decrease life
         p.life -= dt;
 
-        // a random value between (0, 1.0)
-        float noise = rand(float(id) + time) ;
-
         // [TODO] 2.2.1 
         // Upward acceleration (buoyancy)
-        // add 
+        // add the product of acc.y and dt to 
+        // p.velocity.y
         //p.velocity.y += ??;
-        p.velocity.y += noise * acc.y * dt;
+        p.velocity.y += acc.y * dt;
+
+        // a random value between (-0.5, 0.5)
+        float noise = rand(float(id) + time) - 0.5 ;
 
         // Add turbulence to velocity.x and .z
-        p.velocity.x += (noise - 0.5) * acc.x * dt;
-        p.velocity.z += (noise - 0.5) * acc.z * dt;
+        p.velocity.x += noise * acc.x * dt;
+        p.velocity.z += noise * acc.z * dt;
 
         // [TODO] 2.2.2
         // Update position based on the product of
@@ -106,12 +109,12 @@ void main() {
         // life parameter t in [1, 0]
         float t = p.life / p.maxLife;
 
-        // [TODO] 2.3
+        // [TODO] 2.4.1
         // Fire colour : use mix(colour_red, colour_yellow, t) 
         // to achieve colour mixing between red and yellow
         // Hint: red (1.0, 0.0, 0.0), yellow (1.0, 1.0, 0.0)
-        vec3 color = vec3(1.0, 0.0, 0.0);
-        // vec3 color = mix(vec3(1.0, 0.1, 0.0), vec3(1.0, 1.0, 0.0), t);
+        //vec3 color = vec3(1.0, 0.0, 0.0);
+        vec3 color = mix(vec3(1.0, 0.1, 0.0), vec3(1.0, 1.0, 0.0), t);
         
         p.color = vec4(color, 1.0);
     }

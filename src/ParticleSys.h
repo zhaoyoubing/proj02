@@ -78,22 +78,24 @@ private:
     // 16348
 
     bool bPlaySim = true;
-    static const int NUM_POINTS = 8;
+    // [TODO] T3.3.3 change NUM_POINTS from 8 to 1024
+    // static const int NUM_POINTS = 8;
+    static const int NUM_POINTS = 1024;
     Particle particles[NUM_POINTS];
 
-    std::shared_ptr<ShaderProgram> progPoint;
-    std::shared_ptr<ShaderProgram> progQuadTex;
-    std::shared_ptr<ShaderProgram> progQuadSprite;
+    std::shared_ptr<ShaderProgram> progPoint;  // render particles as points
+    std::shared_ptr<ShaderProgram> progQuadTex; // render particles as textures
+    std::shared_ptr<ShaderProgram> progQuadSprite; // render partcles as texture sprites
 
     // rendering
     std::shared_ptr<ArcballCamera> camera;
 
-    // particle vertex and fragment shaders
+    // particle vertex and fragment shaders attached to materials
     std::shared_ptr<Material> drawPointMat;
     std::shared_ptr<Material> drawTexMat;
     std::shared_ptr<Material> drawSpriteMat;
 
-    // simulation compute shaders
+    // the simulation compute shader
     std::shared_ptr<Material> simMat;
 
     // quad for drawing particles with GL_TRIANGLE_STRIP
@@ -107,10 +109,10 @@ private:
     DrawMode drawMode = DrawMode::POINT;
 
     // for drawing particles
-    GLuint vaoPoint;  // vertex array object for quad or point list
+    GLuint vaoPoint;  // VAO (vertex array object) for point list
 
-    GLuint vaoQuad;
-    GLuint quadVertBuf; // the quad proxy for particle textures
+    GLuint vaoQuad;  // vertex array object for quad
+    GLuint quadVertBuf; // the VBO (vertex buffer object) for the quad
 
     // buffer for particles
     // use as Vertex Buffers (VBO) or Shader Storage Buffers (SSBO)

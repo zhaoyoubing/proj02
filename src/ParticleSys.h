@@ -74,11 +74,11 @@ public:
 private:
     // The particle system will work with a predefined pool of particles, this makes things way faster than having a dynamic list.
     // You may be able to increase this number depending on your hardware.
-    // I was able to run it smoothly with 65536 particles on an NVIDIA Mobile 5070Ti
+    // I was able to run it smoothly with 16192 particles on an NVidia Mobile 5070Ti
     // 16348
 
     bool bPlaySim = true;
-    static const int NUM_POINTS = 1024;
+    static const int NUM_POINTS = 16192;
     Particle particles[NUM_POINTS];
 
     std::shared_ptr<ShaderProgram> progPoint;

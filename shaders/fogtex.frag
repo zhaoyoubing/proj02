@@ -49,6 +49,6 @@ void main()
     // combination of ambient, diffuse and specular
     colour_out = vec4(ambient + diffuse + specular, 1.0);
 
-    float fog_rate = exp(viewSpacePos.z/100);
+    float fog_rate = exp(viewSpacePos.z/20.0);
     colour_out = colour_out * fog_rate + (1 - fog_rate) * vec4(1.0, 1.0, 1.0, 1.0);
 }
